@@ -16,12 +16,12 @@
 
 class Screen;
 
-typedef struct weatherData{
-    int8_t temperature;
-    int16_t weatherConditionCode;
-}weatherData;
-
 namespace Watchy {
+    typedef struct weatherData{
+        int8_t temperature;
+        int16_t weatherConditionCode;
+    }weatherData;
+
     extern DS3232RTC RTC;
     extern GxEPD2_BW<GxEPD2_154_D67, GxEPD2_154_D67::HEIGHT> display;
     extern tmElements_t currentTime;
@@ -47,12 +47,15 @@ namespace Watchy {
 
     void showWatchFace(bool partialRefresh);
     void setScreen(Screen *s, bool partialRefresh = false);
-};
 
-extern RTC_DATA_ATTR int guiState;
-extern RTC_DATA_ATTR int menuIndex;
-extern RTC_DATA_ATTR BMA423 sensor;
-extern RTC_DATA_ATTR bool WIFI_CONFIGURED;
-extern RTC_DATA_ATTR bool BLE_CONFIGURED;
+    // stored in RTC_DATA_ATTR
+    extern int guiState;
+    extern int menuIndex;
+    extern BMA423 sensor;
+    extern bool WIFI_CONFIGURED;
+    extern bool BLE_CONFIGURED;
+
+    extern Screen *menuScreenP;
+};
 
 #endif
