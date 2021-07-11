@@ -57,4 +57,12 @@
 #define HARDWARE_VERSION_MAJOR 1
 #define HARDWARE_VERSION_MINOR 0
 
+// debugging "#define DEBUGPORT Serial" for debugging output
+#define DEBUGPORT Serial
+#ifdef DEBUGPORT
+#define DEBUG(...)      DEBUGPORT.printf(__VA_ARGS__)
+#else
+#define DEBUG(...)
+#endif
+
 #endif
