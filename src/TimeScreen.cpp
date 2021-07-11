@@ -3,7 +3,7 @@
 
 void TimeScreen::show()
 {
-    RTC.read(w->currentTime);
+    w->RTC.read(w->currentTime);
     w->display.fillScreen(GxEPD_BLACK);
     w->display.setTextColor(GxEPD_WHITE);
     w->display.setFont(&DSEG7_Classic_Bold_53);
