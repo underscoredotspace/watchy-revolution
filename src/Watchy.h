@@ -26,7 +26,7 @@ class Watchy {
         static DS3232RTC RTC;
         static GxEPD2_BW<GxEPD2_154_D67, GxEPD2_154_D67::HEIGHT> display;
         tmElements_t currentTime;
-        Screen *screen;
+        static Screen *screen;
     public:
         Watchy();
         void init(String datetime = "");
@@ -48,7 +48,7 @@ class Watchy {
         void updateFWBegin();
 
         void showWatchFace(bool partialRefresh);
-        void setScreen(Screen *s);
+        void setScreen(Screen *s, bool partialRefresh = false);
 
     private:
         void _rtcConfig(String datetime);    

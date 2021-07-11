@@ -3,16 +3,16 @@
 #include "TimeScreen.h"
 
 Watchy m; //instantiate your watchface
+TimeScreen ts(&m);
 
 void setup()
 {
-  TimeScreen ts(&m);
-  m.setScreen(&ts);
-  static RTC_DATA_ATTR int bootCount = 0;
-  ++bootCount;
   Serial.begin(921600);
   DEBUG("serial initialized @ 921600\n");
-  DEBUG("wakeup_reason #%d: %d\n", bootCount, esp_sleep_get_wakeup_cause());
+  if (m.screen == nullptr)
+  {
+    m.setScreen(&ts);
+  }
   m.init(); //call init in setup
 }
 
