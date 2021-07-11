@@ -2,18 +2,14 @@
 #include "Screen.h"
 #include "TimeScreen.h"
 
-Watchy m; //instantiate your watchface
-TimeScreen ts(&m);
+TimeScreen ts;
 
 void setup()
 {
   Serial.begin(921600);
-  DEBUG("serial initialized @ 921600\n");
-  if (m.screen == nullptr)
-  {
-    m.setScreen(&ts);
-  }
-  m.init(); //call init in setup
+  DEBUG("\nsetup %d\n", esp_sleep_get_wakeup_cause());
+  Watchy::watchFace = &ts;
+  Watchy::init(); //call init in setup
 }
 
 void loop()

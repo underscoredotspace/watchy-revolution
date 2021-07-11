@@ -1,9 +1,19 @@
 #include "Watchy.h"
 #include "Screen.h"
 
+using namespace Watchy;
+
+void _rtcConfig(String datetime);    
+void _bmaConfig();
+void _configModeCallback(WiFiManager *myWiFiManager);
+uint16_t _readRegister(uint8_t address, uint8_t reg, uint8_t *data, uint16_t len);
+uint16_t _writeRegister(uint8_t address, uint8_t reg, uint8_t *data, uint16_t len);
+
 DS3232RTC Watchy::RTC(false); 
 GxEPD2_BW<GxEPD2_154_D67, GxEPD2_154_D67::HEIGHT> Watchy::display(GxEPD2_154_D67(CS, DC, RESET, BUSY));
+tmElements_t Watchy::currentTime;
 RTC_DATA_ATTR Screen *Watchy::screen = nullptr;
+Screen *Watchy::watchFace; // set by main
 
 RTC_DATA_ATTR int guiState;
 RTC_DATA_ATTR int menuIndex;
@@ -14,14 +24,11 @@ RTC_DATA_ATTR weatherData currentWeather;
 RTC_DATA_ATTR int weatherIntervalCounter = WEATHER_UPDATE_INTERVAL;
 
 class MenuScreen : public Screen {
-    private:
-      int menuIndex = 0;
     public:
-    MenuScreen(Watchy *w) : Screen(w) {};
     void setMenuIndex(int i) { menuIndex = i; }
     void show() {
-        w->display.fillScreen(GxEPD_BLACK);
-        w->display.setFont(&FreeMonoBold9pt7b);
+        display.fillScreen(GxEPD_BLACK);
+        display.setFont(&FreeMonoBold9pt7b);
 
         int16_t  x1, y1;
         uint16_t w1, h1;
@@ -30,19 +37,21 @@ class MenuScreen : public Screen {
         const char *menuItems[] = {"Check Battery", "Vibrate Motor", "Show Accelerometer", "Set Time", "Setup WiFi", "Update Firmware"};
         for(int i=0; i<MENU_LENGTH; i++){
             yPos = 30+(MENU_HEIGHT*i);
-            w->display.setCursor(0, yPos);
+            display.setCursor(0, yPos);
             if(i == menuIndex){
-                w->display.getTextBounds(menuItems[i], 0, yPos, &x1, &y1, &w1, &h1);
-                w->display.fillRect(x1-1, y1-10, 200, h1+15, GxEPD_WHITE);
-                w->display.setTextColor(GxEPD_BLACK);
-                w->display.println(menuItems[i]);      
+                display.getTextBounds(menuItems[i], 0, yPos, &x1, &y1, &w1, &h1);
+                display.fillRect(x1-1, y1-10, 200, h1+15, GxEPD_WHITE);
+                display.setTextColor(GxEPD_BLACK);
+                display.println(menuItems[i]);      
             }else{
-                w->display.setTextColor(GxEPD_WHITE);
-                w->display.println(menuItems[i]);
+                display.setTextColor(GxEPD_WHITE);
+                display.println(menuItems[i]);
             }
         }   
     }
 };
+
+MenuScreen menuScreen;
 
 String getValue(String data, char separator, int index)
 {
@@ -60,8 +69,6 @@ String getValue(String data, char separator, int index)
 
   return found>index ? data.substring(strIndex[0], strIndex[1]) : "";
 }
-
-Watchy::Watchy(){} //constructor
 
 void Watchy::init(String datetime){
     esp_sleep_wakeup_cause_t wakeup_reason;
@@ -104,6 +111,7 @@ void Watchy::init(String datetime){
             _rtcConfig(datetime);
             #endif
             _bmaConfig();
+            if (screen == nullptr) { screen = watchFace; }
             showWatchFace(false); //full update on reset
             break;
     }
@@ -121,7 +129,7 @@ void Watchy::deepSleep(){
   esp_deep_sleep_start();
 }
 
-void Watchy::_rtcConfig(String datetime){
+void _rtcConfig(String datetime){
     if(datetime != NULL){
         const time_t FUDGE(30);//fudge factor to allow for upload time, etc. (seconds, YMMV)
         tmElements_t tm;
@@ -182,8 +190,7 @@ void Watchy::handleButtonPress(){
   else if (wakeupBit & BACK_BTN_MASK){
     if(guiState == MAIN_MENU_STATE){//exit to watch face if already in menu
       RTC.alarm(ALARM_2); //resets the alarm flag in the RTC
-      RTC.read(currentTime);
-      showWatchFace(false);
+      setScreen(watchFace, true);
     }else if(guiState == APP_STATE){
       showMenu(menuIndex, false);//exit to menu if already in app
     }else if(guiState == FW_UPDATE_STATE){
@@ -255,8 +262,7 @@ void Watchy::handleButtonPress(){
             lastTimeout = millis();
             if(guiState == MAIN_MENU_STATE){//exit to watch face if already in menu
             RTC.alarm(ALARM_2); //resets the alarm flag in the RTC
-            RTC.read(currentTime);
-            showWatchFace(false);
+            setScreen(watchFace);
             break; //leave loop
             }else if(guiState == APP_STATE){
             showMenu(menuIndex, false);//exit to menu if already in app
@@ -288,7 +294,6 @@ void Watchy::handleButtonPress(){
 }
 
 void Watchy::showMenu(byte menuIndex, bool partialRefresh){
-    static MenuScreen menuScreen(this);
     menuScreen.setMenuIndex(menuIndex);
     setScreen(&menuScreen, partialRefresh);
     guiState = MAIN_MENU_STATE;    
@@ -652,7 +657,7 @@ float Watchy::getBatteryVoltage(){
     return analogRead(ADC_PIN) / 4096.0 * 7.23;
 }
 
-uint16_t Watchy::_readRegister(uint8_t address, uint8_t reg, uint8_t *data, uint16_t len)
+uint16_t _readRegister(uint8_t address, uint8_t reg, uint8_t *data, uint16_t len)
 {
     Wire.beginTransmission(address);
     Wire.write(reg);
@@ -665,7 +670,7 @@ uint16_t Watchy::_readRegister(uint8_t address, uint8_t reg, uint8_t *data, uint
     return 0;
 }
 
-uint16_t Watchy::_writeRegister(uint8_t address, uint8_t reg, uint8_t *data, uint16_t len)
+uint16_t _writeRegister(uint8_t address, uint8_t reg, uint8_t *data, uint16_t len)
 {
     Wire.beginTransmission(address);
     Wire.write(reg);
@@ -673,7 +678,7 @@ uint16_t Watchy::_writeRegister(uint8_t address, uint8_t reg, uint8_t *data, uin
     return (0 !=  Wire.endTransmission());
 }
 
-void Watchy::_bmaConfig(){
+void _bmaConfig(){
  
     if (sensor.begin(_readRegister, _writeRegister, delay) == false) {
         //fail to init BMA
@@ -803,7 +808,7 @@ void Watchy::setupWifi(){
   guiState = APP_STATE;  
 }
 
-void Watchy::_configModeCallback (WiFiManager *myWiFiManager) {
+void _configModeCallback (WiFiManager *myWiFiManager) {
   display.init(0, false); //_initial_refresh to false to prevent full update on init
   display.setFullWindow();
   display.fillScreen(GxEPD_BLACK);

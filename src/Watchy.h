@@ -21,41 +21,32 @@ typedef struct weatherData{
     int16_t weatherConditionCode;
 }weatherData;
 
-class Watchy {
-    public:
-        static DS3232RTC RTC;
-        static GxEPD2_BW<GxEPD2_154_D67, GxEPD2_154_D67::HEIGHT> display;
-        tmElements_t currentTime;
-        static Screen *screen;
-    public:
-        Watchy();
-        void init(String datetime = "");
-        void deepSleep();
-        float getBatteryVoltage();
-        void vibMotor(uint8_t intervalMs = 100, uint8_t length = 20);
+namespace Watchy {
+    extern DS3232RTC RTC;
+    extern GxEPD2_BW<GxEPD2_154_D67, GxEPD2_154_D67::HEIGHT> display;
+    extern tmElements_t currentTime;
+    extern Screen *screen;
+    extern Screen *watchFace;
+    void init(String datetime = "");
+    void deepSleep();
+    float getBatteryVoltage();
+    void vibMotor(uint8_t intervalMs = 100, uint8_t length = 20);
 
-        void handleButtonPress();
-        void showMenu(byte menuIndex, bool partialRefresh);
-        void showFastMenu(byte menuIndex);
-        void showBattery();
-        void showBuzz();
-        void showAccelerometer();
-        void showUpdateFW();
-        void setTime();
-        void setupWifi();
-        bool connectWiFi();
-        weatherData getWeatherData();
-        void updateFWBegin();
+    void handleButtonPress();
+    void showMenu(byte menuIndex, bool partialRefresh);
+    void showFastMenu(byte menuIndex);
+    void showBattery();
+    void showBuzz();
+    void showAccelerometer();
+    void showUpdateFW();
+    void setTime();
+    void setupWifi();
+    bool connectWiFi();
+    weatherData getWeatherData();
+    void updateFWBegin();
 
-        void showWatchFace(bool partialRefresh);
-        void setScreen(Screen *s, bool partialRefresh = false);
-
-    private:
-        void _rtcConfig(String datetime);    
-        void _bmaConfig();
-        static void _configModeCallback(WiFiManager *myWiFiManager);
-        static uint16_t _readRegister(uint8_t address, uint8_t reg, uint8_t *data, uint16_t len);
-        static uint16_t _writeRegister(uint8_t address, uint8_t reg, uint8_t *data, uint16_t len);
+    void showWatchFace(bool partialRefresh);
+    void setScreen(Screen *s, bool partialRefresh = false);
 };
 
 extern RTC_DATA_ATTR int guiState;
