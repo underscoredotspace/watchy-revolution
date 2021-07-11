@@ -12,7 +12,9 @@
 #include "DSEG7_Classic_Bold_53.h"
 #include "BLE.h"
 #include "bma.h"
-#include "config.h"    
+#include "config.h"
+
+class Screen;
 
 typedef struct weatherData{
     int8_t temperature;
@@ -24,6 +26,7 @@ class Watchy {
         static DS3232RTC RTC;
         static GxEPD2_BW<GxEPD2_154_D67, GxEPD2_154_D67::HEIGHT> display;
         tmElements_t currentTime;
+        Screen *screen;
     public:
         Watchy();
         void init(String datetime = "");
@@ -45,7 +48,7 @@ class Watchy {
         void updateFWBegin();
 
         void showWatchFace(bool partialRefresh);
-        virtual void drawWatchFace(); //override this method for different watch faces
+        void setScreen(Screen *s);
 
     private:
         void _rtcConfig(String datetime);    

@@ -1,4 +1,5 @@
 #include "Watchy.h"
+#include "Screen.h"
 
 DS3232RTC Watchy::RTC(false); 
 GxEPD2_BW<GxEPD2_154_D67, GxEPD2_154_D67::HEIGHT> Watchy::display(GxEPD2_154_D67(CS, DC, RESET, BUSY));
@@ -34,6 +35,7 @@ void Watchy::init(String datetime){
     esp_sleep_wakeup_cause_t wakeup_reason;
     wakeup_reason = esp_sleep_get_wakeup_cause(); //get wake up reason
     Wire.begin(SDA, SCL); //init i2c
+    DEBUG("Watchy::init %d\n", wakeup_reason);
 
     switch (wakeup_reason)
     {
@@ -592,24 +594,16 @@ void Watchy::showAccelerometer(){
 void Watchy::showWatchFace(bool partialRefresh){
   display.init(0, false); //_initial_refresh to false to prevent full update on init
   display.setFullWindow();
-  drawWatchFace();
+  screen->show();
   display.display(partialRefresh); //partial refresh
   display.hibernate();
   guiState = WATCHFACE_STATE;
 }
 
-void Watchy::drawWatchFace(){
-    display.setFont(&DSEG7_Classic_Bold_53);
-    display.setCursor(5, 53+60);
-    if(currentTime.Hour < 10){
-        display.print("0");
-    }
-    display.print(currentTime.Hour);
-    display.print(":");
-    if(currentTime.Minute < 10){
-        display.print("0");
-    }  
-    display.println(currentTime.Minute);    
+void Watchy::setScreen(Screen *s) {
+    screen = s;
+    RTC.read(currentTime);
+    showWatchFace(false);
 }
 
 weatherData Watchy::getWeatherData(){
