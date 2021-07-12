@@ -9,6 +9,8 @@
 class TimeScreen : public Screen
 {
 public:
+    TimeScreen() : Screen("TimeScreen") {};
     virtual void show(); // display this screen
+    virtual void menu();
 };
 #endif

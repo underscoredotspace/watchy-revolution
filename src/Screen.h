@@ -8,34 +8,13 @@
 // presses. Default handlers set watchy screen to that screen.
 class Screen
 {
-protected:
-    Screen *_up, *_down, *_back, *_menu;
-
 public:
+    const char* const name;
+    Screen(const char* const n) : name(n) {};
     virtual void show() = 0; // display this screen
-    virtual void up()
-    {
-        DEBUG("up\n");
-        Watchy::setScreen(_up);
-    }
-    virtual void down()
-    {
-        DEBUG("down\n");
-        Watchy::setScreen(_down);
-    }
-    virtual void back()
-    {
-        DEBUG("back\n");
-        Watchy::setScreen(_back);
-    }
-    virtual void menu()
-    {
-        DEBUG("menu\n");
-        Watchy::setScreen(_menu);
-    }
-    void setUp(Screen *s) { _up = s; }
-    void setDown(Screen *s) { _down = s; }
-    void setBack(Screen *s) { _back = s; }
-    void setMenu(Screen *s) { _menu = s; }
+    virtual void up() { DEBUG("Screen::up\n"); }
+    virtual void down() { DEBUG("Screen::down\n"); }
+    virtual void back() { DEBUG("Screen::back\n"); }
+    virtual void menu() { DEBUG("Screen::menu\n"); }
 };
 #endif

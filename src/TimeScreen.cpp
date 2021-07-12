@@ -12,3 +12,8 @@ void TimeScreen::show()
     display.setCursor(5, 53 + 60);
     display.printf("%02d:%02d", currentTime.Hour, currentTime.Minute);
 }
+
+void TimeScreen::menu() {
+    DEBUG("TimeScreen::menu\n");
+    setScreen(menuScreenP);
+}

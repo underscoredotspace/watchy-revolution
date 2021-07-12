@@ -23,8 +23,15 @@ RTC_DATA_ATTR bool Watchy::BLE_CONFIGURED;
 RTC_DATA_ATTR weatherData currentWeather;
 RTC_DATA_ATTR int weatherIntervalCounter = WEATHER_UPDATE_INTERVAL;
 
-class MenuScreen : public Screen {
-    public:
+void doMenu(int index);
+
+class MenuScreen : public Screen
+{
+public:
+    static const char *const menuItems[];
+
+public:
+    MenuScreen() : Screen("MenuScreen") {};
     void setMenuIndex(int i) { menuIndex = i; }
     virtual void show();
     virtual void menu();
@@ -33,24 +40,34 @@ class MenuScreen : public Screen {
     virtual void down();
 };
 
+const char *const MenuScreen::menuItems[] = {
+    "Check Battery",
+    "Vibrate Motor",
+    "Show Accelerometer",
+    "Set Time",
+    "Setup WiFi",
+    "Update Firmware"};
+
+const unsigned int MENU_LENGTH = (sizeof(MenuScreen::menuItems)/sizeof(MenuScreen::menuItems[0]));
+
 void MenuScreen::show()
 {
+    DEBUG("MenuScreen::show\n");
+    guiState = MAIN_MENU_STATE;
     display.fillScreen(GxEPD_BLACK);
     display.setFont(&FreeMonoBold9pt7b);
 
-    int16_t x1, y1;
-    uint16_t w1, h1;
-    int16_t yPos;
-
-    const char *menuItems[] = {"Check Battery", "Vibrate Motor", "Show Accelerometer", "Set Time", "Setup WiFi", "Update Firmware"};
     for (int i = 0; i < MENU_LENGTH; i++)
     {
-        yPos = 30 + (MENU_HEIGHT * i);
+        int16_t yPos = 30 + (MENU_HEIGHT * i);
         display.setCursor(0, yPos);
         if (i == menuIndex)
         {
-            display.getTextBounds(menuItems[i], 0, yPos, &x1, &y1, &w1, &h1);
-            display.fillRect(x1 - 1, y1 - 10, 200, h1 + 15, GxEPD_WHITE);
+            int16_t x1, y1;
+            uint16_t w, h;
+
+            display.getTextBounds(menuItems[i], 0, yPos, &x1, &y1, &w, &h);
+            display.fillRect(x1 - 1, y1 - 10, 200, h + 15, GxEPD_WHITE);
             display.setTextColor(GxEPD_BLACK);
             display.println(menuItems[i]);
         }
@@ -62,39 +79,18 @@ void MenuScreen::show()
     }
 }
 
+void MenuScreen::menu()
+{
+    DEBUG("MenuScreen::menu\n");
+    doMenu(menuIndex);
+}
+
 void MenuScreen::back()
 {
     DEBUG("MenuScreen::back\n");
     RTC.alarm(ALARM_2); //resets the alarm flag in the RTC
+    guiState = WATCHFACE_STATE;
     setScreen(watchFace);
-}
-
-void MenuScreen::menu()
-{
-    DEBUG("MenuScreen::menu\n");
-    switch (menuIndex)
-    {
-    case 0:
-        showBattery();
-        break;
-    case 1:
-        showBuzz();
-        break;
-    case 2:
-        showAccelerometer();
-        break;
-    case 3:
-        setTime();
-        break;
-    case 4:
-        setupWifi();
-        break;
-    case 5:
-        showUpdateFW();
-        break;
-    default:
-        break;
-    }
 }
 
 void MenuScreen::up()
@@ -180,7 +176,11 @@ void Watchy::init(String datetime){
             _rtcConfig(datetime);
             #endif
             _bmaConfig();
-            if (screen == nullptr) { screen = watchFace; }
+            if (screen == nullptr)
+            {
+                screen = watchFace;
+                guiState = WATCHFACE_STATE;
+            }
             showWatchFace(false); //full update on reset
             break;
     }
@@ -221,6 +221,70 @@ void _rtcConfig(String datetime){
     RTC.read(currentTime);
 }
 
+void fastEventLoop() {
+    long timeout = millis() + 5000;
+    DEBUG("fastEventLoop start timeout %ld\n", timeout);
+    pinMode(MENU_BTN_PIN, INPUT);
+    pinMode(BACK_BTN_PIN, INPUT);
+    pinMode(UP_BTN_PIN, INPUT);
+    pinMode(DOWN_BTN_PIN, INPUT);
+    while (millis() < timeout)
+    {
+        if (digitalRead(MENU_BTN_PIN) == 1)
+        {
+            DEBUG("%ld: fastEventLoop menu button guiState %d\n", millis(), guiState);
+            timeout = millis() + 5000;
+            if (guiState == MAIN_MENU_STATE)
+            {
+                screen->menu();
+            }
+            else if (guiState == FW_UPDATE_STATE)
+            {
+                updateFWBegin();
+            }
+        }
+        else if (digitalRead(BACK_BTN_PIN) == 1)
+        {
+            DEBUG("%ld: fastEventLoop back button guiState %d\n", millis(), guiState);
+            timeout = millis() + 5000;
+            if (guiState == MAIN_MENU_STATE)
+            {
+                screen->back();
+                break; // back to watch face.
+                // TODO need way for event handlers to say
+                // end fast ui mode
+            }
+            else if (guiState == APP_STATE)
+            {
+                showMenu(menuIndex, false); //exit to menu if already in app
+            }
+            else if (guiState == FW_UPDATE_STATE)
+            {
+                showMenu(menuIndex, false); //exit to menu if already in app
+            }
+        }
+        else if (digitalRead(UP_BTN_PIN) == 1)
+        {
+            DEBUG("%ld: fastEventLoop up button guiState %d\n", millis(), guiState);
+            timeout = millis() + 5000;
+            if (guiState == MAIN_MENU_STATE)
+            {
+                screen->up();
+            }
+        }
+        else if (digitalRead(DOWN_BTN_PIN) == 1)
+        {
+            DEBUG("%ld: fastEventLoop down button guiState %d\n", millis(), guiState);
+            timeout = millis() + 5000;
+            if (guiState == MAIN_MENU_STATE)
+            {
+                screen->down();
+            }
+        }
+    }
+    DEBUG("fastEventLoop done millis %ld\n", millis());
+}
+
 void Watchy::handleButtonPress()
 {
     uint64_t wakeupBit = esp_sleep_get_ext1_wakeup_status();
@@ -230,15 +294,19 @@ void Watchy::handleButtonPress()
         switch (wakeupBit & BTN_PIN_MASK)
         {
         case MENU_BTN_MASK:
+            DEBUG("Watchy::handleButtonPress %s->menu()\n", screen->name);
             screen->menu();
             break;
         case BACK_BTN_MASK:
+            DEBUG("Watchy::handleButtonPress %s->back()\n", screen->name);
             screen->back();
             break;
         case UP_BTN_MASK:
+            DEBUG("Watchy::handleButtonPress %s->up()\n", screen->name);
             screen->up();
             break;
         case DOWN_BTN_MASK:
+            DEBUG("Watchy::handleButtonPress %s->down()\n", screen->name);
             screen->down();
             break;
         default:
@@ -266,153 +334,68 @@ void Watchy::handleButtonPress()
         }
     }
 
-    /***************** fast menu *****************/
-    bool timeout = false;
-    long lastTimeout = millis();
-    pinMode(MENU_BTN_PIN, INPUT);
-    pinMode(BACK_BTN_PIN, INPUT);
-    pinMode(UP_BTN_PIN, INPUT);
-    pinMode(DOWN_BTN_PIN, INPUT);
-    while (!timeout)
-    {
-        if (millis() - lastTimeout > 5000)
-        {
-            timeout = true;
-        }
-        else
-        {
-            if (digitalRead(MENU_BTN_PIN) == 1)
-            {
-                lastTimeout = millis();
-                if (guiState == MAIN_MENU_STATE)
-                { //if already in menu, then select menu item
-                    switch (menuIndex)
-                    {
-                    case 0:
-                    showBattery();
-                    break;
-                    case 1:
-                    showBuzz();
-                    break;          
-                    case 2:
-                    showAccelerometer();
-                    break;
-                    case 3:
-                    setTime();
-                    break;
-                    case 4:
-                    setupWifi();
-                    break;                    
-                    case 5:
-                    showUpdateFW();
-                    break;
-                    default:
-                    break;                              
-                }
-            }else if(guiState == FW_UPDATE_STATE){
-                updateFWBegin();
-            }
-          }else if(digitalRead(BACK_BTN_PIN) == 1){
-            lastTimeout = millis();
-            if(guiState == MAIN_MENU_STATE){//exit to watch face if already in menu
-            RTC.alarm(ALARM_2); //resets the alarm flag in the RTC
-            setScreen(watchFace);
-            break; //leave loop
-            }else if(guiState == APP_STATE){
-            showMenu(menuIndex, false);//exit to menu if already in app
-            }else if(guiState == FW_UPDATE_STATE){
-            showMenu(menuIndex, false);//exit to menu if already in app
-            }            
-          }else if(digitalRead(UP_BTN_PIN) == 1){
-            lastTimeout = millis();
-            if(guiState == MAIN_MENU_STATE){//increment menu index
-            menuIndex--;
-            if(menuIndex < 0){
-                menuIndex = MENU_LENGTH - 1;
-            }    
-            showFastMenu(menuIndex);
-            }            
-          }else if(digitalRead(DOWN_BTN_PIN) == 1){
-            lastTimeout = millis();
-            if(guiState == MAIN_MENU_STATE){//decrement menu index
-            menuIndex++;
-            if(menuIndex > MENU_LENGTH - 1){
-                menuIndex = 0;
-            }
-            showFastMenu(menuIndex);
-            }         
-          }
-      }
-  }
-  display.hibernate();
+    fastEventLoop();
+
+    display.hibernate();
 }
 
 void Watchy::showMenu(byte menuIndex, bool partialRefresh){
     menuScreen.setMenuIndex(menuIndex);
+    guiState = MAIN_MENU_STATE;    
     setScreen(&menuScreen, partialRefresh);
-    guiState = MAIN_MENU_STATE;    
 }
 
-void Watchy::showFastMenu(byte menuIndex){
-    display.setFullWindow();
-    display.fillScreen(GxEPD_BLACK);
-    display.setFont(&FreeMonoBold9pt7b);
-
-    int16_t  x1, y1;
-    uint16_t w, h;
-    int16_t yPos;
-
-    const char *menuItems[] = {"Check Battery", "Vibrate Motor", "Show Accelerometer", "Set Time", "Setup WiFi", "Update Firmware"};
-    for(int i=0; i<MENU_LENGTH; i++){
-    yPos = 30+(MENU_HEIGHT*i);
-    display.setCursor(0, yPos);
-    if(i == menuIndex){
-        display.getTextBounds(menuItems[i], 0, yPos, &x1, &y1, &w, &h);
-        display.fillRect(x1-1, y1-10, 200, h+15, GxEPD_WHITE);
-        display.setTextColor(GxEPD_BLACK);
-        display.println(menuItems[i]);      
-    }else{
-        display.setTextColor(GxEPD_WHITE);
-        display.println(menuItems[i]);
-    }   
+class BatteryScreen : public Screen {
+    public:
+        BatteryScreen() : Screen("BatteryScreen") {};
+        void show()
+        {
+            display.init(0, false); //_initial_refresh to false to prevent full update on init
+            display.setFullWindow();
+            display.fillScreen(GxEPD_BLACK);
+            display.setFont(&FreeMonoBold9pt7b);
+            display.setTextColor(GxEPD_WHITE);
+            display.setCursor(20, 30);
+            display.println("Battery Voltage:");
+            float voltage = getBatteryVoltage();
+            display.setCursor(70, 80);
+            display.print(voltage);
+            display.println("V");
+            guiState = APP_STATE;
     }
+    void up() { setScreen(&menuScreen); }
+    void down() { setScreen(&menuScreen); }
+    void back() { setScreen(&menuScreen); }
+    void menu() { setScreen(&menuScreen); }
+};
 
-    display.display(true);
+BatteryScreen batteryScreen;
 
-    guiState = MAIN_MENU_STATE;    
-}
+class BuzzScreen : public Screen
+{
+public:
+    BuzzScreen() : Screen("BuzzScreen") {};
+    void show()
+    {
+        display.init(0, false); //_initial_refresh to false to prevent full update on init
+        display.setFullWindow();
+        display.fillScreen(GxEPD_BLACK);
+        display.setFont(&FreeMonoBold9pt7b);
+        display.setTextColor(GxEPD_WHITE);
+        display.setCursor(70, 80);
+        display.println("Buzz!");
+        display.display(true); // TODO: delete me
+        vibMotor();
+        guiState = MAIN_MENU_STATE;    
+        setScreen(&menuScreen);
+    }
+    void up() { setScreen(&menuScreen); }
+    void down() { setScreen(&menuScreen); }
+    void back() { setScreen(&menuScreen); }
+    void menu() { setScreen(&menuScreen); }
+};
 
-void Watchy::showBattery(){
-    display.init(0, false); //_initial_refresh to false to prevent full update on init
-    display.setFullWindow();
-    display.fillScreen(GxEPD_BLACK);
-    display.setFont(&FreeMonoBold9pt7b);
-    display.setTextColor(GxEPD_WHITE);
-    display.setCursor(20, 30);
-    display.println("Battery Voltage:");
-    float voltage = getBatteryVoltage();
-    display.setCursor(70, 80);
-    display.print(voltage);
-    display.println("V");
-    display.display(false); //full refresh
-    display.hibernate();
-
-    guiState = APP_STATE;      
-}
-
-void Watchy::showBuzz(){
-    display.init(0, false); //_initial_refresh to false to prevent full update on init
-    display.setFullWindow();
-    display.fillScreen(GxEPD_BLACK);
-    display.setFont(&FreeMonoBold9pt7b);
-    display.setTextColor(GxEPD_WHITE);
-    display.setCursor(70, 80);
-    display.println("Buzz!");
-    display.display(false); //full refresh
-    display.hibernate();
-    vibMotor();
-    showMenu(menuIndex, false);    
-}
+BuzzScreen buzzScreen;
 
 void Watchy::vibMotor(uint8_t intervalMs, uint8_t length){
     pinMode(VIB_MOTOR_PIN, OUTPUT);
@@ -424,246 +407,295 @@ void Watchy::vibMotor(uint8_t intervalMs, uint8_t length){
     }
 }
 
-void Watchy::setTime(){
+class SetTimeScreen : public Screen
+{
+public:
+    SetTimeScreen() : Screen("SetTimeScreen") {};
+    void show()
+    {
+        guiState = APP_STATE;
 
-    guiState = APP_STATE;
+        RTC.read(currentTime);
 
-    RTC.read(currentTime);
+        int8_t minute = currentTime.Minute;
+        int8_t hour = currentTime.Hour;
+        int8_t day = currentTime.Day;
+        int8_t month = currentTime.Month;
+        int8_t year = currentTime.Year + YEAR_OFFSET - 1970;
 
-    int8_t minute = currentTime.Minute;
-    int8_t hour = currentTime.Hour;
-    int8_t day = currentTime.Day;
-    int8_t month = currentTime.Month;
-    int8_t year = currentTime.Year + YEAR_OFFSET - 2000;
+        int8_t setIndex = SET_HOUR;
 
-    int8_t setIndex = SET_HOUR;
+        int8_t blink = 0;
 
-    int8_t blink = 0;
+        pinMode(DOWN_BTN_PIN, INPUT);
+        pinMode(UP_BTN_PIN, INPUT);
+        pinMode(MENU_BTN_PIN, INPUT);
+        pinMode(BACK_BTN_PIN, INPUT);
 
-    pinMode(DOWN_BTN_PIN, INPUT);
-    pinMode(UP_BTN_PIN, INPUT);
-    pinMode(MENU_BTN_PIN, INPUT);  
-    pinMode(BACK_BTN_PIN, INPUT);  
+        display.init(0, true); //_initial_refresh to false to prevent full update on init
+        display.setFullWindow();
 
-    display.init(0, true); //_initial_refresh to false to prevent full update on init
-    display.setFullWindow();
+        while (1)
+        {
 
-    while(1){
+            if (digitalRead(MENU_BTN_PIN) == 1)
+            {
+                setIndex++;
+                if (setIndex > SET_DAY)
+                {
+                    break;
+                }
+            }
+            if (digitalRead(BACK_BTN_PIN) == 1)
+            {
+                if (setIndex != SET_HOUR)
+                {
+                    setIndex--;
+                }
+            }
 
-    if(digitalRead(MENU_BTN_PIN) == 1){
-        setIndex++;
-        if(setIndex > SET_DAY){
-        break;
-        }
-    }
-    if(digitalRead(BACK_BTN_PIN) == 1){
-        if(setIndex != SET_HOUR){
-        setIndex--;
-        }
-    }      
+            blink = 1 - blink;
 
-    blink = 1 - blink;
+            if (digitalRead(DOWN_BTN_PIN) == 1)
+            {
+                blink = 1;
+                switch (setIndex)
+                {
+                case SET_HOUR:
+                    hour == 23 ? (hour = 0) : hour++;
+                    break;
+                case SET_MINUTE:
+                    minute == 59 ? (minute = 0) : minute++;
+                    break;
+                case SET_YEAR:
+                    year == 99 ? (year = 20) : year++;
+                    break;
+                case SET_MONTH:
+                    month == 12 ? (month = 1) : month++;
+                    break;
+                case SET_DAY:
+                    day == 31 ? (day = 1) : day++;
+                    break;
+                default:
+                    break;
+                }
+            }
 
-    if(digitalRead(DOWN_BTN_PIN) == 1){
-        blink = 1;
-        switch(setIndex){
-        case SET_HOUR:
-            hour == 23 ? (hour = 0) : hour++;
-            break;
-        case SET_MINUTE:
-            minute == 59 ? (minute = 0) : minute++;
-            break;
-        case SET_YEAR:
-            year == 99 ? (year = 20) : year++;
-            break;
-        case SET_MONTH:
-            month == 12 ? (month = 1) : month++;
-            break;
-        case SET_DAY:
-            day == 31 ? (day = 1) : day++;
-            break;                         
-        default:
-            break;
-        }      
-    }
+            if (digitalRead(UP_BTN_PIN) == 1)
+            {
+                blink = 1;
+                switch (setIndex)
+                {
+                case SET_HOUR:
+                    hour == 0 ? (hour = 23) : hour--;
+                    break;
+                case SET_MINUTE:
+                    minute == 0 ? (minute = 59) : minute--;
+                    break;
+                case SET_YEAR:
+                    year == 20 ? (year = 99) : year--;
+                    break;
+                case SET_MONTH:
+                    month == 1 ? (month = 12) : month--;
+                    break;
+                case SET_DAY:
+                    day == 1 ? (day = 31) : day--;
+                    break;
+                default:
+                    break;
+                }
+            }
 
-    if(digitalRead(UP_BTN_PIN) == 1){
-        blink = 1;
-        switch(setIndex){
-        case SET_HOUR:
-            hour == 0 ? (hour = 23) : hour--;
-            break;
-        case SET_MINUTE:
-            minute == 0 ? (minute = 59) : minute--;
-            break;
-        case SET_YEAR:
-            year == 20 ? (year = 99) : year--;
-            break;
-        case SET_MONTH:
-            month == 1 ? (month = 12) : month--;
-            break;
-        case SET_DAY:
-            day == 1 ? (day = 31) : day--;
-            break;          
-        default:
-            break;
-        }   
-    }    
+            display.fillScreen(GxEPD_BLACK);
+            display.setTextColor(GxEPD_WHITE);
+            display.setFont(&DSEG7_Classic_Bold_53);
 
-    display.fillScreen(GxEPD_BLACK);
-    display.setTextColor(GxEPD_WHITE);
-    display.setFont(&DSEG7_Classic_Bold_53);
+            display.setCursor(5, 80);
+            if (setIndex == SET_HOUR)
+            { //blink hour digits
+                display.setTextColor(blink ? GxEPD_WHITE : GxEPD_BLACK);
+            }
+            if (hour < 10)
+            {
+                display.print("0");
+            }
+            display.print(hour);
 
-    display.setCursor(5, 80);
-    if(setIndex == SET_HOUR){//blink hour digits
-        display.setTextColor(blink ? GxEPD_WHITE : GxEPD_BLACK);
-    }
-    if(hour < 10){
-        display.print("0");      
-    }
-    display.print(hour);
+            display.setTextColor(GxEPD_WHITE);
+            display.print(":");
 
-    display.setTextColor(GxEPD_WHITE);
-    display.print(":");
+            display.setCursor(108, 80);
+            if (setIndex == SET_MINUTE)
+            { //blink minute digits
+                display.setTextColor(blink ? GxEPD_WHITE : GxEPD_BLACK);
+            }
+            if (minute < 10)
+            {
+                display.print("0");
+            }
+            display.print(minute);
 
-    display.setCursor(108, 80);
-    if(setIndex == SET_MINUTE){//blink minute digits
-        display.setTextColor(blink ? GxEPD_WHITE : GxEPD_BLACK);
-    }
-    if(minute < 10){
-        display.print("0");      
-    }
-    display.print(minute);
+            display.setTextColor(GxEPD_WHITE);
 
-    display.setTextColor(GxEPD_WHITE);
+            display.setFont(&FreeMonoBold9pt7b);
+            display.setCursor(45, 150);
+            if (setIndex == SET_YEAR)
+            { //blink minute digits
+                display.setTextColor(blink ? GxEPD_WHITE : GxEPD_BLACK);
+            }
+            display.print(1970 + year);
 
-    display.setFont(&FreeMonoBold9pt7b);
-    display.setCursor(45, 150);
-    if(setIndex == SET_YEAR){//blink minute digits
-        display.setTextColor(blink ? GxEPD_WHITE : GxEPD_BLACK);
-    }    
-    display.print(2000+year);
+            display.setTextColor(GxEPD_WHITE);
+            display.print("/");
 
-    display.setTextColor(GxEPD_WHITE);
-    display.print("/");
+            if (setIndex == SET_MONTH)
+            { //blink minute digits
+                display.setTextColor(blink ? GxEPD_WHITE : GxEPD_BLACK);
+            }
+            if (month < 10)
+            {
+                display.print("0");
+            }
+            display.print(month);
 
-    if(setIndex == SET_MONTH){//blink minute digits
-        display.setTextColor(blink ? GxEPD_WHITE : GxEPD_BLACK);
-    }   
-    if(month < 10){
-        display.print("0");      
-    }     
-    display.print(month);
+            display.setTextColor(GxEPD_WHITE);
+            display.print("/");
 
-    display.setTextColor(GxEPD_WHITE);
-    display.print("/");
-
-    if(setIndex == SET_DAY){//blink minute digits
-        display.setTextColor(blink ? GxEPD_WHITE : GxEPD_BLACK);
-    }       
-    if(day < 10){
-        display.print("0");      
-    }     
-    display.print(day); 
-    display.display(true); //partial refresh
-    }
-
-    display.hibernate();
-
-    const time_t FUDGE(10);//fudge factor to allow for upload time, etc. (seconds, YMMV)
-    tmElements_t tm;
-    tm.Month = month;
-    tm.Day = day;
-    tm.Year = year + 2000 - YEAR_OFFSET;//offset from 1970, since year is stored in uint8_t
-    tm.Hour = hour;
-    tm.Minute = minute;
-    tm.Second = 0;
-
-    time_t t = makeTime(tm) + FUDGE;
-    RTC.set(t);
-
-    showMenu(menuIndex, false);
-
-}
-
-void Watchy::showAccelerometer(){
-    display.init(0, true); //_initial_refresh to false to prevent full update on init
-    display.setFullWindow();
-    display.fillScreen(GxEPD_BLACK);
-    display.setFont(&FreeMonoBold9pt7b);
-    display.setTextColor(GxEPD_WHITE);
-
-    Accel acc;
-
-    long previousMillis = 0;
-    long interval = 200;  
-
-    guiState = APP_STATE;
-
-    pinMode(BACK_BTN_PIN, INPUT);
-
-    while(1){
-
-    unsigned long currentMillis = millis();
-
-    if(digitalRead(BACK_BTN_PIN) == 1){
-        break;
-    }
-
-    if(currentMillis - previousMillis > interval){
-        previousMillis = currentMillis;
-        // Get acceleration data
-        bool res = sensor.getAccel(acc);
-        uint8_t direction = sensor.getDirection();
-        display.fillScreen(GxEPD_BLACK);      
-        display.setCursor(0, 30);
-        if(res == false) {
-            display.println("getAccel FAIL");
-        }else{
-        display.print("  X:"); display.println(acc.x);
-        display.print("  Y:"); display.println(acc.y);
-        display.print("  Z:"); display.println(acc.z);
-
-        display.setCursor(30, 130);
-        switch(direction){
-            case DIRECTION_DISP_DOWN:
-                display.println("FACE DOWN");
-                break;
-            case DIRECTION_DISP_UP:
-                display.println("FACE UP");
-                break;
-            case DIRECTION_BOTTOM_EDGE:
-                display.println("BOTTOM EDGE");
-                break;
-            case DIRECTION_TOP_EDGE:
-                display.println("TOP EDGE");
-                break;
-            case DIRECTION_RIGHT_EDGE:
-                display.println("RIGHT EDGE");
-                break;
-            case DIRECTION_LEFT_EDGE:
-                display.println("LEFT EDGE");
-                break;
-            default:
-                display.println("ERROR!!!");
-                break;
+            if (setIndex == SET_DAY)
+            { //blink minute digits
+                display.setTextColor(blink ? GxEPD_WHITE : GxEPD_BLACK);
+            }
+            if (day < 10)
+            {
+                display.print("0");
+            }
+            display.print(day);
+            display.display(true); //partial refresh
         }
 
-        }
-        display.display(true); //full refresh
-    }
-    }
+        display.hibernate();
 
-    showMenu(menuIndex, false);
-}
+        const time_t FUDGE(10); //fudge factor to allow for upload time, etc. (seconds, YMMV)
+        tmElements_t tm;
+        tm.Month = month;
+        tm.Day = day;
+        tm.Year = year + 1970 - YEAR_OFFSET; //offset from 1970, since year is stored in uint8_t
+        tm.Hour = hour;
+        tm.Minute = minute;
+        tm.Second = 0;
+
+        time_t t = makeTime(tm) + FUDGE;
+        RTC.set(t);
+        guiState = MAIN_MENU_STATE;
+        setScreen(&menuScreen);
+    }
+    void up() { setScreen(&menuScreen); }
+    void down() { setScreen(&menuScreen); }
+    void back() { setScreen(&menuScreen); }
+    void menu() { setScreen(&menuScreen); }
+};
+
+SetTimeScreen setTimeScreen;
+
+class AccelerometerScreen : public Screen
+{
+public:
+    AccelerometerScreen() : Screen("AccelerometerScreen"){};
+    void show()
+    {
+        display.init(0, true); //_initial_refresh to false to prevent full update on init
+        display.setFullWindow();
+        display.fillScreen(GxEPD_BLACK);
+        display.setFont(&FreeMonoBold9pt7b);
+        display.setTextColor(GxEPD_WHITE);
+
+        Accel acc;
+
+        long previousMillis = 0;
+        long interval = 200;
+
+        guiState = APP_STATE;
+
+        pinMode(BACK_BTN_PIN, INPUT);
+
+        while (1)
+        {
+            unsigned long currentMillis = millis();
+
+            if (digitalRead(BACK_BTN_PIN) == 1)
+            {
+                break;
+            }
+
+            if (currentMillis - previousMillis > interval)
+            {
+                previousMillis = currentMillis;
+                // Get acceleration data
+                bool res = sensor.getAccel(acc);
+                uint8_t direction = sensor.getDirection();
+                display.fillScreen(GxEPD_BLACK);
+                display.setCursor(0, 30);
+                if (res == false)
+                {
+                    display.println("getAccel FAIL");
+                }
+                else
+                {
+                    display.print("  X:");
+                    display.println(acc.x);
+                    display.print("  Y:");
+                    display.println(acc.y);
+                    display.print("  Z:");
+                    display.println(acc.z);
+
+                    display.setCursor(30, 130);
+                    switch (direction)
+                    {
+                    case DIRECTION_DISP_DOWN:
+                        display.println("FACE DOWN");
+                        break;
+                    case DIRECTION_DISP_UP:
+                        display.println("FACE UP");
+                        break;
+                    case DIRECTION_BOTTOM_EDGE:
+                        display.println("BOTTOM EDGE");
+                        break;
+                    case DIRECTION_TOP_EDGE:
+                        display.println("TOP EDGE");
+                        break;
+                    case DIRECTION_RIGHT_EDGE:
+                        display.println("RIGHT EDGE");
+                        break;
+                    case DIRECTION_LEFT_EDGE:
+                        display.println("LEFT EDGE");
+                        break;
+                    default:
+                        display.println("ERROR!!!");
+                        break;
+                    }
+                }
+                display.display(true); //full refresh
+            }
+        }
+
+        guiState = MAIN_MENU_STATE;
+        setScreen(&menuScreen);
+    }
+    void up() { setScreen(&menuScreen); }
+    void down() { setScreen(&menuScreen); }
+    void back() { setScreen(&menuScreen); }
+    void menu() { setScreen(&menuScreen); }
+};
+
+AccelerometerScreen accelerometerScreen;
 
 void Watchy::showWatchFace(bool partialRefresh){
   display.init(0, false); //_initial_refresh to false to prevent full update on init
   display.setFullWindow();
+  DEBUG("Watchy::showWatchFace %s->show()\n", screen->name);
   screen->show();
   display.display(partialRefresh); //partial refresh
   display.hibernate();
-  guiState = WATCHFACE_STATE;
 }
 
 void Watchy::setScreen(Screen *s, bool partialRefresh) {
@@ -829,39 +861,54 @@ void _bmaConfig(){
     sensor.enableWakeupInterrupt();  
 }
 
-void Watchy::setupWifi(){
-  WiFiManager wifiManager;
-  wifiManager.resetSettings();
-  wifiManager.setTimeout(WIFI_AP_TIMEOUT);
-  wifiManager.setAPCallback(_configModeCallback);
-  if(!wifiManager.autoConnect(WIFI_AP_SSID)) {//WiFi setup failed
-    display.init(0, false); //_initial_refresh to false to prevent full update on init
-    display.setFullWindow();
-    display.fillScreen(GxEPD_BLACK);
-    display.setFont(&FreeMonoBold9pt7b);
-    display.setTextColor(GxEPD_WHITE);
-    display.setCursor(0, 30);
-    display.println("Setup failed &");
-    display.println("timed out!");
-    display.display(false); //full refresh
-    display.hibernate();
-  }else{
-    display.init(0, false);//_initial_refresh to false to prevent full update on init
-    display.setFullWindow();
-    display.fillScreen(GxEPD_BLACK);
-    display.setFont(&FreeMonoBold9pt7b);
-    display.setTextColor(GxEPD_WHITE);
-    display.println("Connected to");
-    display.println(WiFi.SSID());
-    display.display(false);//full refresh
-    display.hibernate();
-  }
-  //turn off radios
-  WiFi.mode(WIFI_OFF);
-  btStop();
+class SetupWifiScreen : public Screen
+{
+public:
+    SetupWifiScreen() : Screen("SetupWifiScreen") {};
+    void show()
+    {
+        WiFiManager wifiManager;
+        wifiManager.resetSettings();
+        wifiManager.setTimeout(WIFI_AP_TIMEOUT);
+        wifiManager.setAPCallback(_configModeCallback);
+        if (!wifiManager.autoConnect(WIFI_AP_SSID))
+        {                           //WiFi setup failed
+            display.init(0, false); //_initial_refresh to false to prevent full update on init
+            display.setFullWindow();
+            display.fillScreen(GxEPD_BLACK);
+            display.setFont(&FreeMonoBold9pt7b);
+            display.setTextColor(GxEPD_WHITE);
+            display.setCursor(0, 30);
+            display.println("Setup failed &");
+            display.println("timed out!");
+            display.display(false); //full refresh
+            display.hibernate();
+        }
+        else
+        {
+            display.init(0, false); //_initial_refresh to false to prevent full update on init
+            display.setFullWindow();
+            display.fillScreen(GxEPD_BLACK);
+            display.setFont(&FreeMonoBold9pt7b);
+            display.setTextColor(GxEPD_WHITE);
+            display.println("Connected to");
+            display.println(WiFi.SSID());
+            display.display(false); //full refresh
+            display.hibernate();
+        }
+        //turn off radios
+        WiFi.mode(WIFI_OFF);
+        btStop();
 
-  guiState = APP_STATE;  
-}
+        guiState = APP_STATE;
+    }
+    void up() { setScreen(&menuScreen); }
+    void down() { setScreen(&menuScreen); }
+    void back() { setScreen(&menuScreen); }
+    void menu() { setScreen(&menuScreen); }
+};
+
+SetupWifiScreen setupWifiScreen;
 
 void _configModeCallback (WiFiManager *myWiFiManager) {
   display.init(0, false); //_initial_refresh to false to prevent full update on init
@@ -895,27 +942,39 @@ bool Watchy::connectWiFi(){
     return WIFI_CONFIGURED;
 }
 
-void Watchy::showUpdateFW(){
-    display.init(0, false); //_initial_refresh to false to prevent full update on init
-    display.setFullWindow();
-    display.fillScreen(GxEPD_BLACK);
-    display.setFont(&FreeMonoBold9pt7b);
-    display.setTextColor(GxEPD_WHITE);
-    display.setCursor(0, 30);
-    display.println("Please Visit");
-    display.println("watchy.sqfmi.com");
-    display.println("with a Bluetooth");
-    display.println("enabled device");
-    display.println(" ");
-    display.println("Press menu button");
-    display.println("again when ready");
-    display.println(" ");
-    display.println("Keep USB powered");
-    display.display(false); //full refresh
-    display.hibernate();
+class UpdateFWScreen : public Screen
+{
+public:
+    UpdateFWScreen() : Screen("UpdateFWScreen"){};
+    void show()
+    {
+        display.init(0, false); //_initial_refresh to false to prevent full update on init
+        display.setFullWindow();
+        display.fillScreen(GxEPD_BLACK);
+        display.setFont(&FreeMonoBold9pt7b);
+        display.setTextColor(GxEPD_WHITE);
+        display.setCursor(0, 30);
+        display.println("Please Visit");
+        display.println("watchy.sqfmi.com");
+        display.println("with a Bluetooth");
+        display.println("enabled device");
+        display.println(" ");
+        display.println("Press menu button");
+        display.println("again when ready");
+        display.println(" ");
+        display.println("Keep USB powered");
+        display.display(false); //full refresh
+        display.hibernate();
 
-    guiState = FW_UPDATE_STATE;  
-}
+        guiState = FW_UPDATE_STATE;
+    }
+    void up() { setScreen(&menuScreen); }
+    void down() { setScreen(&menuScreen); }
+    void back() { setScreen(&menuScreen); }
+    void menu() { setScreen(&menuScreen); }
+};
+
+UpdateFWScreen updateFWScreen;
 
 void Watchy::updateFWBegin(){
     display.init(0, false); //_initial_refresh to false to prevent full update on init
@@ -1025,3 +1084,29 @@ void Watchy::updateFWBegin(){
 //     time_t t = makeTime(tm);
 //     return t + FUDGE;        //add fudge factor to allow for compile time
 // }
+
+void doMenu(int index) {
+    switch (index)
+    {
+    case 0:
+        setScreen(&batteryScreen);
+        break;
+    case 1:
+        setScreen(&buzzScreen);
+        break;
+    case 2:
+        setScreen(&accelerometerScreen);
+        break;
+    case 3:
+        setScreen(&setTimeScreen);
+        break;
+    case 4:
+        setScreen(&setupWifiScreen);
+        break;
+    case 5:
+        setScreen(&updateFWScreen);
+        break;
+    default:
+        break;
+    }
+}

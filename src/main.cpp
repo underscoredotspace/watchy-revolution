@@ -8,10 +8,6 @@ void setup()
 {
   Serial.begin(921600);
   DEBUG("  setup %d\n", esp_sleep_get_wakeup_cause());
-  ts.setUp(&ts);
-  ts.setDown(&ts);
-  ts.setBack(&ts);
-  ts.setMenu(Watchy::menuScreenP);
   Watchy::watchFace = &ts;
   Watchy::init(); //call init in setup
 }
