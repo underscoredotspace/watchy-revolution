@@ -15,7 +15,6 @@ tmElements_t Watchy::currentTime;
 RTC_DATA_ATTR Screen *Watchy::screen = nullptr;
 Screen *Watchy::watchFace; // set by main
 
-RTC_DATA_ATTR int Watchy::guiState;
 RTC_DATA_ATTR int Watchy::menuIndex;
 RTC_DATA_ATTR BMA423 Watchy::sensor;
 RTC_DATA_ATTR bool Watchy::WIFI_CONFIGURED;
@@ -53,7 +52,6 @@ const unsigned int MENU_LENGTH = (sizeof(MenuScreen::menuItems)/sizeof(MenuScree
 void MenuScreen::show()
 {
     DEBUG("MenuScreen::show\n");
-    guiState = MAIN_MENU_STATE;
     display.fillScreen(GxEPD_BLACK);
     display.setFont(&FreeMonoBold9pt7b);
 
@@ -89,7 +87,6 @@ void MenuScreen::back()
 {
     DEBUG("MenuScreen::back\n");
     RTC.alarm(ALARM_2); //resets the alarm flag in the RTC
-    guiState = WATCHFACE_STATE;
     setScreen(watchFace);
 }
 
@@ -144,29 +141,24 @@ void Watchy::init(String datetime){
     {
         #ifdef ESP_RTC
         case ESP_SLEEP_WAKEUP_TIMER: //ESP Internal RTC
-            if(guiState == WATCHFACE_STATE){
-                RTC.read(currentTime);
-                currentTime.Minute++;
-                tmElements_t tm;
-                tm.Month = currentTime.Month;
-                tm.Day = currentTime.Day;
-                tm.Year = currentTime.Year;
-                tm.Hour = currentTime.Hour;
-                tm.Minute = currentTime.Minute;
-                tm.Second = 0;
-                time_t t = makeTime(tm);
-                RTC.set(t);
-                RTC.read(currentTime);           
-                showWatchFace(true); //partial updates on tick
-            }
+            RTC.read(currentTime);
+            currentTime.Minute++;
+            tmElements_t tm;
+            tm.Month = currentTime.Month;
+            tm.Day = currentTime.Day;
+            tm.Year = currentTime.Year;
+            tm.Hour = currentTime.Hour;
+            tm.Minute = currentTime.Minute;
+            tm.Second = 0;
+            time_t t = makeTime(tm);
+            RTC.set(t);
+            RTC.read(currentTime);           
+            showWatchFace(true); //partial updates on tick
             break;        
         #endif
         case ESP_SLEEP_WAKEUP_EXT0: //RTC Alarm
             RTC.alarm(ALARM_2); //resets the alarm flag in the RTC
-            if(guiState == WATCHFACE_STATE){
-                RTC.read(currentTime);
-                showWatchFace(true); //partial updates on tick
-            }
+            showWatchFace(true); //partial updates on tick
             break;
         case ESP_SLEEP_WAKEUP_EXT1: //button Press
             handleButtonPress();
@@ -179,7 +171,6 @@ void Watchy::init(String datetime){
             if (screen == nullptr)
             {
                 screen = watchFace;
-                guiState = WATCHFACE_STATE;
             }
             showWatchFace(false); //full update on reset
             break;
@@ -221,117 +212,77 @@ void _rtcConfig(String datetime){
     RTC.read(currentTime);
 }
 
+bool pollButtonsAndDispatch() // returns true if button was pressed
+{
+        if (digitalRead(MENU_BTN_PIN) == 1)
+        {
+            DEBUG("%ld: pollButtonsAndDispatch menu\n", millis());
+            screen->menu();
+            return true;
+        }
+        if (digitalRead(BACK_BTN_PIN) == 1)
+        {
+            DEBUG("%ld: pollButtonsAndDispatch back\n", millis());
+            screen->back();
+            return true;
+        }
+        if (digitalRead(UP_BTN_PIN) == 1)
+        {
+            DEBUG("%ld: pollButtonsAndDispatch up\n", millis());
+            screen->up();
+            return true;
+        }
+        if (digitalRead(DOWN_BTN_PIN) == 1)
+        {
+            DEBUG("%ld: pollButtonsAndDispatch down\n", millis());
+            screen->down();
+            return true;
+        }
+        return false;
+}
+
 void fastEventLoop() {
-    long timeout = millis() + 5000;
-    DEBUG("fastEventLoop start timeout %ld\n", timeout);
+    // TODO need a way for handlers to say they're done with the ui
+    const int timeout = 5000;
+    long timeoutMillis = millis() + timeout;
+    DEBUG("%ld: fastEventLoop start timeout %ld\n", millis(), timeoutMillis);
     pinMode(MENU_BTN_PIN, INPUT);
     pinMode(BACK_BTN_PIN, INPUT);
     pinMode(UP_BTN_PIN, INPUT);
     pinMode(DOWN_BTN_PIN, INPUT);
-    while (millis() < timeout)
+    while (millis() < timeoutMillis)
     {
-        if (digitalRead(MENU_BTN_PIN) == 1)
-        {
-            DEBUG("%ld: fastEventLoop menu button guiState %d\n", millis(), guiState);
-            timeout = millis() + 5000;
-            if (guiState == MAIN_MENU_STATE)
-            {
-                screen->menu();
-            }
-            else if (guiState == FW_UPDATE_STATE)
-            {
-                updateFWBegin();
-            }
-        }
-        else if (digitalRead(BACK_BTN_PIN) == 1)
-        {
-            DEBUG("%ld: fastEventLoop back button guiState %d\n", millis(), guiState);
-            timeout = millis() + 5000;
-            if (guiState == MAIN_MENU_STATE)
-            {
-                screen->back();
-                break; // back to watch face.
-                // TODO need way for event handlers to say
-                // end fast ui mode
-            }
-            else if (guiState == APP_STATE)
-            {
-                showMenu(menuIndex, false); //exit to menu if already in app
-            }
-            else if (guiState == FW_UPDATE_STATE)
-            {
-                showMenu(menuIndex, false); //exit to menu if already in app
-            }
-        }
-        else if (digitalRead(UP_BTN_PIN) == 1)
-        {
-            DEBUG("%ld: fastEventLoop up button guiState %d\n", millis(), guiState);
-            timeout = millis() + 5000;
-            if (guiState == MAIN_MENU_STATE)
-            {
-                screen->up();
-            }
-        }
-        else if (digitalRead(DOWN_BTN_PIN) == 1)
-        {
-            DEBUG("%ld: fastEventLoop down button guiState %d\n", millis(), guiState);
-            timeout = millis() + 5000;
-            if (guiState == MAIN_MENU_STATE)
-            {
-                screen->down();
-            }
+        if (pollButtonsAndDispatch()) {
+            timeoutMillis = millis() + timeout;
         }
     }
-    DEBUG("fastEventLoop done millis %ld\n", millis());
+    DEBUG("%ld: fastEventLoop done\n", millis());
 }
 
 void Watchy::handleButtonPress()
 {
     uint64_t wakeupBit = esp_sleep_get_ext1_wakeup_status();
     DEBUG("handleButtonPress %llx\n", wakeupBit);
-    if ((guiState == WATCHFACE_STATE) || (guiState == MAIN_MENU_STATE))
+    switch (wakeupBit & BTN_PIN_MASK)
     {
-        switch (wakeupBit & BTN_PIN_MASK)
-        {
-        case MENU_BTN_MASK:
-            DEBUG("Watchy::handleButtonPress %s->menu()\n", screen->name);
-            screen->menu();
-            break;
-        case BACK_BTN_MASK:
-            DEBUG("Watchy::handleButtonPress %s->back()\n", screen->name);
-            screen->back();
-            break;
-        case UP_BTN_MASK:
-            DEBUG("Watchy::handleButtonPress %s->up()\n", screen->name);
-            screen->up();
-            break;
-        case DOWN_BTN_MASK:
-            DEBUG("Watchy::handleButtonPress %s->down()\n", screen->name);
-            screen->down();
-            break;
-        default:
-            break;
-        }
-    }
-    else if (wakeupBit & MENU_BTN_MASK)
-    //Menu Button
-    {
-        if (guiState == FW_UPDATE_STATE)
-        {
-            updateFWBegin();
-        }
-    }
-    else if (wakeupBit & BACK_BTN_MASK)
-    //Back Button
-    {
-        if (guiState == APP_STATE)
-        {
-            showMenu(menuIndex, false); //exit to menu if already in app
-        }
-        else if (guiState == FW_UPDATE_STATE)
-        {
-            showMenu(menuIndex, false); //exit to menu if already in app
-        }
+    case MENU_BTN_MASK:
+        DEBUG("Watchy::handleButtonPress %s->menu()\n", screen->name);
+        screen->menu();
+        break;
+    case BACK_BTN_MASK:
+        DEBUG("Watchy::handleButtonPress %s->back()\n", screen->name);
+        screen->back();
+        break;
+    case UP_BTN_MASK:
+        DEBUG("Watchy::handleButtonPress %s->up()\n", screen->name);
+        screen->up();
+        break;
+    case DOWN_BTN_MASK:
+        DEBUG("Watchy::handleButtonPress %s->down()\n", screen->name);
+        screen->down();
+        break;
+    default:
+        break;
     }
 
     fastEventLoop();
@@ -341,7 +292,6 @@ void Watchy::handleButtonPress()
 
 void Watchy::showMenu(byte menuIndex, bool partialRefresh){
     menuScreen.setMenuIndex(menuIndex);
-    guiState = MAIN_MENU_STATE;    
     setScreen(&menuScreen, partialRefresh);
 }
 
@@ -361,7 +311,6 @@ class BatteryScreen : public Screen {
             display.setCursor(70, 80);
             display.print(voltage);
             display.println("V");
-            guiState = APP_STATE;
     }
     void up() { setScreen(&menuScreen); }
     void down() { setScreen(&menuScreen); }
@@ -386,7 +335,6 @@ public:
         display.println("Buzz!");
         display.display(true); // TODO: delete me
         vibMotor();
-        guiState = MAIN_MENU_STATE;    
         setScreen(&menuScreen);
     }
     void up() { setScreen(&menuScreen); }
@@ -413,8 +361,6 @@ public:
     SetTimeScreen() : Screen("SetTimeScreen") {};
     void show()
     {
-        guiState = APP_STATE;
-
         RTC.read(currentTime);
 
         int8_t minute = currentTime.Minute;
@@ -586,7 +532,6 @@ public:
 
         time_t t = makeTime(tm) + FUDGE;
         RTC.set(t);
-        guiState = MAIN_MENU_STATE;
         setScreen(&menuScreen);
     }
     void up() { setScreen(&menuScreen); }
@@ -603,6 +548,7 @@ public:
     AccelerometerScreen() : Screen("AccelerometerScreen"){};
     void show()
     {
+        // TODO consider using the RTC to tell us to update every 200 ms
         display.init(0, true); //_initial_refresh to false to prevent full update on init
         display.setFullWindow();
         display.fillScreen(GxEPD_BLACK);
@@ -611,74 +557,60 @@ public:
 
         Accel acc;
 
-        long previousMillis = 0;
-        long interval = 200;
-
-        guiState = APP_STATE;
+        const int interval = 200;
+        long timeout = millis() + interval;
 
         pinMode(BACK_BTN_PIN, INPUT);
 
-        while (1)
+        while (!pollButtonsAndDispatch())
         {
-            unsigned long currentMillis = millis();
-
-            if (digitalRead(BACK_BTN_PIN) == 1)
+            if (millis() < timeout)
             {
+                continue;
+            }
+
+            timeout = millis() + interval;
+
+            display.fillScreen(GxEPD_BLACK);
+            display.setCursor(0, 30);
+
+            // Get acceleration data
+            if (!sensor.getAccel(acc))
+            {
+                display.println("getAccel FAIL");
+                continue;
+            }
+
+            display.printf("  X: %d\n  Y: %d\n  Z: %d\n", acc.x, acc.y, acc.z);
+
+            display.setCursor(30, 130);
+            uint8_t direction = sensor.getDirection();
+            switch (direction)
+            {
+            case DIRECTION_DISP_DOWN:
+                display.println("FACE DOWN");
+                break;
+            case DIRECTION_DISP_UP:
+                display.println("FACE UP");
+                break;
+            case DIRECTION_BOTTOM_EDGE:
+                display.println("BOTTOM EDGE");
+                break;
+            case DIRECTION_TOP_EDGE:
+                display.println("TOP EDGE");
+                break;
+            case DIRECTION_RIGHT_EDGE:
+                display.println("RIGHT EDGE");
+                break;
+            case DIRECTION_LEFT_EDGE:
+                display.println("LEFT EDGE");
+                break;
+            default:
+                display.println("ERROR!!!");
                 break;
             }
-
-            if (currentMillis - previousMillis > interval)
-            {
-                previousMillis = currentMillis;
-                // Get acceleration data
-                bool res = sensor.getAccel(acc);
-                uint8_t direction = sensor.getDirection();
-                display.fillScreen(GxEPD_BLACK);
-                display.setCursor(0, 30);
-                if (res == false)
-                {
-                    display.println("getAccel FAIL");
-                }
-                else
-                {
-                    display.print("  X:");
-                    display.println(acc.x);
-                    display.print("  Y:");
-                    display.println(acc.y);
-                    display.print("  Z:");
-                    display.println(acc.z);
-
-                    display.setCursor(30, 130);
-                    switch (direction)
-                    {
-                    case DIRECTION_DISP_DOWN:
-                        display.println("FACE DOWN");
-                        break;
-                    case DIRECTION_DISP_UP:
-                        display.println("FACE UP");
-                        break;
-                    case DIRECTION_BOTTOM_EDGE:
-                        display.println("BOTTOM EDGE");
-                        break;
-                    case DIRECTION_TOP_EDGE:
-                        display.println("TOP EDGE");
-                        break;
-                    case DIRECTION_RIGHT_EDGE:
-                        display.println("RIGHT EDGE");
-                        break;
-                    case DIRECTION_LEFT_EDGE:
-                        display.println("LEFT EDGE");
-                        break;
-                    default:
-                        display.println("ERROR!!!");
-                        break;
-                    }
-                }
-                display.display(true); //full refresh
-            }
+            display.display(true); //full refresh
         }
-
-        guiState = MAIN_MENU_STATE;
         setScreen(&menuScreen);
     }
     void up() { setScreen(&menuScreen); }
@@ -698,9 +630,14 @@ void Watchy::showWatchFace(bool partialRefresh){
   display.hibernate();
 }
 
-void Watchy::setScreen(Screen *s, bool partialRefresh) {
-    DEBUG("setScreen %08lx\n", (long unsigned)s);
-    if (s == nullptr) return;
+void Watchy::setScreen(Screen *s, bool partialRefresh)
+{
+    if (s == nullptr)
+    {
+        DEBUG("setScreen nullptr\n");
+        return;
+    }
+    DEBUG("setScreen %08lx (%s)\n", (long unsigned)s, s->name);
     screen = s;
     showWatchFace(partialRefresh);
 }
@@ -899,8 +836,6 @@ public:
         //turn off radios
         WiFi.mode(WIFI_OFF);
         btStop();
-
-        guiState = APP_STATE;
     }
     void up() { setScreen(&menuScreen); }
     void down() { setScreen(&menuScreen); }
@@ -965,13 +900,11 @@ public:
         display.println("Keep USB powered");
         display.display(false); //full refresh
         display.hibernate();
-
-        guiState = FW_UPDATE_STATE;
     }
     void up() { setScreen(&menuScreen); }
     void down() { setScreen(&menuScreen); }
     void back() { setScreen(&menuScreen); }
-    void menu() { setScreen(&menuScreen); }
+    void menu() { Watchy::updateFWBegin(); }
 };
 
 UpdateFWScreen updateFWScreen;
