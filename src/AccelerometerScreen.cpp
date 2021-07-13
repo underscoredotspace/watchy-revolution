@@ -10,11 +10,7 @@ AccelerometerScreen accelerometerScreen;
 void AccelerometerScreen::show()
 {
     // TODO consider using the RTC to tell us to update every 200 ms
-    display.init(0, true); //_initial_refresh to false to prevent full update on init
-    display.setFullWindow();
-    display.fillScreen(GxEPD_BLACK);
     display.setFont(&FreeMonoBold9pt7b);
-    display.setTextColor(GxEPD_WHITE);
 
     Accel acc;
 

@@ -27,7 +27,6 @@ RTC_DATA_ATTR int MenuScreen::menuIndex;
 void MenuScreen::show()
 {
     DEBUG("MenuScreen::show index %d\n", menuIndex);
-    display.fillScreen(GxEPD_BLACK);
     display.setFont(&FreeMonoBold9pt7b);
 
     for (int i = 0; i < MENU_LENGTH; i++)
@@ -70,8 +69,7 @@ void MenuScreen::up()
     {
         menuIndex = MENU_LENGTH - 1;
     }
-    show();
-    display.display(true);
+    showWatchFace(true);
 }
 
 void MenuScreen::down()
@@ -81,8 +79,7 @@ void MenuScreen::down()
     {
         menuIndex = 0;
     }
-    show();
-    display.display(true);
+    showWatchFace(true);
 }
 
 MenuScreen menuScreen;

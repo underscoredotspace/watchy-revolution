@@ -11,11 +11,7 @@ void vibMotor(uint8_t intervalMs = 100, uint8_t length = 20);
 
 void BuzzScreen::show()
 {
-    display.init(0, false); //_initial_refresh to false to prevent full update on init
-    display.setFullWindow();
-    display.fillScreen(GxEPD_BLACK);
     display.setFont(&FreeMonoBold9pt7b);
-    display.setTextColor(GxEPD_WHITE);
     display.setCursor(70, 80);
     display.println("Buzz!");
     display.display(true); // TODO: delete me

@@ -86,6 +86,7 @@ void Watchy::deepSleep(){
   esp_sleep_enable_timer_wakeup(60000000);
   #endif 
   esp_sleep_enable_ext1_wakeup(BTN_PIN_MASK, ESP_EXT1_WAKEUP_ANY_HIGH); //enable deep sleep wake on button press
+  DEBUG("%ld: deep sleep\n", millis());
   esp_deep_sleep_start();
 }
 
@@ -189,6 +190,9 @@ void Watchy::handleButtonPress()
 void Watchy::showWatchFace(bool partialRefresh){
   display.init(0, false); //_initial_refresh to false to prevent full update on init
   display.setFullWindow();
+  display.fillScreen(screen->bgColor);
+  display.setTextColor(
+      (screen->bgColor == GxEPD_WHITE ? GxEPD_BLACK : GxEPD_WHITE));
   DEBUG("Watchy::showWatchFace %s->show()\n", screen->name);
   screen->show();
   display.display(partialRefresh); //partial refresh

@@ -32,9 +32,6 @@ void SetTimeScreen::show()
     pinMode(MENU_BTN_PIN, INPUT);
     pinMode(BACK_BTN_PIN, INPUT);
 
-    display.init(0, true); //_initial_refresh to false to prevent full update on init
-    display.setFullWindow();
-
     while (1)
     {
 
@@ -106,8 +103,6 @@ void SetTimeScreen::show()
             }
         }
 
-        display.fillScreen(GxEPD_BLACK);
-        display.setTextColor(GxEPD_WHITE);
         display.setFont(&DSEG7_Classic_Bold_53);
 
         display.setCursor(5, 80);

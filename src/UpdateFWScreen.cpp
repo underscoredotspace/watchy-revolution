@@ -12,10 +12,7 @@ void updateFWBegin();
 void UpdateFWScreen::show()
 {
     display.init(0, false); //_initial_refresh to false to prevent full update on init
-    display.setFullWindow();
-    display.fillScreen(GxEPD_BLACK);
     display.setFont(&FreeMonoBold9pt7b);
-    display.setTextColor(GxEPD_WHITE);
     display.setCursor(0, 30);
     display.println("Please Visit");
     display.println("watchy.sqfmi.com");
@@ -35,11 +32,7 @@ void UpdateFWScreen::back() { setScreen(&menuScreen); }
 void UpdateFWScreen::menu() { updateFWBegin(); }
 
 void updateFWBegin(){
-    display.init(0, false); //_initial_refresh to false to prevent full update on init
-    display.setFullWindow();
-    display.fillScreen(GxEPD_BLACK);
     display.setFont(&FreeMonoBold9pt7b);
-    display.setTextColor(GxEPD_WHITE);
     display.setCursor(0, 30);
     display.println("Bluetooth Started");
     display.println(" ");
@@ -58,10 +51,7 @@ void updateFWBegin(){
     currentStatus = BT.updateStatus();
     if(prevStatus != currentStatus || prevStatus == 1){
         if(currentStatus == 0){
-        display.setFullWindow();
-        display.fillScreen(GxEPD_BLACK);
         display.setFont(&FreeMonoBold9pt7b);
-        display.setTextColor(GxEPD_WHITE);
         display.setCursor(0, 30);
         display.println("BLE Connected!");
         display.println(" ");
@@ -70,10 +60,7 @@ void updateFWBegin(){
         display.display(false); //full refresh
         }
         if(currentStatus == 1){
-        display.setFullWindow();
-        display.fillScreen(GxEPD_BLACK);
         display.setFont(&FreeMonoBold9pt7b);
-        display.setTextColor(GxEPD_WHITE);
         display.setCursor(0, 30);
         display.println("Downloading");
         display.println("firmware:");
@@ -83,10 +70,7 @@ void updateFWBegin(){
         display.display(true); //partial refresh        
         }
         if(currentStatus == 2){
-        display.setFullWindow();
-        display.fillScreen(GxEPD_BLACK);
         display.setFont(&FreeMonoBold9pt7b);
-        display.setTextColor(GxEPD_WHITE);
         display.setCursor(0, 30);
         display.println("Download");
         display.println("completed!");
@@ -98,10 +82,7 @@ void updateFWBegin(){
         esp_restart();           
         }
         if(currentStatus == 4){
-        display.setFullWindow();
-        display.fillScreen(GxEPD_BLACK);
         display.setFont(&FreeMonoBold9pt7b);
-        display.setTextColor(GxEPD_WHITE);
         display.setCursor(0, 30);
         display.println("BLE Disconnected!");
         display.println(" ");

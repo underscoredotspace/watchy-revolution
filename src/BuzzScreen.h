@@ -6,7 +6,7 @@
 class BuzzScreen : public Screen
 {
 public:
-    BuzzScreen() : Screen("BuzzScreen"){};
+    BuzzScreen() : Screen("BuzzScreen", GxEPD_BLACK){};
     void show();
     void up();
     void down();

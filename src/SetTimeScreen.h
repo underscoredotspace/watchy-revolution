@@ -6,7 +6,7 @@
 class SetTimeScreen : public Screen
 {
 public:
-    SetTimeScreen() : Screen("SetTimeScreen"){};
+    SetTimeScreen() : Screen("SetTimeScreen", GxEPD_BLACK){};
     void show();
     void up();
     void down();

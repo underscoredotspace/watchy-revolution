@@ -10,7 +10,7 @@ private:
     void doMenu(int index);
 
 public:
-    MenuScreen() : Screen("MenuScreen"){};
+    MenuScreen() : Screen("MenuScreen", GxEPD_BLACK){};
     virtual void show();
     virtual void menu();
     virtual void back();
