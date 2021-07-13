@@ -30,7 +30,6 @@ namespace Watchy {
     void init(String datetime = "");
     void deepSleep();
     float getBatteryVoltage();
-    void vibMotor(uint8_t intervalMs = 100, uint8_t length = 20);
 
     void handleButtonPress();
     void showMenu(byte menuIndex, bool partialRefresh);
@@ -47,6 +46,7 @@ namespace Watchy {
 
     void showWatchFace(bool partialRefresh);
     void setScreen(Screen *s, bool partialRefresh = false);
+    bool pollButtonsAndDispatch(); // returns true if button was pressed
 
     // stored in RTC_DATA_ATTR
     extern int guiState;
