@@ -19,6 +19,7 @@ const char *const menuItems[] = {
     "Setup WiFi",
     "Update Firmware"};
 
+const int MENU_HEIGHT = 30;
 const unsigned int MENU_LENGTH = (sizeof(menuItems) / sizeof(menuItems[0]));
 
 RTC_DATA_ATTR int MenuScreen::menuIndex;

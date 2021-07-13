@@ -7,6 +7,8 @@ using namespace Watchy;
 
 SetupWifiScreen setupWifiScreen;
 
+const int WIFI_AP_TIMEOUT = 60;
+
 void _configModeCallback (WiFiManager *myWiFiManager);
 
 void SetupWifiScreen::show()

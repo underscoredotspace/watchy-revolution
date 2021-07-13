@@ -4,6 +4,12 @@
 
 using namespace Watchy;
 
+const int SET_HOUR = 0;
+const int SET_MINUTE = 1;
+const int SET_YEAR = 2;
+const int SET_MONTH = 3;
+const int SET_DAY = 4;
+
 SetTimeScreen setTimeScreen;
 
 void SetTimeScreen::show()
