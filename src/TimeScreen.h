@@ -3,9 +3,6 @@
 
 #include "Screen.h"
 
-// Abstract base class for screens. Each screen must provide a method for
-// showing its face, and methods for handling up, down, back, and menu button
-// presses. Default handlers set watchy screen to that screen.
 class TimeScreen : public Screen
 {
 public:
@@ -13,4 +10,6 @@ public:
     virtual void show(); // display this screen
     virtual void menu();
 };
+
+extern TimeScreen timeScreen;
 #endif

@@ -2,13 +2,14 @@
 #include "Screen.h"
 #include "TimeScreen.h"
 
-TimeScreen ts;
+using namespace Watchy;
 
 void setup()
 {
   Serial.begin(921600);
   DEBUG("  setup %d\n", esp_sleep_get_wakeup_cause());
-  Watchy::watchFace = &ts;
+  if (screen == nullptr) { screen = &timeScreen; } // on reset, set current screen
+
   Watchy::init(); //call init in setup
 }
 

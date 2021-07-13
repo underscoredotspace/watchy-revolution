@@ -26,7 +26,6 @@ namespace Watchy {
     extern GxEPD2_BW<GxEPD2_154_D67, GxEPD2_154_D67::HEIGHT> display;
     extern tmElements_t currentTime;
     extern Screen *screen;
-    extern Screen *watchFace;
     void init(String datetime = "");
     void deepSleep();
     float getBatteryVoltage();
@@ -42,10 +41,9 @@ namespace Watchy {
     void setupWifi();
     bool connectWiFi();
     weatherData getWeatherData();
-    void updateFWBegin();
 
     void showWatchFace(bool partialRefresh);
-    void setScreen(Screen *s, bool partialRefresh = false);
+    void setScreen(Screen *s);
     bool pollButtonsAndDispatch(); // returns true if button was pressed
 
     // stored in RTC_DATA_ATTR
@@ -54,8 +52,6 @@ namespace Watchy {
     extern BMA423 sensor;
     extern bool WIFI_CONFIGURED;
     extern bool BLE_CONFIGURED;
-
-    extern Screen *menuScreenP;
 };
 
 #endif

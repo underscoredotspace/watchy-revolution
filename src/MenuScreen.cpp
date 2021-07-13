@@ -1,5 +1,6 @@
 #include "Watchy.h"
 #include "MenuScreen.h"
+#include "TimeScreen.h"
 #include "BatteryScreen.h"
 #include "BuzzScreen.h"
 #include "AccelerometerScreen.h"
@@ -52,20 +53,17 @@ void MenuScreen::show()
 
 void MenuScreen::menu()
 {
-    DEBUG("MenuScreen::menu\n");
     doMenu(menuIndex);
 }
 
 void MenuScreen::back()
 {
-    DEBUG("MenuScreen::back\n");
     RTC.alarm(ALARM_2); //resets the alarm flag in the RTC
-    setScreen(watchFace);
+    setScreen(&timeScreen);
 }
 
 void MenuScreen::up()
 {
-    DEBUG("MenuScreen::up\n");
     menuIndex--;
     if (menuIndex < 0)
     {
@@ -77,7 +75,6 @@ void MenuScreen::up()
 
 void MenuScreen::down()
 {
-    DEBUG("MenuScreen::down\n");
     menuIndex++;
     if (menuIndex > MENU_LENGTH - 1)
     {

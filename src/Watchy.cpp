@@ -1,6 +1,5 @@
 #include "Watchy.h"
 #include "Screen.h"
-#include "MenuScreen.h"
 
 using namespace Watchy;
 
@@ -11,17 +10,13 @@ uint16_t _writeRegister(uint8_t address, uint8_t reg, uint8_t *data, uint16_t le
 
 DS3232RTC Watchy::RTC(false); 
 GxEPD2_BW<GxEPD2_154_D67, GxEPD2_154_D67::HEIGHT> Watchy::display(GxEPD2_154_D67(CS, DC, RESET, BUSY));
-tmElements_t Watchy::currentTime;
 RTC_DATA_ATTR Screen *Watchy::screen = nullptr;
-Screen *Watchy::watchFace; // set by main
 
 RTC_DATA_ATTR BMA423 Watchy::sensor;
 RTC_DATA_ATTR bool Watchy::WIFI_CONFIGURED;
 RTC_DATA_ATTR bool Watchy::BLE_CONFIGURED;
 RTC_DATA_ATTR weatherData currentWeather;
 RTC_DATA_ATTR int weatherIntervalCounter = WEATHER_UPDATE_INTERVAL;
-
-Screen *Watchy::menuScreenP = &menuScreen;
 
 String getValue(String data, char separator, int index)
 {
@@ -49,6 +44,7 @@ void Watchy::init(String datetime){
     {
         #ifdef ESP_RTC
         case ESP_SLEEP_WAKEUP_TIMER: //ESP Internal RTC
+            tmElements_t Watchy::currentTime;
             RTC.read(currentTime);
             currentTime.Minute++;
             tmElements_t tm;
@@ -60,7 +56,6 @@ void Watchy::init(String datetime){
             tm.Second = 0;
             time_t t = makeTime(tm);
             RTC.set(t);
-            RTC.read(currentTime);           
             showWatchFace(true); //partial updates on tick
             break;        
         #endif
@@ -76,10 +71,6 @@ void Watchy::init(String datetime){
             _rtcConfig(datetime);
             #endif
             _bmaConfig();
-            if (screen == nullptr)
-            {
-                screen = watchFace;
-            }
             showWatchFace(false); //full update on reset
             break;
     }
@@ -87,6 +78,7 @@ void Watchy::init(String datetime){
 }
 
 void Watchy::deepSleep(){
+  display.hibernate();
   #ifndef ESP_RTC
   esp_sleep_enable_ext0_wakeup(RTC_PIN, 0); //enable deep sleep wake on RTC interrupt
   #endif  
@@ -114,35 +106,33 @@ void _rtcConfig(String datetime){
     }
     //https://github.com/JChristensen/DS3232RTC
     RTC.squareWave(SQWAVE_NONE); //disable square wave output
-    //RTC.set(compileTime()); //set RTC time to compile time
     RTC.setAlarm(ALM2_EVERY_MINUTE, 0, 0, 0, 0); //alarm wakes up Watchy every minute
     RTC.alarmInterrupt(ALARM_2, true); //enable alarm interrupt
-    RTC.read(currentTime);
 }
 
 bool Watchy::pollButtonsAndDispatch() // returns true if button was pressed
 {
         if (digitalRead(MENU_BTN_PIN) == 1)
         {
-            DEBUG("%ld: pollButtonsAndDispatch menu\n", millis());
+            DEBUG("%ld: pollButtonsAndDispatch %s->menu()\n", millis(), screen->name);
             screen->menu();
             return true;
         }
         if (digitalRead(BACK_BTN_PIN) == 1)
         {
-            DEBUG("%ld: pollButtonsAndDispatch back\n", millis());
+            DEBUG("%ld: pollButtonsAndDispatch %s->back()\n", millis(), screen->name);
             screen->back();
             return true;
         }
         if (digitalRead(UP_BTN_PIN) == 1)
         {
-            DEBUG("%ld: pollButtonsAndDispatch up\n", millis());
+            DEBUG("%ld: pollButtonsAndDispatch %s->up()\n", millis(), screen->name);
             screen->up();
             return true;
         }
         if (digitalRead(DOWN_BTN_PIN) == 1)
         {
-            DEBUG("%ld: pollButtonsAndDispatch down\n", millis());
+            DEBUG("%ld: pollButtonsAndDispatch %s->down()\n", millis(), screen->name);
             screen->down();
             return true;
         }
@@ -194,8 +184,6 @@ void Watchy::handleButtonPress()
     }
 
     fastEventLoop();
-
-    display.hibernate();
 }
 
 void Watchy::showWatchFace(bool partialRefresh){
@@ -204,10 +192,11 @@ void Watchy::showWatchFace(bool partialRefresh){
   DEBUG("Watchy::showWatchFace %s->show()\n", screen->name);
   screen->show();
   display.display(partialRefresh); //partial refresh
-  display.hibernate();
 }
 
-void Watchy::setScreen(Screen *s, bool partialRefresh)
+// setScreen is used to set a new screen on the display
+// it always does a full refresh
+void Watchy::setScreen(Screen *s)
 {
     if (s == nullptr)
     {
@@ -216,7 +205,7 @@ void Watchy::setScreen(Screen *s, bool partialRefresh)
     }
     DEBUG("setScreen %08lx (%s)\n", (long unsigned)s, s->name);
     screen = s;
-    showWatchFace(partialRefresh);
+    showWatchFace(false);
 }
 
 weatherData Watchy::getWeatherData(){
@@ -390,112 +379,3 @@ bool Watchy::connectWiFi(){
     }
     return WIFI_CONFIGURED;
 }
-
-void Watchy::updateFWBegin(){
-    display.init(0, false); //_initial_refresh to false to prevent full update on init
-    display.setFullWindow();
-    display.fillScreen(GxEPD_BLACK);
-    display.setFont(&FreeMonoBold9pt7b);
-    display.setTextColor(GxEPD_WHITE);
-    display.setCursor(0, 30);
-    display.println("Bluetooth Started");
-    display.println(" ");
-    display.println("Watchy BLE OTA");
-    display.println(" ");
-    display.println("Waiting for");
-    display.println("connection...");
-    display.display(false); //full refresh
-
-    BLE BT;
-    BT.begin("Watchy BLE OTA");
-    int prevStatus = -1;
-    int currentStatus;
-
-    while(1){
-    currentStatus = BT.updateStatus();
-    if(prevStatus != currentStatus || prevStatus == 1){
-        if(currentStatus == 0){
-        display.setFullWindow();
-        display.fillScreen(GxEPD_BLACK);
-        display.setFont(&FreeMonoBold9pt7b);
-        display.setTextColor(GxEPD_WHITE);
-        display.setCursor(0, 30);
-        display.println("BLE Connected!");
-        display.println(" ");
-        display.println("Waiting for");
-        display.println("upload...");
-        display.display(false); //full refresh
-        }
-        if(currentStatus == 1){
-        display.setFullWindow();
-        display.fillScreen(GxEPD_BLACK);
-        display.setFont(&FreeMonoBold9pt7b);
-        display.setTextColor(GxEPD_WHITE);
-        display.setCursor(0, 30);
-        display.println("Downloading");
-        display.println("firmware:");
-        display.println(" ");
-        display.print(BT.howManyBytes());
-        display.println(" bytes");
-        display.display(true); //partial refresh        
-        }
-        if(currentStatus == 2){
-        display.setFullWindow();
-        display.fillScreen(GxEPD_BLACK);
-        display.setFont(&FreeMonoBold9pt7b);
-        display.setTextColor(GxEPD_WHITE);
-        display.setCursor(0, 30);
-        display.println("Download");
-        display.println("completed!");
-        display.println(" ");
-        display.println("Rebooting...");
-        display.display(false); //full refresh
-
-        delay(2000);
-        esp_restart();           
-        }
-        if(currentStatus == 4){
-        display.setFullWindow();
-        display.fillScreen(GxEPD_BLACK);
-        display.setFont(&FreeMonoBold9pt7b);
-        display.setTextColor(GxEPD_WHITE);
-        display.setCursor(0, 30);
-        display.println("BLE Disconnected!");
-        display.println(" ");
-        display.println("exiting...");
-        display.display(false); //full refresh
-        delay(1000);
-        break;
-        }
-        prevStatus = currentStatus;
-    }
-    delay(100);
-    }
-
-    //turn off radios
-    WiFi.mode(WIFI_OFF);
-    btStop();
-    setScreen(&menuScreen, false);
-}
-
-// time_t compileTime()
-// {   
-//     const time_t FUDGE(10);    //fudge factor to allow for upload time, etc. (seconds, YMMV)
-//     const char *compDate = __DATE__, *compTime = __TIME__, *months = "JanFebMarAprMayJunJulAugSepOctNovDec";
-//     char compMon[3], *m;
-
-//     strncpy(compMon, compDate, 3);
-//     compMon[3] = '\0';
-//     m = strstr(months, compMon);
-
-//     tmElements_t tm;
-//     tm.Month = ((m - months) / 3 + 1);
-//     tm.Day = atoi(compDate + 4);
-//     tm.Year = atoi(compDate + 7) - YEAR_OFFSET; // offset from 1970, since year is stored in uint8_t
-//     tm.Hour = atoi(compTime);
-//     tm.Minute = atoi(compTime + 3);
-//     tm.Second = atoi(compTime + 6);
-
-//     time_t t = makeTime(tm);
-//     return t + FUDGE;        //add fudge factor to allow for compile time
-// }

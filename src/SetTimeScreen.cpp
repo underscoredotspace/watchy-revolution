@@ -8,6 +8,7 @@ SetTimeScreen setTimeScreen;
 
 void SetTimeScreen::show()
 {
+    tmElements_t currentTime;
     RTC.read(currentTime);
 
     int8_t minute = currentTime.Minute;

@@ -1,10 +1,14 @@
 #include "TimeScreen.h"
+#include "MenuScreen.h"
 #include "Watchy.h"
 
 using namespace Watchy;
 
+TimeScreen timeScreen;
+
 void TimeScreen::show()
 {
+    tmElements_t currentTime;
     RTC.read(currentTime);
     display.fillScreen(GxEPD_BLACK);
     display.setTextColor(GxEPD_WHITE);
@@ -14,6 +18,5 @@ void TimeScreen::show()
 }
 
 void TimeScreen::menu() {
-    DEBUG("TimeScreen::menu\n");
-    setScreen(menuScreenP);
+    setScreen(&menuScreen);
 }
