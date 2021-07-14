@@ -11,7 +11,8 @@ class Screen
 public:
     const char* const name;
     uint16_t bgColor;
-    Screen(const char* const n, uint16_t bg = GxEPD_WHITE) : name(n), bgColor(bg) {};
+    Screen(const char *const n = "screen", uint16_t bg = GxEPD_BLACK)
+        : name(n), bgColor(bg){};
     virtual void show() = 0; // display this screen
     virtual void up() { DEBUG("Screen::up\n"); }
     virtual void down() { DEBUG("Screen::down\n"); }

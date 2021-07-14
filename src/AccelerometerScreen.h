@@ -6,7 +6,7 @@
 class AccelerometerScreen : public Screen
 {
 public:
-    AccelerometerScreen() : Screen("AccelerometerScreen", GxEPD_BLACK){};
+    AccelerometerScreen() : Screen("AccelerometerScreen"){};
     void show();
     void up();
     void down();

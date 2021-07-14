@@ -6,7 +6,7 @@
 class TimeScreen : public Screen
 {
 public:
-    TimeScreen() : Screen("TimeScreen") {};
+    TimeScreen() : Screen("TimeScreen", GxEPD_WHITE) {};
     virtual void show(); // display this screen
     virtual void menu();
 };

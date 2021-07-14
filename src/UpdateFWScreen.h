@@ -6,7 +6,7 @@
 class UpdateFWScreen : public Screen
 {
 public:
-    UpdateFWScreen() : Screen("UpdateFWScreen", GxEPD_BLACK){};
+    UpdateFWScreen() : Screen("UpdateFWScreen"){};
     void show();
     void up();
     void down();

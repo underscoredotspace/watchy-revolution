@@ -6,7 +6,7 @@
 class BatteryScreen : public Screen
 {
 public:
-    BatteryScreen() : Screen("BatteryScreen", GxEPD_BLACK){};
+    BatteryScreen() : Screen("BatteryScreen"){};
     void show();
     void up();
     void down();
