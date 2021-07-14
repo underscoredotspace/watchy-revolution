@@ -6,12 +6,8 @@
 class SetupWifiScreen : public Screen
 {
 public:
-    SetupWifiScreen() : Screen("SetupWifiScreen", GxEPD_BLACK){};
+    SetupWifiScreen() : Screen("SetupWifiScreen"){};
     void show();
-    void up();
-    void down();
-    void back();
-    void menu();
 };
 
 extern SetupWifiScreen setupWifiScreen;
