@@ -28,7 +28,7 @@ void AccelerometerScreen::show()
 
         timeout = millis() + interval;
 
-        display.fillScreen(GxEPD_BLACK);
+        display.fillScreen(bgColor);
         display.setCursor(0, 30);
 
         // Get acceleration data
@@ -66,7 +66,7 @@ void AccelerometerScreen::show()
             display.println("ERROR!!!");
             break;
         }
-        display.display(true); //full refresh
+        display.display(true); //partial refresh
     }
     setScreen(&menuScreen);
 }

@@ -27,6 +27,7 @@ RTC_DATA_ATTR int MenuScreen::menuIndex;
 void MenuScreen::show()
 {
     DEBUG("MenuScreen::show index %d\n", menuIndex);
+    const uint16_t fgColor = (screen->bgColor == GxEPD_WHITE ? GxEPD_BLACK : GxEPD_WHITE);
     display.setFont(&FreeMonoBold9pt7b);
 
     for (int i = 0; i < MENU_LENGTH; i++)
@@ -39,13 +40,13 @@ void MenuScreen::show()
             uint16_t w, h;
 
             display.getTextBounds(menuItems[i], 0, yPos, &x1, &y1, &w, &h);
-            display.fillRect(x1 - 1, y1 - 10, 200, h + 15, GxEPD_WHITE);
-            display.setTextColor(GxEPD_BLACK);
+            display.fillRect(x1 - 1, y1 - 10, 200, h + 15, fgColor);
+            display.setTextColor(bgColor);
             display.println(menuItems[i]);
         }
         else
         {
-            display.setTextColor(GxEPD_WHITE);
+            display.setTextColor(fgColor);
             display.println(menuItems[i]);
         }
     }
@@ -58,7 +59,6 @@ void MenuScreen::menu()
 
 void MenuScreen::back()
 {
-    RTC.alarm(ALARM_2); //resets the alarm flag in the RTC
     setScreen(&timeScreen);
 }
 
