@@ -14,6 +14,8 @@ SetTimeScreen setTimeScreen;
 
 void SetTimeScreen::show()
 {
+    const uint16_t fgColor = (screen->bgColor == GxEPD_WHITE ? GxEPD_BLACK : GxEPD_WHITE);
+
     tmElements_t currentTime;
     RTC.read(currentTime);
 
@@ -108,7 +110,7 @@ void SetTimeScreen::show()
         display.setCursor(5, 80);
         if (setIndex == SET_HOUR)
         { //blink hour digits
-            display.setTextColor(blink ? GxEPD_WHITE : GxEPD_BLACK);
+            display.setTextColor(blink ? fgColor : bgColor);
         }
         if (hour < 10)
         {
@@ -116,13 +118,13 @@ void SetTimeScreen::show()
         }
         display.print(hour);
 
-        display.setTextColor(GxEPD_WHITE);
+        display.setTextColor(fgColor);
         display.print(":");
 
         display.setCursor(108, 80);
         if (setIndex == SET_MINUTE)
         { //blink minute digits
-            display.setTextColor(blink ? GxEPD_WHITE : GxEPD_BLACK);
+            display.setTextColor(blink ? fgColor : bgColor);
         }
         if (minute < 10)
         {
@@ -130,22 +132,22 @@ void SetTimeScreen::show()
         }
         display.print(minute);
 
-        display.setTextColor(GxEPD_WHITE);
+        display.setTextColor(fgColor);
 
         display.setFont(&FreeMonoBold9pt7b);
         display.setCursor(45, 150);
         if (setIndex == SET_YEAR)
         { //blink minute digits
-            display.setTextColor(blink ? GxEPD_WHITE : GxEPD_BLACK);
+            display.setTextColor(blink ? fgColor : bgColor);
         }
         display.print(1970 + year);
 
-        display.setTextColor(GxEPD_WHITE);
+        display.setTextColor(fgColor);
         display.print("/");
 
         if (setIndex == SET_MONTH)
         { //blink minute digits
-            display.setTextColor(blink ? GxEPD_WHITE : GxEPD_BLACK);
+            display.setTextColor(blink ? fgColor : bgColor);
         }
         if (month < 10)
         {
@@ -153,12 +155,12 @@ void SetTimeScreen::show()
         }
         display.print(month);
 
-        display.setTextColor(GxEPD_WHITE);
+        display.setTextColor(fgColor);
         display.print("/");
 
         if (setIndex == SET_DAY)
         { //blink minute digits
-            display.setTextColor(blink ? GxEPD_WHITE : GxEPD_BLACK);
+            display.setTextColor(blink ? fgColor : bgColor);
         }
         if (day < 10)
         {
