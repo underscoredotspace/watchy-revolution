@@ -209,7 +209,7 @@ void Watchy::setScreen(Screen *s)
     }
     DEBUG("setScreen %08lx (%s)\n", (long unsigned)s, s->name);
     screen = s;
-    showWatchFace(false);
+    showWatchFace(true);
 }
 
 weatherData Watchy::getWeatherData(){
