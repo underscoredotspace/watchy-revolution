@@ -185,7 +185,3 @@ void SetTimeScreen::show()
     RTC.set(t);
     setScreen(&menuScreen);
 }
-void SetTimeScreen::up() { setScreen(&menuScreen); }
-void SetTimeScreen::down() { setScreen(&menuScreen); }
-void SetTimeScreen::back() { setScreen(&menuScreen); }
-void SetTimeScreen::menu() { setScreen(&menuScreen); }
