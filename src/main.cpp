@@ -7,8 +7,7 @@ using namespace Watchy;
 void setup()
 {
   Serial.begin(921600);
-  unsigned long m = micros();
-  DEBUG("  %ld.%03ld: setup %d\n", m/1000, m%1000, esp_sleep_get_wakeup_cause());
+  DEBUG("  %ld: setup %d\n", millis(), esp_sleep_get_wakeup_cause());
   if (screen == nullptr) { screen = &timeScreen; } // on reset, set current screen
 
   Watchy::init(); //call init in setup

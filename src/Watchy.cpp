@@ -86,8 +86,7 @@ void Watchy::deepSleep(){
   esp_sleep_enable_timer_wakeup(60000000);
   #endif 
   esp_sleep_enable_ext1_wakeup(BTN_PIN_MASK, ESP_EXT1_WAKEUP_ANY_HIGH); //enable deep sleep wake on button press
-  unsigned long m = micros();
-  DEBUG("%ld.%03ld: deep sleep\n", m/1000, m%1000);
+  DEBUG("%ld: deep sleep\n", millis());
   esp_deep_sleep_start();
 }
 
