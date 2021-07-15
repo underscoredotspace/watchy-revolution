@@ -105,6 +105,7 @@ void SetTimeScreen::show()
             }
         }
 
+        display.fillScreen(screen->bgColor);
         display.setFont(&DSEG7_Classic_Bold_53);
 
         display.setCursor(5, 80);
