@@ -23,7 +23,7 @@ void SetTimeScreen::show()
     int8_t hour = currentTime.Hour;
     int8_t day = currentTime.Day;
     int8_t month = currentTime.Month;
-    int8_t year = currentTime.Year + YEAR_OFFSET - 1970;
+    int8_t year = currentTime.Year + YEAR_OFFSET - 2000;
 
     int8_t setIndex = SET_HOUR;
 
@@ -176,7 +176,7 @@ void SetTimeScreen::show()
     tmElements_t tm;
     tm.Month = month;
     tm.Day = day;
-    tm.Year = year + 1970 - YEAR_OFFSET; //offset from 1970, since year is stored in uint8_t
+    tm.Year = year + 2000 - YEAR_OFFSET; //offset from 1970, since year is stored in uint8_t
     tm.Hour = hour;
     tm.Minute = minute;
     tm.Second = 0;
