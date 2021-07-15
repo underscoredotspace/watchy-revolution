@@ -112,11 +112,7 @@ void SetTimeScreen::show()
         { //blink hour digits
             display.setTextColor(blink ? fgColor : bgColor);
         }
-        if (hour < 10)
-        {
-            display.print("0");
-        }
-        display.print(hour);
+        display.printf("%02d", hour);
 
         display.setTextColor(fgColor);
         display.print(":");
@@ -126,11 +122,7 @@ void SetTimeScreen::show()
         { //blink minute digits
             display.setTextColor(blink ? fgColor : bgColor);
         }
-        if (minute < 10)
-        {
-            display.print("0");
-        }
-        display.print(minute);
+        display.printf("%02d", minute);
 
         display.setTextColor(fgColor);
 
@@ -149,11 +141,7 @@ void SetTimeScreen::show()
         { //blink minute digits
             display.setTextColor(blink ? fgColor : bgColor);
         }
-        if (month < 10)
-        {
-            display.print("0");
-        }
-        display.print(month);
+        display.printf("%02d", month);
 
         display.setTextColor(fgColor);
         display.print("/");
@@ -162,11 +150,7 @@ void SetTimeScreen::show()
         { //blink minute digits
             display.setTextColor(blink ? fgColor : bgColor);
         }
-        if (day < 10)
-        {
-            display.print("0");
-        }
-        display.print(day);
+        display.printf("%02d", day);
         display.display(true); //partial refresh
     }
 
