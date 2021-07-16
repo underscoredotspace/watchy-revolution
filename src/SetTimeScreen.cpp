@@ -1,6 +1,7 @@
-#include "Watchy.h"
-#include "MenuScreen.h"
 #include "SetTimeScreen.h"
+
+#include "MenuScreen.h"
+#include "Watchy.h"
 
 using namespace Watchy;
 
