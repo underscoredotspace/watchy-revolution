@@ -112,6 +112,7 @@ void btPoll()
             showWatchFace(true);
             delay(1000);
         }
+    yield();
     }
 }
 
