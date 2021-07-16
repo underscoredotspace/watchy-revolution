@@ -11,6 +11,7 @@ uint16_t _writeRegister(uint8_t address, uint8_t reg, uint8_t *data, uint16_t le
 DS3232RTC Watchy::RTC(false); 
 GxEPD2_BW<GxEPD2_154_D67, GxEPD2_154_D67::HEIGHT> Watchy::display(GxEPD2_154_D67(CS, DC, RESET, BUSY));
 RTC_DATA_ATTR Screen *Watchy::screen = nullptr;
+Screen *Watchy::defaultScreen = nullptr;
 
 RTC_DATA_ATTR BMA423 Watchy::sensor;
 RTC_DATA_ATTR bool Watchy::WIFI_CONFIGURED;
@@ -39,6 +40,9 @@ void Watchy::init(String datetime){
     esp_sleep_wakeup_cause_t wakeup_reason;
     wakeup_reason = esp_sleep_get_wakeup_cause(); //get wake up reason
     Wire.begin(SDA, SCL); //init i2c
+    if (screen == nullptr) {
+      screen = defaultScreen;
+    }
 
     switch (wakeup_reason)
     {

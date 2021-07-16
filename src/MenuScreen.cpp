@@ -5,7 +5,6 @@
 #include "BuzzScreen.h"
 #include "SetTimeScreen.h"
 #include "SetupWifiScreen.h"
-#include "TimeScreen.h"
 #include "UpdateFWScreen.h"
 #include "Watchy.h"
 
@@ -47,7 +46,7 @@ void MenuScreen::show() {
 
 void MenuScreen::menu() { doMenu(menuIndex); }
 
-void MenuScreen::back() { setScreen(&timeScreen); }
+void MenuScreen::back() { setScreen(defaultScreen); }
 
 void MenuScreen::up() {
   menuIndex--;
