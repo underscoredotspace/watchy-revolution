@@ -12,161 +12,174 @@ const int SET_DAY = 4;
 
 SetTimeScreen setTimeScreen;
 
-void SetTimeScreen::show()
-{
-    const uint16_t fgColor = (screen->bgColor == GxEPD_WHITE ? GxEPD_BLACK : GxEPD_WHITE);
+bool blink;
+bool revert;
+bool commit;
 
-    tmElements_t currentTime;
-    RTC.read(currentTime);
+void decrMin(int8_t& v, const int8_t& lo, const int8_t& hi) {
+  if (v-- <= lo) {
+    v = hi;
+  }
+}
 
-    int8_t minute = currentTime.Minute;
-    int8_t hour = currentTime.Hour;
-    int8_t day = currentTime.Day;
-    int8_t month = currentTime.Month;
-    int8_t year = currentTime.Year + YEAR_OFFSET - 2000;
+void incrMax(int8_t& v, const int8_t& lo, const int8_t& hi) {
+  if (v++ >= hi) {
+    v = lo;
+  }
+}
 
-    int8_t setIndex = SET_HOUR;
+void _show(int8_t setIndex);
 
-    int8_t blink = 0;
+class SetHour : public Screen {
+ public:
+  SetHour() : Screen("SetHour") {}
+  void show() { _show(SET_HOUR); }
+  void up() { decrMin(setTimeScreen.hour, 0, 23); }
+  void down() { incrMax(setTimeScreen.hour, 0, 23); }
+  void back() { revert = true; }
+  void menu();
+} setHour;
 
-    pinMode(DOWN_BTN_PIN, INPUT);
-    pinMode(UP_BTN_PIN, INPUT);
-    pinMode(MENU_BTN_PIN, INPUT);
-    pinMode(BACK_BTN_PIN, INPUT);
+class SetMinute : public Screen {
+ public:
+  SetMinute() : Screen("SetMinute") {}
+  void show() { _show(SET_MINUTE); }
+  void up() { decrMin(setTimeScreen.minute, 0, 59); }
+  void down() { incrMax(setTimeScreen.minute, 0, 59); }
+  void back() { screen = &setHour; }
+  void menu();
+} setMinute;
 
-    while (1)
-    {
+void SetHour::menu() { screen = &setMinute; }
 
-        if (digitalRead(MENU_BTN_PIN) == 1)
-        {
-            setIndex++;
-            if (setIndex > SET_DAY)
-            {
-                break;
-            }
-        }
-        if (digitalRead(BACK_BTN_PIN) == 1)
-        {
-            if (setIndex != SET_HOUR)
-            {
-                setIndex--;
-            }
-        }
+class SetYear : public Screen {
+ public:
+  SetYear() : Screen("SetYear") {}
+  void show() { _show(SET_YEAR); }
+  void up() { decrMin(setTimeScreen.year, 20, 99); }
+  void down() { incrMax(setTimeScreen.year, 20, 99); }
+  void back() { screen = &setMinute; }
+  void menu();
+} setYear;
 
-        blink = 1 - blink;
+void SetMinute::menu() { screen = &setYear; }
 
-        if (digitalRead(DOWN_BTN_PIN) == 1)
-        {
-            blink = 1;
-            switch (setIndex)
-            {
-            case SET_HOUR:
-                hour == 23 ? (hour = 0) : hour++;
-                break;
-            case SET_MINUTE:
-                minute == 59 ? (minute = 0) : minute++;
-                break;
-            case SET_YEAR:
-                year == 99 ? (year = 20) : year++;
-                break;
-            case SET_MONTH:
-                month == 12 ? (month = 1) : month++;
-                break;
-            case SET_DAY:
-                day == 31 ? (day = 1) : day++;
-                break;
-            default:
-                break;
-            }
-        }
+class SetMonth : public Screen {
+ public:
+  SetMonth() : Screen("SetMonth") {}
+  void show() { _show(SET_MONTH); }
+  void up() { decrMin(setTimeScreen.month, 1, 12); }
+  void down() { incrMax(setTimeScreen.month, 1, 12); }
+  void back() { screen = &setYear; }
+  void menu();
+} setMonth;
 
-        if (digitalRead(UP_BTN_PIN) == 1)
-        {
-            blink = 1;
-            switch (setIndex)
-            {
-            case SET_HOUR:
-                hour == 0 ? (hour = 23) : hour--;
-                break;
-            case SET_MINUTE:
-                minute == 0 ? (minute = 59) : minute--;
-                break;
-            case SET_YEAR:
-                year == 20 ? (year = 99) : year--;
-                break;
-            case SET_MONTH:
-                month == 1 ? (month = 12) : month--;
-                break;
-            case SET_DAY:
-                day == 1 ? (day = 31) : day--;
-                break;
-            default:
-                break;
-            }
-        }
+void SetYear::menu() { screen = &setMonth; }
 
-        display.fillScreen(screen->bgColor);
-        display.setFont(&DSEG7_Classic_Bold_53);
+class SetDay : public Screen {
+ public:
+  SetDay() : Screen("SetDay") {}
+  void show() { _show(SET_DAY); }
+  void up() { decrMin(setTimeScreen.day, 1, 31); }
+  void down() { incrMax(setTimeScreen.day, 1, 31); }
+  void back() { screen = &setMonth; }
+  void menu() { commit = true; }
+} setDay;
 
-        display.setCursor(5, 80);
-        if (setIndex == SET_HOUR)
-        { //blink hour digits
-            display.setTextColor(blink ? fgColor : bgColor);
-        }
-        display.printf("%02d", hour);
+void SetMonth::menu() { screen = &setDay; }
 
-        display.setTextColor(fgColor);
-        display.print(":");
+void _show(int8_t setIndex) {
+  DEBUG("SetTimeScreen::_show(%d)\n", setIndex);
+  while (!pollButtonsAndDispatch()) {
+    blink = 1 - blink;
+    const uint16_t fgColor =
+        (screen->bgColor == GxEPD_WHITE ? GxEPD_BLACK : GxEPD_WHITE);
 
-        display.setCursor(108, 80);
-        if (setIndex == SET_MINUTE)
-        { //blink minute digits
-            display.setTextColor(blink ? fgColor : bgColor);
-        }
-        display.printf("%02d", minute);
+    display.fillScreen(screen->bgColor);
+    display.setFont(&DSEG7_Classic_Bold_53);
+    display.setTextColor(fgColor);
 
-        display.setTextColor(fgColor);
-
-        display.setFont(&FreeMonoBold9pt7b);
-        display.setCursor(45, 150);
-        if (setIndex == SET_YEAR)
-        { //blink minute digits
-            display.setTextColor(blink ? fgColor : bgColor);
-        }
-        display.print(1970 + year);
-
-        display.setTextColor(fgColor);
-        display.print("/");
-
-        if (setIndex == SET_MONTH)
-        { //blink minute digits
-            display.setTextColor(blink ? fgColor : bgColor);
-        }
-        display.printf("%02d", month);
-
-        display.setTextColor(fgColor);
-        display.print("/");
-
-        if (setIndex == SET_DAY)
-        { //blink minute digits
-            display.setTextColor(blink ? fgColor : bgColor);
-        }
-        display.printf("%02d", day);
-        display.display(true); //partial refresh
+    display.setCursor(5, 80);
+    if (setIndex == SET_HOUR) {  // blink hour digits
+      display.setTextColor(blink ? fgColor : screen->bgColor);
     }
+    display.printf("%02d", setTimeScreen.hour);
 
-    display.hibernate();
+    display.setTextColor(fgColor);
+    display.print(":");
 
-    const time_t FUDGE(10); //fudge factor to allow for upload time, etc. (seconds, YMMV)
+    display.setCursor(108, 80);
+    if (setIndex == SET_MINUTE) {  // blink minute digits
+      display.setTextColor(blink ? fgColor : screen->bgColor);
+    }
+    display.printf("%02d", setTimeScreen.minute);
+
+    display.setTextColor(fgColor);
+
+    display.setFont(&FreeMonoBold9pt7b);
+    display.setCursor(45, 150);
+    if (setIndex == SET_YEAR) {  // blink minute digits
+      display.setTextColor(blink ? fgColor : screen->bgColor);
+    }
+    display.print(1970 + setTimeScreen.year);
+
+    display.setTextColor(fgColor);
+    display.print("/");
+
+    if (setIndex == SET_MONTH) {  // blink minute digits
+      display.setTextColor(blink ? fgColor : screen->bgColor);
+    }
+    display.printf("%02d", setTimeScreen.month);
+
+    display.setTextColor(fgColor);
+    display.print("/");
+
+    if (setIndex == SET_DAY) {  // blink minute digits
+      display.setTextColor(blink ? fgColor : screen->bgColor);
+    }
+    display.printf("%02d", setTimeScreen.day);
+    display.display(true);  // partial refresh}
+  }
+}
+
+void SetTimeScreen::show() {
+  tmElements_t currentTime;
+  RTC.read(currentTime);
+
+  minute = currentTime.Minute;
+  hour = currentTime.Hour;
+  day = currentTime.Day;
+  month = currentTime.Month;
+  year = currentTime.Year + YEAR_OFFSET - 2000;
+
+  blink = 0;
+  revert = false;
+  commit = false;
+
+  pinMode(DOWN_BTN_PIN, INPUT);
+  pinMode(UP_BTN_PIN, INPUT);
+  pinMode(MENU_BTN_PIN, INPUT);
+  pinMode(BACK_BTN_PIN, INPUT);
+
+  screen = &setHour;
+  while (!revert && !commit) {
+    showWatchFace(true);
+  }
+
+  if (commit) {
+    const time_t FUDGE(
+        10);  // fudge factor to allow for upload time, etc. (seconds, YMMV)
     tmElements_t tm;
     tm.Month = month;
     tm.Day = day;
-    tm.Year = year + 2000 - YEAR_OFFSET; //offset from 1970, since year is stored in uint8_t
+    tm.Year = year + 2000 -
+              YEAR_OFFSET;  // offset from 1970, since year is stored in uint8_t
     tm.Hour = hour;
     tm.Minute = minute;
     tm.Second = 0;
 
     time_t t = makeTime(tm) + FUDGE;
     RTC.set(t);
-    setScreen(&menuScreen);
+  }
+  setScreen(&menuScreen);
 }
