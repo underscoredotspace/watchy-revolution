@@ -1,17 +1,17 @@
 {
-  "name": "Watchy",
-  "version": "1.2.6",
-  "description": "Watchy - An Open Source E-Paper Watch by SQFMI",
+  "name": "Watchy-Screen",
+  "version": "1.0.0",
+  "description": "Watchy Screen - Watchy lib with Screens",
   "authors": [
     {
-      "name": "SQFMI",
-      "url": "https://github.com/sqfmi"
+      "name": "charles-haynes",
+      "url": "https://github.com/charles-haynes"
     }
   ],
-  "homepage": "https://watchy.sqfmi.com",
+  "homepage": "https://github.com/charles-haynes/Watchy-Screen",
   "repository": {
     "type": "git",
-    "url": "https://github.com/sqfmi/Watchy.git"
+    "url": "https://github.com/charles-haynes/Watchy-Screen.git"
   },
   "frameworks": "arduino",
   "platforms": ["espressif32"],
