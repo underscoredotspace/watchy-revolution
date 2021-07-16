@@ -1,5 +1,4 @@
-#ifndef BUZZSCREEN_H
-#define BUZZSCREEN_H
+#pragma once
 
 #include "Screen.h"
 
@@ -15,4 +14,3 @@ public:
 };
 
 extern BuzzScreen buzzScreen;
-#endif

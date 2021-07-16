@@ -1,5 +1,4 @@
-#ifndef UPDATEFWSCREEN_H
-#define UPDATEFWSCREEN_H
+#pragma once
 
 #include "Screen.h"
 
@@ -15,4 +14,3 @@ public:
 };
 
 extern UpdateFWScreen updateFWScreen;
-#endif

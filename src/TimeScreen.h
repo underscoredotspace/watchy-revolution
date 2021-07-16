@@ -1,5 +1,4 @@
-#ifndef TIMESCREEN_H
-#define TIMESCREEN_H
+#pragma once
 
 #include "Screen.h"
 
@@ -12,4 +11,3 @@ public:
 };
 
 extern TimeScreen timeScreen;
-#endif

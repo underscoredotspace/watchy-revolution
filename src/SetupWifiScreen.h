@@ -1,5 +1,4 @@
-#ifndef SETUPWIFISCREEN_H
-#define SETUPWIFISCREEN_H
+#pragma once
 
 #include "Screen.h"
 
@@ -11,4 +10,3 @@ public:
 };
 
 extern SetupWifiScreen setupWifiScreen;
-#endif

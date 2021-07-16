@@ -1,5 +1,4 @@
-#ifndef MENUSCREEN_H
-#define MENUSCREEN_H
+#pragma once
 
 #include "Screen.h"
 
@@ -19,4 +18,3 @@ public:
 };
 
 extern MenuScreen menuScreen;
-#endif

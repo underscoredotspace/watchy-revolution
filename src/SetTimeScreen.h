@@ -1,5 +1,4 @@
-#ifndef SETTIMESCREEN_H
-#define SETTIMESCREEN_H
+#pragma once
 
 #include "Screen.h"
 
@@ -11,4 +10,3 @@ public:
 };
 
 extern SetTimeScreen setTimeScreen;
-#endif

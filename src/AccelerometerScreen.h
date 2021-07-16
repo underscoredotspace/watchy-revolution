@@ -1,5 +1,4 @@
-#ifndef ACCELEROMETERSCREEN_H
-#define ACCELEROMETERSCREEN_H
+#pragma once
 
 #include "Screen.h"
 
@@ -15,4 +14,3 @@ public:
 };
 
 extern AccelerometerScreen accelerometerScreen;
-#endif

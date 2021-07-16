@@ -1,5 +1,4 @@
-#ifndef BATTERYSCREEN_H
-#define BATTERYSCREEN_H
+#pragma once
 
 #include "Screen.h"
 
@@ -15,4 +14,3 @@ public:
 };
 
 extern BatteryScreen batteryScreen;
-#endif

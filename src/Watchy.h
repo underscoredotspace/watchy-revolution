@@ -1,5 +1,4 @@
-#ifndef WATCHY_H
-#define WATCHY_H
+#pragma once
 
 #include <Arduino.h>
 #include <WiFiManager.h>
@@ -53,5 +52,3 @@ namespace Watchy {
     extern bool WIFI_CONFIGURED;
     extern bool BLE_CONFIGURED;
 };
-
-#endif

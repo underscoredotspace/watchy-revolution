@@ -1,5 +1,4 @@
-#ifndef SCREEN_H
-#define SCREEN_H
+#pragma once
 
 #include "Watchy.h"
 
@@ -19,4 +18,3 @@ public:
     virtual void back() { DEBUG("Screen::back\n"); }
     virtual void menu() { DEBUG("Screen::menu\n"); }
 };
-#endif

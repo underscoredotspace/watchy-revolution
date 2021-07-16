@@ -1,5 +1,4 @@
-#ifndef CONFIG_H
-#define CONFIG_H
+#pragma once
 
 //pins
 #define SDA 21
@@ -54,6 +53,4 @@ const int HARDWARE_VERSION_MINOR = 0;
 #define DEBUG(...)      DEBUGPORT.printf(__VA_ARGS__)
 #else
 #define DEBUG(...)
-#endif
-
 #endif
