@@ -19,9 +19,9 @@ class Screen {
 };
 ```
 
-A screen encapsulates the logic to display one screenful of information, and to respond to button presses. To make a `Screen` instance, subclass `Screen` and implement the `show` method to display your screen. `show` is called with the screen cleared to your `bgColor` and text color set to the opposite of `bgColor.` After `show` is done painting, it returns and the display does a partial refresh.
+A screen encapsulates the logic to display one screenful of information, and to respond to button presses. To make a `Screen` instance, subclass `Screen` and implement the `show` method to display your screen. `show` is called with the screen cleared to your `bgColor` and text color set to the opposite of `bgColor.` After `show` is done painting, it should return and the display will do a partial refresh.
 
-By default the screen does nothing on any button press. If you want your screen to respond to button presses, override one of the button methods in your subclass. For example, if you had a screen to show the time called `timeScreen` and another to display a menu called `menuScreen` then you might write.
+By default the screen does nothing on any button press. To enable the screen to respond to buttons override the corresponding button method in your subclass. For example, if there was a screen to show the time called `timeScreen` and another to display a menu called `menuScreen` Where pressing the `Menu` button while displaying the time screen should display the menu, and pressing `Back` while displaying the menu screen should return to the time screen:
 
 ```c++
 // MenuScreen.h
@@ -51,6 +51,8 @@ class TimeScreen : public Screen {
 
 TimeScreen timeScreen;
 ```
+
+And in the main program, set `timeScreen` as the default Watchy screen.
 
 ```c++
 // main.cpp
