@@ -3,6 +3,7 @@
 Screen based implementation of the [Watchy](https://github.com/sqfmi/Watchy) library. It assumes some familiarity with the Watchy library and only documents the differences.
 
 ## Screen abstraction
+
 ```c++
 class Screen {
  public:
@@ -17,6 +18,7 @@ class Screen {
   virtual void menu() {}
 };
 ```
+
 A screen encapsulates the logic to display one screenful of information, and to respond to button presses. To make a `Screen` instance, subclass `Screen` and implement the `show` method to display your screen. `show` is called with the screen cleared to your `bgColor` and text color set to the opposite of `bgColor.` After `show` is done painting, it returns and the display does a partial refresh.
 
 By default the screen does nothing on any button press. If you want your screen to respond to button presses, override one of the button methods in your subclass. For example, if you had a screen to show the time called `timeScreen` and another to display a menu called `menuScreen` then you might write.
@@ -34,6 +36,7 @@ class MenuScreen : public Screen {
 
 MenuScreen menuScreen;
 ```
+
 ```c++
 //TimeScreen.h
 #include "MenuScreen.h"
@@ -48,6 +51,7 @@ class TimeScreen : public Screen {
 
 TimeScreen timeScreen;
 ```
+
 ```c++
 // main.cpp
 #include "TimeScreen.h"
@@ -62,6 +66,7 @@ void loop() {} // this should never run, Watchy deep sleeps after init();
 ```
 
 ## Watchy changes
+
 * Watchy is no longer a class, you don't have to instantiate it. Now it's a namespace, which means that any references to Watchy need to be prefixed with `Watchy::`
 * You need to call `Watchy::init` from your setup function.
 * You need to set `Watchy::defaultScreen` before calling `Watchy::init`
