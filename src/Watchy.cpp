@@ -203,7 +203,6 @@ void Watchy::showWatchFace(bool partialRefresh){
 }
 
 // setScreen is used to set a new screen on the display
-// it always does a full refresh
 void Watchy::setScreen(Screen *s)
 {
     if (s == nullptr)
