@@ -158,6 +158,7 @@ void fastEventLoop() {
         if (pollButtonsAndDispatch()) {
             timeoutMillis = millis() + timeout;
         }
+        yield();
     }
     DEBUG("%ld: fastEventLoop done\n", millis());
 }
