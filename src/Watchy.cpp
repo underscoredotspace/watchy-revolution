@@ -119,25 +119,25 @@ bool Watchy::pollButtonsAndDispatch() // returns true if button was pressed
 {
         if (digitalRead(MENU_BTN_PIN) == 1)
         {
-            DEBUG("%ld: pollButtonsAndDispatch %s->menu()\n", millis(), screen->name);
+            DEBUG("%ld: pollButtonsAndDispatch menu()\n", millis());
             screen->menu();
             return true;
         }
         if (digitalRead(BACK_BTN_PIN) == 1)
         {
-            DEBUG("%ld: pollButtonsAndDispatch %s->back()\n", millis(), screen->name);
+            DEBUG("%ld: pollButtonsAndDispatch back()\n", millis());
             screen->back();
             return true;
         }
         if (digitalRead(UP_BTN_PIN) == 1)
         {
-            DEBUG("%ld: pollButtonsAndDispatch %s->up()\n", millis(), screen->name);
+            DEBUG("%ld: pollButtonsAndDispatch up()\n", millis());
             screen->up();
             return true;
         }
         if (digitalRead(DOWN_BTN_PIN) == 1)
         {
-            DEBUG("%ld: pollButtonsAndDispatch %s->down()\n", millis(), screen->name);
+            DEBUG("%ld: pollButtonsAndDispatch down()\n", millis());
             screen->down();
             return true;
         }
@@ -170,19 +170,19 @@ void Watchy::handleButtonPress()
     switch (wakeupBit & BTN_PIN_MASK)
     {
     case MENU_BTN_MASK:
-        DEBUG("Watchy::handleButtonPress %s->menu()\n", screen->name);
+        DEBUG("Watchy::handleButtonPress menu()\n");
         screen->menu();
         break;
     case BACK_BTN_MASK:
-        DEBUG("Watchy::handleButtonPress %s->back()\n", screen->name);
+        DEBUG("Watchy::handleButtonPress back()\n");
         screen->back();
         break;
     case UP_BTN_MASK:
-        DEBUG("Watchy::handleButtonPress %s->up()\n", screen->name);
+        DEBUG("Watchy::handleButtonPress up()\n");
         screen->up();
         break;
     case DOWN_BTN_MASK:
-        DEBUG("Watchy::handleButtonPress %s->down()\n", screen->name);
+        DEBUG("Watchy::handleButtonPress down()\n");
         screen->down();
         break;
     default:
@@ -192,14 +192,14 @@ void Watchy::handleButtonPress()
     fastEventLoop();
 }
 
-void Watchy::showWatchFace(bool partialRefresh){
+void Watchy::showWatchFace(bool partialRefresh, Screen *s){
   display.init(0, false); //_initial_refresh to false to prevent full update on init
   display.setFullWindow();
-  display.fillScreen(screen->bgColor);
+  display.fillScreen(s->bgColor);
   display.setTextColor(
-      (screen->bgColor == GxEPD_WHITE ? GxEPD_BLACK : GxEPD_WHITE));
-  DEBUG("Watchy::showWatchFace %s->show()\n", screen->name);
-  screen->show();
+      (s->bgColor == GxEPD_WHITE ? GxEPD_BLACK : GxEPD_WHITE));
+  DEBUG("Watchy::showWatchFace show()\n");
+  s->show();
   display.display(partialRefresh); //partial refresh
 }
 
@@ -211,7 +211,7 @@ void Watchy::setScreen(Screen *s)
         DEBUG("setScreen nullptr\n");
         return;
     }
-    DEBUG("setScreen %08lx (%s)\n", (long unsigned)s, s->name);
+    DEBUG("setScreen %08lx\n", (long unsigned)s);
     screen = s;
     showWatchFace(true);
 }

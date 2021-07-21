@@ -42,7 +42,7 @@ void setupWifi();
 bool connectWiFi();
 weatherData getWeatherData();
 
-void showWatchFace(bool partialRefresh);
+void showWatchFace(bool partialRefresh, Screen *s = screen);
 void setScreen(Screen *s);
 bool pollButtonsAndDispatch();  // returns true if button was pressed
 
