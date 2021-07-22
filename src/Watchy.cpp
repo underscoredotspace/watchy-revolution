@@ -122,32 +122,42 @@ void _rtcConfig(String datetime) {
   RTC.alarmInterrupt(ALARM_2, true);  // enable alarm interrupt
 }
 
+void debounce(uint8_t pin, int state) {
+  // wait for changed state + 40ms
+  // or 400ms
+  unsigned long timeout = millis() + 400;
+  while (millis() < timeout) {
+    if (digitalRead(pin) != state) {
+      delay(min(timeout-millis(), 40ul));
+      break;
     }
-    //https://github.com/JChristensen/DS3232RTC
-    RTC.squareWave(SQWAVE_NONE); //disable square wave output
-    RTC.setAlarm(ALM2_EVERY_MINUTE, 0, 0, 0, 0); //alarm wakes up Watchy every minute
-    RTC.alarmInterrupt(ALARM_2, true); //enable alarm interrupt
+    yield();
+  }
 }
 
 bool Watchy::pollButtonsAndDispatch()  // returns true if button was pressed
 {
   if (digitalRead(MENU_BTN_PIN) == 1) {
     DEBUG("%ld: pollButtonsAndDispatch menu()\n", millis());
+    debounce(MENU_BTN_PIN, 1);
     screen->menu();
     return true;
   }
   if (digitalRead(BACK_BTN_PIN) == 1) {
     DEBUG("%ld: pollButtonsAndDispatch back()\n", millis());
+    debounce(BACK_BTN_PIN, 1);
     screen->back();
     return true;
   }
   if (digitalRead(UP_BTN_PIN) == 1) {
     DEBUG("%ld: pollButtonsAndDispatch up()\n", millis());
+    debounce(UP_BTN_PIN, 1);
     screen->up();
     return true;
   }
   if (digitalRead(DOWN_BTN_PIN) == 1) {
     DEBUG("%ld: pollButtonsAndDispatch down()\n", millis());
+    debounce(DOWN_BTN_PIN, 1);
     screen->down();
     return true;
   }
