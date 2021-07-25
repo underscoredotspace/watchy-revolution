@@ -18,7 +18,7 @@ const char *decades[] = {nullptr, nullptr, "twenty", "thirty", "forty", "fifty"}
 void TimeScreen::show() {
   tmElements_t currentTime;
   Watchy::RTC.read(currentTime);
-  DEBUG("TimeScreen::show currentTime %4d-%2d-%2d %02d:%02d:%02d %s\n",
+  DEBUG("TimeScreen::show currentTime %04d-%02d-%02d %02d:%02d:%02d %s\n",
                 currentTime.Year+1970, currentTime.Month, currentTime.Day,
                 currentTime.Hour, currentTime.Minute, currentTime.Second,
                 dayShortStr(currentTime.Wday));
@@ -57,8 +57,5 @@ void TimeScreen::show() {
   // date
   display.setCursor(0, 195);
   display.setFont(&OptimaLTStd7pt7b);
-  char buf[50];
-  if (strftime(buf, sizeof(buf), "%A, %B %d %Y %Z", &t)) {
-    display.print(buf);
-  }
+  display.print(&t, "%A, %B %d %Y %Z");
 }
