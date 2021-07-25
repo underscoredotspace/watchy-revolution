@@ -1,8 +1,8 @@
 #include "TimeScreen.h"
 
-#include "OptimaLTStd22pt7b.h"
-#include "OptimaLTStd7pt7b.h"
-#include "OptimaLTStd_Bold22pt7b.h"
+#include "Fonts/FreeSans24pt7b.h"
+#include "Fonts/FreeSans9pt7b.h"
+#include "Fonts/FreeSansBold24pt7b.h"
 #include "SyncTimeScreen.h"
 
 using namespace Watchy;
@@ -30,12 +30,12 @@ void TimeScreen::show() {
   localtime_r(&tt, &t);
 
   // hour, just one line
-  display.setFont(&OptimaLTStd_Bold22pt7b);
-  display.setCursor(0, 0);
+  display.setFont(&FreeSansBold24pt7b);
+  display.setCursor(0, -5);
   display.printf("\n%s\n", smallNumbers[(t.tm_hour + 11) % 12 + 1]);  // 24->12
 
   // minutes, can be up to two lines
-  display.setFont(&OptimaLTStd22pt7b);
+  display.setFont(&FreeSans24pt7b);
   if (t.tm_min == 0) {
     // 0: exactly on the hour
     if (t.tm_hour == 0) {
@@ -56,6 +56,6 @@ void TimeScreen::show() {
 
   // date
   display.setCursor(0, 195);
-  display.setFont(&OptimaLTStd7pt7b);
-  display.print(&t, "%A, %B %d %Y %Z");
+  display.setFont(&FreeSans9pt7b);
+  display.print(&t, "%a, %B %d %Y %Z");
 }

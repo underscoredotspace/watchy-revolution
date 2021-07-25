@@ -1,6 +1,6 @@
 #include <Adafruit_GFX.h>
 
-const uint8_t OptimaLTStd7pt7bBitmaps[] PROGMEM = {
+const uint8_t FreeSans9pt7bBitmaps[] PROGMEM = {
   0x00, 0x69, 0x00, 0xE0, 0x30, 0x7A, 0x28, 0x61, 0x86, 0x18, 0x62, 0x70,
   0x2E, 0x22, 0x22, 0x22, 0x22, 0x39, 0x10, 0x41, 0x08, 0x42, 0x10, 0x7C,
   0xF0, 0xC6, 0x23, 0x04, 0x21, 0xF0, 0x0C, 0x28, 0x51, 0x24, 0x48, 0xBF,
@@ -44,7 +44,7 @@ const uint8_t OptimaLTStd7pt7bBitmaps[] PROGMEM = {
   0xD0, 0xC0, 0x82, 0x89, 0x11, 0x00, 0xC4, 0x89, 0x21, 0x42, 0x86, 0x04,
   0x10, 0x20, 0x41, 0x00, 0x7C, 0x20, 0x84, 0x21, 0x87, 0xC0 };
 
-const GFXglyph OptimaLTStd7pt7bGlyphs[] PROGMEM = {
+const GFXglyph FreeSans9pt7bGlyphs[] PROGMEM = {
   {     0,   1,   1,   4,    0,    0 },   // 0x20 ' '
   {     0,   0,   0,   0,    0,    0 },   // 0x21 '!'
   {     0,   0,   0,   0,    0,    0 },   // 0x22 '"'
@@ -137,9 +137,9 @@ const GFXglyph OptimaLTStd7pt7bGlyphs[] PROGMEM = {
   {   486,   7,  11,   7,    0,   -6 },   // 0x79 'y'
   {   496,   6,   7,   7,    0,   -6 } }; // 0x7A 'z'
 
-const GFXfont OptimaLTStd7pt7b PROGMEM = {
-  (uint8_t  *)OptimaLTStd7pt7bBitmaps,
-  (GFXglyph *)OptimaLTStd7pt7bGlyphs,
+const GFXfont FreeSans9pt7b PROGMEM = {
+  (uint8_t  *)FreeSans9pt7bBitmaps,
+  (GFXglyph *)FreeSans9pt7bGlyphs,
   0x20, 0x7A, 16 };
 
 // Approx. 1146 bytes

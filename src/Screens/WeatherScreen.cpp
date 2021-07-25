@@ -1,7 +1,7 @@
 
 #include "WeatherScreen.h"
 
-#include "OptimaLTStd12pt7b.h"
+#include "Fonts/FreeSans12pt7b.h"
 #include "TimeScreen.h"
 #include "BatteryScreen.h"
 
@@ -125,7 +125,7 @@ static const char *weatherConditionCodeToString(int16_t weatherConditionCode) {
 }
 
 void WeatherScreen::show() {
-  display.setFont(&OptimaLTStd12pt7b);
+  display.setFont(&FreeSans12pt7b);
   display.setTextWrap(true);
   display.setCursor(0, 0);
   weatherData wd = getWeatherData();

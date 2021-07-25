@@ -1,6 +1,6 @@
 #include <Adafruit_GFX.h>
 
-const uint8_t OptimaLTStd_Bold22pt7bBitmaps[] PROGMEM = {
+const uint8_t FreeSansBold24pt7bBitmaps[] PROGMEM = {
   0x01, 0xFC, 0x00, 0xFF, 0xE0, 0x7E, 0x3E, 0x0F, 0x87, 0xE3, 0xE0, 0x7C,
   0xFC, 0x0F, 0xDF, 0x81, 0xFB, 0xF0, 0x3F, 0x7E, 0x07, 0xFF, 0xFF, 0xFF,
   0xFF, 0xFF, 0xFF, 0x00, 0x0F, 0xE0, 0x00, 0xFC, 0x00, 0x1F, 0x80, 0x03,
@@ -69,7 +69,7 @@ const uint8_t OptimaLTStd_Bold22pt7bBitmaps[] PROGMEM = {
   0xFE, 0x00, 0x3F, 0xC0, 0x07, 0xFC, 0x01, 0xDF, 0xC0, 0x73, 0xF8, 0x1C,
   0x3F, 0x83, 0x87, 0xF0, 0xE0, 0x7F, 0x3C, 0x07, 0xFF, 0x00, 0xFE };
 
-const GFXglyph OptimaLTStd_Bold22pt7bGlyphs[] PROGMEM = {
+const GFXglyph FreeSansBold24pt7bGlyphs[] PROGMEM = {
   {     0,  19,  22,  22,    1,  -20 },   // 0x65 'e'
   {    53,  14,  33,  14,    1,  -32 },   // 0x66 'f'
   {   111,  20,  33,  22,    1,  -20 },   // 0x67 'g'
@@ -91,9 +91,9 @@ const GFXglyph OptimaLTStd_Bold22pt7bGlyphs[] PROGMEM = {
   {   669,  32,  21,  34,    1,  -20 },   // 0x77 'w'
   {   753,  19,  21,  22,    1,  -20 } }; // 0x78 'x'
 
-const GFXfont OptimaLTStd_Bold22pt7b PROGMEM = {
-  (uint8_t  *)OptimaLTStd_Bold22pt7bBitmaps,
-  (GFXglyph *)OptimaLTStd_Bold22pt7bGlyphs,
+const GFXfont FreeSansBold24pt7b PROGMEM = {
+  (uint8_t  *)FreeSansBold24pt7bBitmaps,
+  (GFXglyph *)FreeSansBold24pt7bGlyphs,
   0x65, 0x78, 52 };
 
 // Approx. 950 bytes

@@ -1,12 +1,12 @@
 #include "ShowOrientationScreen.h"
 
-#include "OptimaLTStd22pt7b.h"
+#include "Fonts/FreeSans24pt7b.h"
 #include "OrientationScreen.h"
 #include "SettingsScreen.h"
 #include "Watchy.h"
 
 void ShowOrientationScreen::show() {
-  Watchy::display.setFont(&OptimaLTStd22pt7b);
+  Watchy::display.setFont(&FreeSans24pt7b);
   Watchy::display.setCursor(0, 0);
   Watchy::display.printf("\ndirection\n");
   uint8_t direction = Watchy::sensor.getDirection();

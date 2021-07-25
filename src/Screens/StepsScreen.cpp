@@ -1,14 +1,14 @@
 #include "StepsScreen.h"
 
 #include "Adafruit_GFX.h"
-#include "OptimaLTStd22pt7b.h"
+#include "Fonts/FreeSans24pt7b.h"
 #include "Watchy.h"
 #include "icons.h"
 
 void StepsScreen::show() {
   constexpr const char *label = "steps";
   const uint16_t fgColor = (bgColor == GxEPD_WHITE ? GxEPD_BLACK : GxEPD_WHITE);
-  Watchy::display.setFont(&OptimaLTStd22pt7b);
+  Watchy::display.setFont(&FreeSans24pt7b);
   int16_t x1, y1;
   uint16_t w, h;
   Watchy::display.drawBitmap((200 - 96) / 2, (200 - 96) / 2 / 2, bitmap_steps,

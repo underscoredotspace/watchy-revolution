@@ -5,7 +5,7 @@
 #include <Wifi.h>
 
 #include "Adafruit_GFX.h"
-#include "OptimaLTStd12pt7b.h"
+#include "Fonts/FreeSans12pt7b.h"
 #include "Watchy.h"
 #include "icons.h"
 #include "time.h"
@@ -48,7 +48,7 @@ bool showSyncState() {
 }
 
 void SyncTimeScreen::show() {
-  Watchy::display.setFont(&OptimaLTStd12pt7b);
+  Watchy::display.setFont(&FreeSans12pt7b);
   Watchy::display.setCursor(0, 0);
   if (showSyncState()) {
     return;
