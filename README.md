@@ -21,20 +21,21 @@ class Screen {
 
 A screen encapsulates the logic to display one screenful of information, and to respond to button presses. To make a `Screen` instance, subclass `Screen` and implement the `show` method to display your screen. `show` is called with the screen cleared to your `bgColor` and text color set to the opposite of `bgColor.` After `show` is done painting, it should return and the display will do a partial refresh.
 
-By default the screen does nothing on up, down, or menu button press, and goes up to it's parent (if any) on back button press. To enable the screen to respond to buttons override the corresponding button method in your subclass. For example, if there was a screen to show the time called `timeScreen` and another to display a content called `contentScreen` Where pressing the `Menu` button while displaying the time screen should display the content, and pressing `Back` while displaying the content screen should return to the time screen:
+By default the screen does nothing on up, down, or menu button press, and goes up to it's parent (if any) on back button press. To enable the screen to respond to buttons override the corresponding button method in your subclass. For example, if there was a screen to show the time called `timeScreen` and another to display a content called `contentScreen` Where pressing the `up` button while displaying the time screen should display the content, and pressing `Back` while displaying the content screen should return to the time screen:
 
 ```c++
 // ContentScreen.h
 #include "Screen.h"
+#include "TimeScreen.h"
 #include "Watchy.h"
 
 class ContentScreen : public Screen {
     public:
     void show() { Watchy::display.print("This is the content."); }
-    void back() { Watchy::setScreen(Watchy::defaultScreen); }
+    void back() { Watchy::setScreen(&timeScreen); }
 }
 
-MenuScreen menuScreen;
+ContentScreen contentScreen;
 ```
 
 ```c++
@@ -52,11 +53,12 @@ class TimeScreen : public Screen {
 TimeScreen timeScreen;
 ```
 
-And in the main program, set `timeScreen` as the default Watchy screen.
+And in the main program, make `TimeScreen` the default
 
 ```c++
 // main.cpp
 #include "TimeScreen.h"
+#include "ContentScreen.h"
 #include "Watchy.h"  //include the Watchy library
 
 void setup() {
@@ -67,7 +69,7 @@ void setup() {
 void loop() {} // this should never run, Watchy deep sleeps after init();
 ```
 
-Manually coding the relationships between screens is tedious and error prone though. See [Watchy Screen demo](https://github.com/charles-haynes/Watchy-Screen-demo) for a nicer approach.
+Manually coding the relationships between screens is tedious and error prone though. See `MenuScreen` and `CarouselScreen` below for a nicer approach.
 
 ## Watchy changes
 
@@ -114,13 +116,13 @@ And two "aggregate" screens used to organize other screens:
 
 ### Menu
 
-The menu screen implements a simple text menu. It takes an array of menu items, each consisting of a textual menu item name and corresponding screen to invoke. `up` and `down` navigate the menu, `menu` invokes the current item. When in a menu item's screen `back` takes you back to the menu.
+The menu screen implements a simple text menu. It takes an array of menu items, each consisting of a textual menu item name and corresponding screen to invoke. Adding new items to the menu is as simple as adding another `MenuItem` to the array in the call to the constructor. `up` and `down` navigate the menu, `menu` invokes the current item. When in a menu item's screen `back` takes you back to the menu.
 
 ### Carousel
 
-The carousel implements a cyclic view of spash screens and a corresponding display. Typically a splash screen is a simple static graphical or textual screen, and a display screen has more complex active logic.
+The carousel implements a cyclic view of spash screens and a corresponding display. Typically a splash screen is a simple static graphical or textual screen, and a display screen has more complex UI and active logic. To construct a carousel create an array of `CarouselItems` each one is a pair of screens the `splash` that is displayed in the carousel and the optional `child` that is displayed when you press `Menu` on the splash screen. The `child` screen is free to use any of the buttons for its own purposes, though conventionally the `back` button should return to the splash screen.
 
-While in a carousel `up` takes you to the previous splash screen, `down` takes you to the next one, `menu` shows the display screen for that splash screen, `back` while looking at a splash screen takes you back to the first screen of the carousel. When in a display screen `back` takes you back to it's splash screen. If the splash screen contains all information for the display the display screen can be null.
+While in a carousel `up` takes you to the previous splash screen, `down` takes you to the next one, `menu` shows the child screen for that splash screen, `back` while looking at a splash screen takes you back to the first screen of the carousel. When in a child screen `back` should take you back to it's splash screen but the child has complete control. If the splash screen contains all information for the display the and doesn't need an additional UI, the child screen can be null. To add another screen to a carousel, add another `CarouselItem` to the array passed to the `CarouselScreen` constructor in the location you want the screen to appear in the carousel.
 
 ## Demo
 
