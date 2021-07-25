@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Watchy-Screen
 
 Screen based implementation of the [Watchy](https://github.com/sqfmi/Watchy) library. It assumes some familiarity with the Watchy library and only documents the differences.
@@ -90,14 +89,10 @@ Because of how deep sleep works, all screen instances must be globally persisten
 The fields in a screen instance are not persistent across deep sleep. Do not expect to store persistent state in a screen instance. If you need persistence across sleep, make the state static and tag it with `RTC_DATA_ATTR` but this will only work for a single instance of a screen. If you have multiple instances of the same screen that need different persistent instance data you'll have do it some other way.
 
 If you want multiple sub-screens for a single action you can instantiate local anonymous subclasses of `Screen` see `SetupWifiScreen.cpp` and `UpdateFWScreen.cpp` for examples.
-=======
-# Watchy Screen Demo
 
-This is a [Watchy](https://watchy.sqfmi.com/) watchface based on [Watchy-Screen](https://github.com/charles-haynes/Watchy-Screen) intended to demonstrate a multi-screen watchface.
+## Example Screens
 
-## Screens
-
-It includes individual screens for:
+The `Screens` directory includes individual screens for:
 
 * Time/Date  
 * Weather  
@@ -133,5 +128,4 @@ The face is organized as a carousel of time, weather, battery, steps, orientatio
 
 The settings display screen is a menu that lets you set the time, setup the wifi, or update the firmware.
 
-There are no dependencies within the screens, all of the screen instances and their organization are in `main.cpp` most of the screens are just a `show` method.
->>>>>>> Screen-demo/main
+There are no dependencies within the screens, all of the screen instances and their organization will be in `main.cpp` most of the screens are just a `show` method.
