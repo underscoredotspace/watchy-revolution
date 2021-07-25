@@ -43,7 +43,6 @@ Field fields[] = {{&SetTimeScreen::hour, 0, 23},
 const uint8_t numFields = sizeof(fields) / sizeof(fields[0]);
 
 void SetTimeScreen::show() {
-  DEBUG("SetTimeScreen::show index %d\n", setIndex);
   tmElements_t currentTime;
   RTC.read(currentTime);
 
@@ -131,25 +130,22 @@ void SetTimeScreen::show() {
     time_t t = makeTime(tm) + FUDGE;
     RTC.set(t);
   }
-  setIndex = 0; // make sure we start at the beginning if we come back
-  DEBUG("SetTimeScreen done. Setting screen to %08lx\n",(unsigned long)parent);
+  setIndex = 0;  // make sure we start at the beginning if we come back
+
   Watchy::setScreen(parent ? parent : Watchy::defaultScreen);
 }
 
 void SetTimeScreen::up() {
-  DEBUG("SetTimeScreen::up index %d\n", setIndex);
   decrMin(this->*(fields[setIndex].val), fields[setIndex].min,
           fields[setIndex].max);
 }
 
 void SetTimeScreen::down() {
-  DEBUG("SetTimeScreen::down index %d\n", setIndex);
   incrMax(this->*(fields[setIndex].val), fields[setIndex].min,
           fields[setIndex].max);
 }
 
 void SetTimeScreen::back() {
-  DEBUG("SetTimeScreen::back index %d\n", setIndex);
   if (setIndex == 0) {
     revert = true;
   } else {
@@ -158,8 +154,7 @@ void SetTimeScreen::back() {
 }
 
 void SetTimeScreen::menu() {
-  DEBUG("SetTimeScreen::menu index %d\n", setIndex);
-  if (setIndex == numFields-1) {
+  if (setIndex == numFields - 1) {
     commit = true;
   } else {
     setIndex++;

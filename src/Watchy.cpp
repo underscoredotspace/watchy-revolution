@@ -95,7 +95,6 @@ void Watchy::deepSleep() {
   esp_sleep_enable_ext1_wakeup(
       BTN_PIN_MASK,
       ESP_EXT1_WAKEUP_ANY_HIGH);  // enable deep sleep wake on button press
-  DEBUG("%ld: deep sleep\n", millis());
   esp_deep_sleep_start();
 }
 
@@ -128,7 +127,7 @@ void debounce(uint8_t pin, int state) {
   unsigned long timeout = millis() + 400;
   while (millis() < timeout) {
     if (digitalRead(pin) != state) {
-      delay(min(timeout-millis(), 40ul));
+      delay(min(timeout - millis(), 40ul));
       break;
     }
     yield();
@@ -138,25 +137,21 @@ void debounce(uint8_t pin, int state) {
 bool Watchy::pollButtonsAndDispatch()  // returns true if button was pressed
 {
   if (digitalRead(MENU_BTN_PIN) == 1) {
-    DEBUG("%ld: pollButtonsAndDispatch menu()\n", millis());
     debounce(MENU_BTN_PIN, 1);
     screen->menu();
     return true;
   }
   if (digitalRead(BACK_BTN_PIN) == 1) {
-    DEBUG("%ld: pollButtonsAndDispatch back()\n", millis());
     debounce(BACK_BTN_PIN, 1);
     screen->back();
     return true;
   }
   if (digitalRead(UP_BTN_PIN) == 1) {
-    DEBUG("%ld: pollButtonsAndDispatch up()\n", millis());
     debounce(UP_BTN_PIN, 1);
     screen->up();
     return true;
   }
   if (digitalRead(DOWN_BTN_PIN) == 1) {
-    DEBUG("%ld: pollButtonsAndDispatch down()\n", millis());
     debounce(DOWN_BTN_PIN, 1);
     screen->down();
     return true;
@@ -168,7 +163,6 @@ void fastEventLoop() {
   // TODO need a way for handlers to say they're done with the ui
   const int timeout = 5000;
   long timeoutMillis = millis() + timeout;
-  DEBUG("%ld: fastEventLoop start timeout %ld\n", millis(), timeoutMillis);
   pinMode(MENU_BTN_PIN, INPUT);
   pinMode(BACK_BTN_PIN, INPUT);
   pinMode(UP_BTN_PIN, INPUT);
@@ -179,27 +173,21 @@ void fastEventLoop() {
     }
     yield();
   }
-  DEBUG("%ld: fastEventLoop done\n", millis());
 }
 
 void Watchy::handleButtonPress() {
   uint64_t wakeupBit = esp_sleep_get_ext1_wakeup_status();
-  DEBUG("handleButtonPress %llx\n", wakeupBit);
   switch (wakeupBit & BTN_PIN_MASK) {
     case MENU_BTN_MASK:
-      DEBUG("Watchy::handleButtonPress menu()\n");
       screen->menu();
       break;
     case BACK_BTN_MASK:
-      DEBUG("Watchy::handleButtonPress back()\n");
       screen->back();
       break;
     case UP_BTN_MASK:
-      DEBUG("Watchy::handleButtonPress up()\n");
       screen->up();
       break;
     case DOWN_BTN_MASK:
-      DEBUG("Watchy::handleButtonPress down()\n");
       screen->down();
       break;
     default:
@@ -215,7 +203,6 @@ void Watchy::showWatchFace(bool partialRefresh, Screen *s) {
   display.setFullWindow();
   display.fillScreen(s->bgColor);
   display.setTextColor((s->bgColor == GxEPD_WHITE ? GxEPD_BLACK : GxEPD_WHITE));
-  DEBUG("Watchy::showWatchFace show()\n");
   s->show();
   display.display(partialRefresh);  // partial refresh
 }
@@ -223,10 +210,8 @@ void Watchy::showWatchFace(bool partialRefresh, Screen *s) {
 // setScreen is used to set a new screen on the display
 void Watchy::setScreen(Screen *s) {
   if (s == nullptr) {
-    DEBUG("setScreen nullptr\n");
     return;
   }
-  DEBUG("setScreen %08lx\n", (long unsigned)s);
   screen = s;
   showWatchFace(true);
 }

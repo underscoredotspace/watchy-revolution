@@ -1,9 +1,9 @@
 
 #include "WeatherScreen.h"
 
+#include "BatteryScreen.h"
 #include "Fonts/FreeSans12pt7b.h"
 #include "TimeScreen.h"
-#include "BatteryScreen.h"
 
 using namespace Watchy;
 
@@ -131,6 +131,4 @@ void WeatherScreen::show() {
   weatherData wd = getWeatherData();
   display.printf("\n%d deg\n%s", wd.temperature,
                  weatherConditionCodeToString(wd.weatherConditionCode));
-  DEBUG("\n%d deg\n%s\n", wd.temperature,
-        weatherConditionCodeToString(wd.weatherConditionCode));
 }

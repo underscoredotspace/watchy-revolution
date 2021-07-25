@@ -10,10 +10,6 @@
 #include "icons.h"
 #include "time.h"
 
-void timeSyncCallback(struct timeval *tv) {
-  DEBUG("\n*** timeSyncCallback %ld.%06ld", tv->tv_sec, tv->tv_usec);
-}
-
 RTC_DATA_ATTR const char *SyncTimeScreen::tz = TZ;
 RTC_DATA_ATTR const char *SyncTimeScreen::ntpServer = NTP_SERVER;
 RTC_DATA_ATTR enum SyncState {
@@ -55,8 +51,7 @@ void SyncTimeScreen::show() {
   }
   time_t tt;
   time(&tt);
-  DEBUG("SyncTimeScreen::show time %ld\n", tt);
-  sntp_set_time_sync_notification_cb(timeSyncCallback);
+
   syncState = waitingForSync;
   showSyncState();
   Watchy::display.display(true);
@@ -99,7 +94,10 @@ void SyncTimeScreen::show() {
   showSyncState();
 }
 
-void SyncTimeScreen::back() { syncState = ready; Screen::back(); }
+void SyncTimeScreen::back() {
+  syncState = ready;
+  Screen::back();
+}
 
 // RTC does not know about TZ
 // so DST has to be in app code

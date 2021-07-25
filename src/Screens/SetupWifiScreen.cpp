@@ -73,8 +73,6 @@ void SetupWifiScreen::show() {
 }
 
 void SetupWifiScreen::back() {
-  DEBUG("%08lx->SetupWifiScreen::back parent %08lx\n", (unsigned long)this,
-        (unsigned long)parent);
   wifiSetupState = start;
   Screen::back();
 }

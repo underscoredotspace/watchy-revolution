@@ -22,8 +22,7 @@ MenuScreen::MenuScreen(MenuItem *mis, const int8_t ms, Screen *p)
 }
 
 void MenuScreen::show() {
-  DEBUG("MenuScreen::show index %d\n", index);
-  const uint16_t fgColor =
+    const uint16_t fgColor =
       (screen->bgColor == GxEPD_WHITE ? GxEPD_BLACK : GxEPD_WHITE);
   display.setFont(&FreeMonoBold9pt7b);
 

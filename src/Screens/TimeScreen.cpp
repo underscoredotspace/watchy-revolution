@@ -13,17 +13,14 @@ const char *smallNumbers[] = {"oh",      "one",       "two",      "three",
                               "eight",   "nine",      "ten",      "eleven",
                               "twelve",  "thirteen",  "fourteen", "fifteen",
                               "sixteen", "seventeen", "eighteen", "nineteen"};
-const char *decades[] = {nullptr, nullptr, "twenty", "thirty", "forty", "fifty"};
+const char *decades[] = {nullptr,  nullptr, "twenty",
+                         "thirty", "forty", "fifty"};
 
 void TimeScreen::show() {
   tmElements_t currentTime;
   Watchy::RTC.read(currentTime);
-  DEBUG("TimeScreen::show currentTime %04d-%02d-%02d %02d:%02d:%02d %s\n",
-                currentTime.Year+1970, currentTime.Month, currentTime.Day,
-                currentTime.Hour, currentTime.Minute, currentTime.Second,
-                dayShortStr(currentTime.Wday));
   time_t tt = makeTime(currentTime);
-  DEBUG("TimeScreen::show tt %ld\n", tt);
+
   setenv("TZ", SyncTimeScreen::tz, 1);
   tzset();
   tm t;
