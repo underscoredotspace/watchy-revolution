@@ -45,3 +45,12 @@ const int SOFTWARE_VERSION_MINOR = 0;
 const int SOFTWARE_VERSION_PATCH = 0;
 const int HARDWARE_VERSION_MAJOR = 1;
 const int HARDWARE_VERSION_MINOR = 0;
+
+// debugging "#define DEBUGPORT Serial" for debugging output
+#define DEBUGPORT Serial
+#undef DEBUGPORT
+#ifdef DEBUGPORT
+#define DEBUG(...)      DEBUGPORT.printf(__VA_ARGS__)
+#else
+#define DEBUG(...)
+#endif
