@@ -2,8 +2,8 @@
 
 #include "Screen.h"
 
-class SettingsScreen : public Screen {
+class Settings : public Screen {
  public:
-  SettingsScreen(Screen *p = nullptr) : Screen(p) {}
+  Settings(Screen *p = nullptr) : Screen(p) {}
   void show() override;
 };

@@ -1,63 +1,64 @@
-#include "BatteryScreen.h"
-#include "BluetoothScreen.h"
-#include "CarouselScreen.h"
-#include "MenuScreen.h"
-#include "OrientationScreen.h"
-#include "SetTimeScreen.h"
-#include "SettingsScreen.h"
-#include "SetupWifiScreen.h"
-#include "ShowBatteryScreen.h"
-#include "ShowBluetoothScreen.h"
-#include "ShowOrientationScreen.h"
-#include "ShowStepsScreen.h"
-#include "ShowWifiScreen.h"
-#include "StepsScreen.h"
-#include "SyncTimeScreen.h"
-#include "TimeScreen.h"
-#include "UpdatefWScreen.h"
+#include "Battery.h"
+#include "Bluetooth.h"
+#include "Carousel.h"
+#include "Menu.h"
+#include "Orientation.h"
+#include "SetTime.h"
+#include "Settings.h"
+#include "SetupWifi.h"
+#include "ShowBattery.h"
+#include "ShowBluetooth.h"
+#include "ShowOrientation.h"
+#include "ShowSteps.h"
+#include "ShowWifi.h"
+#include "Steps.h"
+#include "SyncTime.h"
+#include "Time.h"
+#include "UpdateFW.h"
 #include "Watchy.h"
-#include "WeatherScreen.h"
-#include "WifiScreen.h"
+#include "Weather.h"
+#include "Wifi.h"
 
-SetTimeScreen setTimeScreen;
-SetupWifiScreen setupWifiScreen;
-UpdateFWScreen updateFWScreen;
-SyncTimeScreen syncTimeScreen;
+SetTime setTimeScreen;
+SetupWifi setupWifi;
+UpdateFW updateFW;
+SyncTime syncTime;
 
-MenuItem menu[] = {{"Set Time", &setTimeScreen},
-                   {"Setup WiFi", &setupWifiScreen},
-                   {"Update Firmware", &updateFWScreen},
-                   {"Sync Time", &syncTimeScreen}};
+MenuItem menuItems[] = {{"Set Time", &setTimeScreen},
+                   {"Setup WiFi", &setupWifi},
+                   {"Update Firmware", &updateFW},
+                   {"Sync Time", &syncTime}};
 
-MenuScreen menuScreen(menu, sizeof(menu) / sizeof(menu[0]));
+Menu menu(menuItems, sizeof(menuItems) / sizeof(menuItems[0]));
 
-TimeScreen timeScreen;
-WeatherScreen weatherScreen;
-BatteryScreen batteryScreen;
-StepsScreen stepsScreen;
-OrientationScreen orientationScreen;
-BluetoothScreen bluetoothScreen;
-WifiScreen wifiScreen;
-SettingsScreen settingsScreen;
-ShowBatteryScreen showBatteryScreen;
-ShowBluetoothScreen showBluetoothScreen;
-ShowOrientationScreen showOrientationScreen;
-ShowStepsScreen showStepsScreen;
-ShowWifiScreen showWifiScreen;
+Time timeScreen;
+Weather weather;
+Battery battery;
+Steps steps;
+Orientation orientation;
+Bluetooth bluetooth;
+Wifi wifi;
+Settings settings;
+ShowBattery showBattery;
+ShowBluetooth showBluetooth;
+ShowOrientation showOrientation;
+ShowSteps showSteps;
+ShowWifi showWifi;
 
-CarouselItem carousel[] = {{&timeScreen, nullptr},
-                           {&weatherScreen, nullptr},
-                           {&batteryScreen, &showBatteryScreen},
-                           {&stepsScreen, &showStepsScreen},
-                           {&orientationScreen, &showOrientationScreen},
-                           {&bluetoothScreen, &showBluetoothScreen},
-                           {&wifiScreen, &showWifiScreen},
-                           {&settingsScreen, &menuScreen}};
+CarouselItem carouselItems[] = {{&timeScreen, nullptr},
+                           {&weather, nullptr},
+                           {&battery, &showBattery},
+                           {&steps, &showSteps},
+                           {&orientation, &showOrientation},
+                           {&bluetooth, &showBluetooth},
+                           {&wifi, &showWifi},
+                           {&settings, &menu}};
 
-CarouselScreen carouselScreen(carousel, sizeof(carousel) / sizeof(carousel[0]));
+Carousel carousel(carouselItems, sizeof(carouselItems) / sizeof(carouselItems[0]));
 
 void setup() {
-  Watchy::defaultScreen = &carouselScreen;
+  Serial.begin(115200);
+  Watchy::defaultScreen = &carousel;
   Watchy::init();
 }
 

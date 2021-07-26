@@ -2,8 +2,8 @@
 
 #include "Screen.h"
 
-class ShowBluetoothScreen : public Screen {
+class ShowBluetooth : public Screen {
  public:
-  ShowBluetoothScreen(Screen *p = nullptr) : Screen(p) {}
+  ShowBluetooth(Screen *p = nullptr) : Screen(p) {}
   void show() override;
 };

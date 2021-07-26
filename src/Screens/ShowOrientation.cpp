@@ -1,9 +1,9 @@
-#include "ShowOrientationScreen.h"
+#include "ShowOrientation.h"
 
 #include "Fonts/FreeSans12pt7b.h"
 #include "Watchy.h"
 
-void ShowOrientationScreen::showMe() {
+void ShowOrientation::showMe() {
   Watchy::display.fillScreen(bgColor);
   Watchy::display.setCursor(0, 0);
   Accel acc;
@@ -43,7 +43,7 @@ void ShowOrientationScreen::showMe() {
   Watchy::display.display(true);
 }
 
-void ShowOrientationScreen::show() {
+void ShowOrientation::show() {
   Watchy::display.setFont(&FreeSans12pt7b);
   showing = true;
   while (showing) {
@@ -56,7 +56,7 @@ void ShowOrientationScreen::show() {
   }
 }
 
-void ShowOrientationScreen::back() {
+void ShowOrientation::back() {
   showing = false;
   Screen::back();
 }

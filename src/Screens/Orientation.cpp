@@ -1,11 +1,11 @@
-#include "OrientationScreen.h"
+#include "Orientation.h"
 
 #include "Adafruit_GFX.h"
 #include "Fonts/FreeSans24pt7b.h"
 #include "Watchy.h"
 #include "icons.h"
 
-void OrientationScreen::show() {
+void Orientation::show() {
   constexpr const char *label = "orient";
   const uint16_t fgColor = (bgColor == GxEPD_WHITE ? GxEPD_BLACK : GxEPD_WHITE);
   Watchy::display.setFont(&FreeSans24pt7b);

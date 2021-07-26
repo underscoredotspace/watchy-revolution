@@ -1,4 +1,4 @@
-#include "SetupWifiScreen.h"
+#include "SetupWifi.h"
 
 #include "Screen.h"
 #include "Watchy.h"
@@ -19,7 +19,7 @@ void _configModeCallback(WiFiManager *myWiFiManager) {
   display.hibernate();
 }
 
-void SetupWifiScreen::show() {
+void SetupWifi::show() {
   // this is a little ugly the show() method blocks without
   // showing anything in autoConnect, and lets _configModeCallback
   // set the display
@@ -72,7 +72,7 @@ void SetupWifiScreen::show() {
   display.hibernate();
 }
 
-void SetupWifiScreen::back() {
+void SetupWifi::back() {
   wifiSetupState = start;
   Screen::back();
 }

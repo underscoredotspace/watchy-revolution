@@ -1,11 +1,11 @@
-#include "WifiScreen.h"
+#include "Wifi.h"
 
 #include "Adafruit_GFX.h"
 #include "Fonts/FreeSans24pt7b.h"
 #include "Watchy.h"
 #include "icons.h"
 
-void WifiScreen::show() {
+void Wifi::show() {
   constexpr const char *label = "wifi";
   const uint16_t fgColor = (bgColor == GxEPD_WHITE ? GxEPD_BLACK : GxEPD_WHITE);
   Watchy::display.setFont(&FreeSans24pt7b);

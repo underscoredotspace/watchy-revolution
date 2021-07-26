@@ -1,18 +1,14 @@
-#include "MenuScreen.h"
+#include "Menu.h"
 
-#include "SetTimeScreen.h"
-#include "SettingsScreen.h"
-#include "SetupWifiScreen.h"
-#include "UpdateFWScreen.h"
 #include "Watchy.h"
 
 using namespace Watchy;
 
 const int MENU_HEIGHT = 30;
 
-RTC_DATA_ATTR int8_t MenuScreen::index;
+RTC_DATA_ATTR int8_t Menu::index;
 
-MenuScreen::MenuScreen(MenuItem *mis, const int8_t ms, Screen *p)
+Menu::Menu(MenuItem *mis, const int8_t ms, Screen *p)
     : Screen(p), items(mis), size(ms) {
   for (int i = 0; i < size; i++) {
     if (items[i].screen != nullptr) {
@@ -21,7 +17,7 @@ MenuScreen::MenuScreen(MenuItem *mis, const int8_t ms, Screen *p)
   }
 }
 
-void MenuScreen::show() {
+void Menu::show() {
     const uint16_t fgColor =
       (screen->bgColor == GxEPD_WHITE ? GxEPD_BLACK : GxEPD_WHITE);
   display.setFont(&FreeMonoBold9pt7b);
@@ -44,11 +40,11 @@ void MenuScreen::show() {
   }
 }
 
-void MenuScreen::menu() { Watchy::setScreen(items[index].screen); }
+void Menu::menu() { Watchy::setScreen(items[index].screen); }
 
-void MenuScreen::back() { setScreen(parent); }
+void Menu::back() { setScreen(parent); }
 
-void MenuScreen::up() {
+void Menu::up() {
   index--;
   if (index < 0) {
     index = size - 1;
@@ -56,7 +52,7 @@ void MenuScreen::up() {
   showWatchFace(true);
 }
 
-void MenuScreen::down() {
+void Menu::down() {
   index++;
   if (index >= size) {
     index = 0;

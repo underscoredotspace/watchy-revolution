@@ -1,6 +1,6 @@
 #include "config.h"  // should be first
 
-#include "SyncTimeScreen.h"
+#include "SyncTime.h"
 
 #include <Wifi.h>
 
@@ -10,8 +10,8 @@
 #include "icons.h"
 #include "time.h"
 
-RTC_DATA_ATTR const char *SyncTimeScreen::tz = TZ;
-RTC_DATA_ATTR const char *SyncTimeScreen::ntpServer = NTP_SERVER;
+RTC_DATA_ATTR const char *SyncTime::tz = TZ;
+RTC_DATA_ATTR const char *SyncTime::ntpServer = NTP_SERVER;
 RTC_DATA_ATTR enum SyncState {
   ready,
   waitingForSync,
@@ -55,7 +55,7 @@ void timeSyncCallback(struct timeval *tv) {
   showSyncState();
 }
 
-void SyncTimeScreen::show() {
+void SyncTime::show() {
   Watchy::display.setFont(&FreeSans12pt7b);
   Watchy::display.setCursor(0, 0);
   if (showSyncState()) {
@@ -87,7 +87,7 @@ void SyncTimeScreen::show() {
   showSyncState();
 }
 
-void SyncTimeScreen::back() {
+void SyncTime::back() {
   syncState = ready;
   Screen::back();
 }

@@ -1,20 +1,12 @@
-#include "CarouselScreen.h"
+#include "Carousel.h"
 
-#include "BatteryScreen.h"
-#include "BluetoothScreen.h"
-#include "OrientationScreen.h"
-#include "SettingsScreen.h"
-#include "StepsScreen.h"
-#include "TimeScreen.h"
 #include "Watchy.h"
-#include "WeatherScreen.h"
-#include "WifiScreen.h"
 
 using namespace Watchy;
 
-RTC_DATA_ATTR int8_t CarouselScreen::index;
+RTC_DATA_ATTR int8_t Carousel::index;
 
-CarouselScreen::CarouselScreen(CarouselItem *cis, const int8_t cs, Screen *p)
+Carousel::Carousel(CarouselItem *cis, const int8_t cs, Screen *p)
     : Screen(p), items(cis), size(cs) {
   for (int i = 0; i < size; i++) {
     if (items[i].splash != nullptr) {
@@ -26,22 +18,22 @@ CarouselScreen::CarouselScreen(CarouselItem *cis, const int8_t cs, Screen *p)
   }
 }
 
-void CarouselScreen::show() {
+void Carousel::show() {
   Watchy::showWatchFace(true, items[index].splash);
 }
 
-void CarouselScreen::menu() {
+void Carousel::menu() {
   if (items[index].child != nullptr) {
     Watchy::setScreen(items[index].child);
   }
 }
 
-void CarouselScreen::back() {
+void Carousel::back() {
   index = 0;
   show();
 }
 
-void CarouselScreen::up() {
+void Carousel::up() {
   index--;
   if (index < 0) {
     index = size - 1;
@@ -49,7 +41,7 @@ void CarouselScreen::up() {
   show();
 }
 
-void CarouselScreen::down() {
+void Carousel::down() {
   index++;
   if (index >= size) {
     index = 0;

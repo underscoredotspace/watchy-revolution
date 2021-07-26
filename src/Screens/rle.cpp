@@ -2,7 +2,6 @@
 
 #include "Adafruit_GFX.h"
 #include "GxEPD2.h"
-#include "icons.h"  // DEBUG
 
 // does no sanity checking, length of bitmap, size of gfx
 void drawRLEBitmap(Adafruit_GFX &gfx, int16_t x, int16_t y, const rle *r,

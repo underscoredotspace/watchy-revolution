@@ -1,11 +1,11 @@
-#include "BluetoothScreen.h"
+#include "Bluetooth.h"
 
 #include "Adafruit_GFX.h"
 #include "Fonts/FreeSans24pt7b.h"
 #include "Watchy.h"
 #include "icons.h"
 
-void BluetoothScreen::show() {
+void Bluetooth::show() {
   constexpr const char *label = "bluetooth";
   const uint16_t fgColor = (bgColor == GxEPD_WHITE ? GxEPD_BLACK : GxEPD_WHITE);
   Watchy::display.setFont(&FreeSans24pt7b);

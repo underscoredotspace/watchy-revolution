@@ -1,6 +1,5 @@
-#include "SetTimeScreen.h"
+#include "SetTime.h"
 
-#include "MenuScreen.h"
 #include "Watchy.h"
 
 using namespace Watchy;
@@ -15,10 +14,10 @@ bool blink;
 bool revert;
 bool commit;
 
-RTC_DATA_ATTR uint8_t SetTimeScreen::setIndex;
+RTC_DATA_ATTR uint8_t SetTime::setIndex;
 
 typedef struct {
-  int8_t SetTimeScreen::*val;
+  int8_t SetTime::*val;
   int8_t min;
   int8_t max;
 } Field;
@@ -35,14 +34,14 @@ void incrMax(int8_t &val, int8_t &min, int8_t &max) {
   }
 }
 
-Field fields[] = {{&SetTimeScreen::hour, 0, 23},
-                  {&SetTimeScreen::minute, 0, 59},
-                  {&SetTimeScreen::year, 20, 99},
-                  {&SetTimeScreen::month, 1, 12},
-                  {&SetTimeScreen::day, 1, 31}};
+Field fields[] = {{&SetTime::hour, 0, 23},
+                  {&SetTime::minute, 0, 59},
+                  {&SetTime::year, 20, 99},
+                  {&SetTime::month, 1, 12},
+                  {&SetTime::day, 1, 31}};
 const uint8_t numFields = sizeof(fields) / sizeof(fields[0]);
 
-void SetTimeScreen::show() {
+void SetTime::show() {
   tmElements_t currentTime;
   RTC.read(currentTime);
 
@@ -135,17 +134,17 @@ void SetTimeScreen::show() {
   Watchy::setScreen(parent ? parent : Watchy::defaultScreen);
 }
 
-void SetTimeScreen::up() {
+void SetTime::up() {
   decrMin(this->*(fields[setIndex].val), fields[setIndex].min,
           fields[setIndex].max);
 }
 
-void SetTimeScreen::down() {
+void SetTime::down() {
   incrMax(this->*(fields[setIndex].val), fields[setIndex].min,
           fields[setIndex].max);
 }
 
-void SetTimeScreen::back() {
+void SetTime::back() {
   if (setIndex == 0) {
     revert = true;
   } else {
@@ -153,7 +152,7 @@ void SetTimeScreen::back() {
   }
 }
 
-void SetTimeScreen::menu() {
+void SetTime::menu() {
   if (setIndex == numFields - 1) {
     commit = true;
   } else {

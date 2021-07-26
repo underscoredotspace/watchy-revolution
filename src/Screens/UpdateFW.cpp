@@ -1,6 +1,5 @@
-#include "UpdateFWScreen.h"
+#include "UpdateFW.h"
 
-#include "MenuScreen.h"
 #include "Screen.h"
 #include "Watchy.h"
 
@@ -116,7 +115,7 @@ class : public Screen {
   }
 } updateFWBeginScreen;
 
-void UpdateFWScreen::show() {
+void UpdateFW::show() {
   display.setFont(&FreeMonoBold9pt7b);
   display.setCursor(0, 30);
   display.println("Please Visit");
@@ -132,4 +131,4 @@ void UpdateFWScreen::show() {
   BLE BT;
 }
 
-void UpdateFWScreen::menu() { setScreen(&updateFWBeginScreen); }
+void UpdateFW::menu() { setScreen(&updateFWBeginScreen); }

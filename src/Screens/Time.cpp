@@ -1,9 +1,9 @@
-#include "TimeScreen.h"
+#include "Time.h"
 
 #include "Fonts/FreeSans24pt7b.h"
 #include "Fonts/FreeSans9pt7b.h"
 #include "Fonts/FreeSansBold24pt7b.h"
-#include "SyncTimeScreen.h"
+#include "SyncTime.h"
 
 using namespace Watchy;
 
@@ -16,12 +16,12 @@ const char *smallNumbers[] = {"oh",      "one",       "two",      "three",
 const char *decades[] = {"oh",  nullptr, "twenty",
                          "thirty", "forty", "fifty"};
 
-void TimeScreen::show() {
+void Time::show() {
   tmElements_t currentTime;
   Watchy::RTC.read(currentTime);
   time_t tt = makeTime(currentTime);
 
-  setenv("TZ", SyncTimeScreen::tz, 1);
+  setenv("TZ", SyncTime::tz, 1);
   tzset();
   tm t;
   localtime_r(&tt, &t);
@@ -46,9 +46,7 @@ void TimeScreen::show() {
     display.println(smallNumbers[t.tm_min]);
   } else if (t.tm_min <= 59) {
     display.println(decades[t.tm_min / 10]);
-    if (t.tm_min % 10 > 0) {
-      display.println(smallNumbers[t.tm_min % 10]);
-    }
+    display.println(smallNumbers[t.tm_min % 10]);
   }
 
   // date

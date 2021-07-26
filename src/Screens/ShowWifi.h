@@ -2,8 +2,8 @@
 
 #include "Screen.h"
 
-class ShowWifiScreen : public Screen {
+class ShowWifi : public Screen {
  public:
-  ShowWifiScreen(Screen *p = nullptr) : Screen(p) {}
+  ShowWifi(Screen *p = nullptr) : Screen(p) {}
   void show() override;
 };

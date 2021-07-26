@@ -1,12 +1,11 @@
-#include "SettingsScreen.h"
+#include "Settings.h"
 
 #include "Adafruit_GFX.h"
 #include "Fonts/FreeSans24pt7b.h"
 #include "Watchy.h"
 #include "icons.h"
-#include "rle.h" // DEBUG
 
-void SettingsScreen::show() {
+void Settings::show() {
   constexpr const char *label = "settings";
   const uint16_t fgColor = (bgColor == GxEPD_WHITE ? GxEPD_BLACK : GxEPD_WHITE);
   Watchy::display.setFont(&FreeSans24pt7b);

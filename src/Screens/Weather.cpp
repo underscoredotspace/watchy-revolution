@@ -1,9 +1,7 @@
 
-#include "WeatherScreen.h"
+#include "Weather.h"
 
-#include "BatteryScreen.h"
 #include "Fonts/FreeSans12pt7b.h"
-#include "TimeScreen.h"
 
 using namespace Watchy;
 
@@ -124,7 +122,7 @@ static const char *weatherConditionCodeToString(int16_t weatherConditionCode) {
   }
 }
 
-void WeatherScreen::show() {
+void Weather::show() {
   display.setFont(&FreeSans12pt7b);
   display.setTextWrap(true);
   display.setCursor(0, 0);

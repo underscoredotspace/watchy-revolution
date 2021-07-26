@@ -69,7 +69,7 @@ void setup() {
 void loop() {} // this should never run, Watchy deep sleeps after init();
 ```
 
-Manually coding the relationships between screens is tedious and error prone though. See `MenuScreen` and `CarouselScreen` below for a nicer approach.
+Manually coding the relationships between screens is tedious and error prone though. See `Menu` and `Carousel` below for a nicer approach.
 
 ## Watchy changes
 
@@ -82,7 +82,7 @@ Manually coding the relationships between screens is tedious and error prone tho
 * Use `Watchy::setScreen(Screen *s)` to change screens.
 * Use `Watchy::showWatchFace(bool partialRefresh)` to redisplay the current screen.
 
-There are some helper functions if you want to do polling UI instead of sleeping and waiting for an event. Normally you should just use the event driven UI, but look at `SetTimeScreen.{h,cpp}` and `UpdateFWScreen.{h,cpp}` in [Watchy Screen demo](https://github.com/charles-haynes/Watchy-Screen-demo) for examples of how to implement a captive UI. `AccelerometerScreen.{h,cpp}` shows how to refresh the display more frequently than once a minute. Unfortunately all of those use a traditional polling loop, which is energy intensive. Eventually they should all be event driven.
+There are some helper functions if you want to do polling UI instead of sleeping and waiting for an event. Normally you should just use the event driven UI, but look at `SetTime.{h,cpp}` and `UpdateFW.{h,cpp}` for examples of how to implement a captive UI. `Orientation.{h,cpp}` shows how to refresh the display more frequently than once a minute. Unfortunately all of those use a traditional polling loop, which is energy intensive. Eventually they should all be event driven.
 
 ### Caveats
 
@@ -90,7 +90,7 @@ Because of how deep sleep works, all screen instances must be globally persisten
 
 The fields in a screen instance are not persistent across deep sleep. Do not expect to store persistent state in a screen instance. If you need persistence across sleep, make the state static and tag it with `RTC_DATA_ATTR` but this will only work for a single instance of a screen. If you have multiple instances of the same screen that need different persistent instance data you'll have do it some other way.
 
-If you want multiple sub-screens for a single action you can instantiate local anonymous subclasses of `Screen` see `SetupWifiScreen.cpp` and `UpdateFWScreen.cpp` for examples.
+If you want multiple sub-screens for a single action you can instantiate local anonymous subclasses of `Screen` see `UpdateFW.cpp` for an example.
 
 ## Example Screens
 
@@ -122,7 +122,7 @@ The menu screen implements a simple text menu. It takes an array of menu items, 
 
 The carousel implements a cyclic view of spash screens and a corresponding display. Typically a splash screen is a simple static graphical or textual screen, and a display screen has more complex UI and active logic. To construct a carousel create an array of `CarouselItems` each one is a pair of screens the `splash` that is displayed in the carousel and the optional `child` that is displayed when you press `Menu` on the splash screen. The `child` screen is free to use any of the buttons for its own purposes, though conventionally the `back` button should return to the splash screen.
 
-While in a carousel `up` takes you to the previous splash screen, `down` takes you to the next one, `menu` shows the child screen for that splash screen, `back` while looking at a splash screen takes you back to the first screen of the carousel. When in a child screen `back` should take you back to it's splash screen but the child has complete control. If the splash screen contains all information for the display the and doesn't need an additional UI, the child screen can be null. To add another screen to a carousel, add another `CarouselItem` to the array passed to the `CarouselScreen` constructor in the location you want the screen to appear in the carousel.
+In a carousel `up` takes you to the previous splash screen, `down` takes you to the next one, `menu` shows the child screen for that splash screen, `back` while looking at a splash screen takes you back to the first screen of the carousel. A splash screen uses all of the buttons for its UI. In a child screen the child has complete control of the buttons, though by convention `back` should take you back to the carousel (the `parent` of the child screen). If the splash screen contains all information for the display the and doesn't need any additional UI, the child screen can be null. To add another screen to a carousel, add another `CarouselItem` to the array passed to the `Carousel` constructor in the location you want the screen to appear in the carousel.
 
 ## Demo
 

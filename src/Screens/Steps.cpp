@@ -1,11 +1,11 @@
-#include "StepsScreen.h"
+#include "Steps.h"
 
 #include "Adafruit_GFX.h"
 #include "Fonts/FreeSans24pt7b.h"
 #include "Watchy.h"
 #include "icons.h"
 
-void StepsScreen::show() {
+void Steps::show() {
   constexpr const char *label = "steps";
   const uint16_t fgColor = (bgColor == GxEPD_WHITE ? GxEPD_BLACK : GxEPD_WHITE);
   Watchy::display.setFont(&FreeSans24pt7b);

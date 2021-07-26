@@ -2,8 +2,8 @@
 
 #include "Screen.h"
 
-class TimeScreen : public Screen {
+class Time : public Screen {
  public:
-  TimeScreen(Screen *p = nullptr) : Screen(p) {}
+  Time(Screen *p = nullptr) : Screen(p) {}
   void show();
 };

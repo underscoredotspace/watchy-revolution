@@ -2,8 +2,8 @@
 
 #include "Screen.h"
 
-class ShowBatteryScreen : public Screen {
+class ShowBattery : public Screen {
  public:
-  ShowBatteryScreen(Screen *p = nullptr) : Screen(p) {}
+  ShowBattery(Screen *p = nullptr) : Screen(p) {}
   void show() override;
 };
