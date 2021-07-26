@@ -13,7 +13,7 @@ const char *smallNumbers[] = {"oh",      "one",       "two",      "three",
                               "eight",   "nine",      "ten",      "eleven",
                               "twelve",  "thirteen",  "fourteen", "fifteen",
                               "sixteen", "seventeen", "eighteen", "nineteen"};
-const char *decades[] = {nullptr,  nullptr, "twenty",
+const char *decades[] = {"oh",  nullptr, "twenty",
                          "thirty", "forty", "fifty"};
 
 void TimeScreen::show() {
