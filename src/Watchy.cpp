@@ -1,6 +1,7 @@
 #include "Watchy.h"
 
 #include "Screen.h"
+#include "Screens/SetLocation.h" // bad hack
 
 using namespace Watchy;
 
@@ -223,11 +224,16 @@ weatherData Watchy::getWeatherData() {
     if (connectWiFi()) {  // Use Weather API for live data if WiFi is connected
       HTTPClient http;
       http.setConnectTimeout(3000);  // 3 second max timeout
-      String weatherQueryURL =
-          String(OPENWEATHERMAP_URL) + String(CITY_NAME) + String(",") +
-          String(COUNTRY_CODE) + String("&units=") + String(TEMP_UNIT) +
-          String("&appid=") + String(OPENWEATHERMAP_APIKEY);
-      http.begin(weatherQueryURL.c_str());
+      const unsigned int weatherQueryURLSize =
+          strlen(OPENWEATHERMAP_URL) + strlen("?lat=") + 8 + strlen("&lon=") +
+          8 + strlen("&units=") + strlen(TEMP_UNIT) + strlen("&appid=") +
+          strlen(OPENWEATHERMAP_APIKEY) + 1;
+      char weatherQueryURL[weatherQueryURLSize];
+      snprintf(weatherQueryURL, weatherQueryURLSize,
+               "%s?lat=%8.4f&lon=%8.4f&units=%s&appid=%s", OPENWEATHERMAP_URL,
+               SetLocation::lat, SetLocation::lon, TEMP_UNIT,
+               OPENWEATHERMAP_APIKEY);
+      http.begin(weatherQueryURL);
       int httpResponseCode = http.GET();
       if (httpResponseCode == 200) {
         String payload = http.getString();

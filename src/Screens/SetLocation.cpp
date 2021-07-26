@@ -4,8 +4,9 @@
 #include <Wifi.h>
 #include <esp_http_client.h>
 
-RTC_DATA_ATTR float SetLocation::lat;
-RTC_DATA_ATTR float SetLocation::lon;
+// these should move into Watchy
+RTC_DATA_ATTR float SetLocation::lat = DEFAULT_LOCATION_LATITUDE;
+RTC_DATA_ATTR float SetLocation::lon = DEFAULT_LOCATION_LONGDITUDE;
 RTC_DATA_ATTR char SetLocation::timezone[50];
 RTC_DATA_ATTR IPAddress SetLocation::ip;
 RTC_DATA_ATTR enum {
