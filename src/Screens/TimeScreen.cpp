@@ -42,7 +42,7 @@ void TimeScreen::show() {
     } else {
       display.println("o'clock");
     }
-  } else if (t.tm_min < 20) {
+  } else if (10 <= t.tm_min && t.tm_min < 20) {
     display.println(smallNumbers[t.tm_min]);
   } else if (t.tm_min <= 59) {
     display.println(decades[t.tm_min / 10]);
