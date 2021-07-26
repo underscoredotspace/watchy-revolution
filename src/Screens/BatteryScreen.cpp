@@ -11,8 +11,8 @@ void BatteryScreen::show() {
   Watchy::display.setFont(&FreeSans24pt7b);
   int16_t x1, y1;
   uint16_t w, h;
-  Watchy::display.drawBitmap((200 - 96) / 2, (200 - 96) / 2 / 2, bitmap_battery,
-                             96, 96, fgColor);
+  drawRLEBitmap(Watchy::display, (200 - 96) / 2, (200 - 96) / 2 / 2,
+                &rle_battery, fgColor);
   Watchy::display.getTextBounds(label, 0, 0, &x1, &y1, &w, &h);
   Watchy::display.setCursor((200 - w) / 2, 170);
   Watchy::display.print(label);
