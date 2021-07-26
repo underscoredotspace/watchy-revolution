@@ -4,6 +4,7 @@
 #include "Menu.h"
 #include "Orientation.h"
 #include "SetTime.h"
+#include "SetLocation.h"
 #include "Settings.h"
 #include "SetupWifi.h"
 #include "ShowBattery.h"
@@ -23,11 +24,13 @@ SetTime setTimeScreen;
 SetupWifi setupWifi;
 UpdateFW updateFW;
 SyncTime syncTime;
+SetLocation setLocation;
 
 MenuItem menuItems[] = {{"Set Time", &setTimeScreen},
                    {"Setup WiFi", &setupWifi},
                    {"Update Firmware", &updateFW},
-                   {"Sync Time", &syncTime}};
+                   {"Sync Time", &syncTime},
+                   {"Set Location", &setLocation}};
 
 Menu menu(menuItems, sizeof(menuItems) / sizeof(menuItems[0]));
 
