@@ -43,6 +43,18 @@ bool showSyncState() {
   return true;
 }
 
+void timeSyncCallback(struct timeval *tv) {
+  // consider using tv.tv_usec as well
+  struct tm t;
+  localtime_r(&tv->tv_sec, &t);
+  Watchy::display.print(&t, "\n%A\n%B %d %Y\n%H.%M.%S");
+  tmElements_t te;
+  breakTime(tv->tv_sec, te);
+  Watchy::RTC.write(te);
+  syncState = syncSucceeded;
+  showSyncState();
+}
+
 void SyncTimeScreen::show() {
   Watchy::display.setFont(&FreeSans12pt7b);
   Watchy::display.setCursor(0, 0);
@@ -51,7 +63,6 @@ void SyncTimeScreen::show() {
   }
   time_t tt;
   time(&tt);
-
   syncState = waitingForSync;
   showSyncState();
   Watchy::display.display(true);
@@ -63,32 +74,14 @@ void SyncTimeScreen::show() {
     showSyncState();
     return;
   }
+  sntp_set_time_sync_notification_cb(timeSyncCallback);
   configTzTime(tz, ntpServer);
-  struct tm t;
-  // logic from getLocalTime
-  uint32_t start = millis();
-  time_t now;
-  while ((millis() - start) <= 5000) {
-    time(&now);
-    if (now < SECS_YR_2000) {
-      delay(10);
-      continue;
+  uint32_t timeout = millis() + 5000;
+  while (millis() < timeout) {
+    if (syncState == syncSucceeded) {
+      return;
     }
-    localtime_r(&now, &t);
-    Watchy::display.print(&t, "\n%A\n%B %d %Y\n%H.%M.%S");
-    syncState = syncSucceeded;
-    showSyncState();
-    DEBUG("time synced %04d-%02d-%02d %02d:%02d:%02d dst %d\n",
-          t.tm_year + 1900, t.tm_mon + 1, t.tm_mday, t.tm_hour, t.tm_min,
-          t.tm_sec, t.tm_isdst);
-    tmElements_t te;
-    breakTime(now, te);
-    Watchy::RTC.write(te);
-    DEBUG(
-        "SyncTimeScreen::show RTC.write (UTC)  %04d-%02d-%02d "
-        "%02d:%02d:%02d\n",
-        te.Year + 1970, te.Month, te.Day, te.Hour, te.Minute, te.Second);
-    return;
+    delay(10);
   }
   syncState = syncFailed;
   showSyncState();
