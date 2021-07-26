@@ -5,6 +5,7 @@ constexpr const char *NTP_SERVER = "pool.ntp.org";
 
 // debugging "#define DEBUGPORT Serial" for debugging output
 #define DEBUGPORT Serial
+#undef DEBUGPORT
 #ifdef DEBUGPORT
 #define DEBUG(...)      DEBUGPORT.printf(__VA_ARGS__)
 #else
