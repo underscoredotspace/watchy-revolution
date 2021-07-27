@@ -12,6 +12,14 @@
         "random": "cpp",
         "initializer_list": "cpp",
         "functional": "cpp",
-        "limits": "cpp"
+        "limits": "cpp",
+        "streambuf": "cpp",
+        "fstream": "cpp",
+        "istream": "cpp",
+        "ostream": "cpp",
+        "sstream": "cpp",
+        "algorithm": "cpp",
+        "utility": "cpp",
+        "system_error": "cpp"
     }
 }
