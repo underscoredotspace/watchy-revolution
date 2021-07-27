@@ -1,6 +1,5 @@
 #include "ShowBluetooth.h"
 
-#include "Bluetooth.h"
 #include "Fonts/FreeSans24pt7b.h"
 #include "Watchy.h"
 
