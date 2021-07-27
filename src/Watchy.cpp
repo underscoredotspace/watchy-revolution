@@ -179,22 +179,12 @@ void fastEventLoop() {
 void Watchy::handleButtonPress() {
   uint64_t wakeupBit = esp_sleep_get_ext1_wakeup_status();
   switch (wakeupBit & BTN_PIN_MASK) {
-    case MENU_BTN_MASK:
-      screen->menu();
-      break;
-    case BACK_BTN_MASK:
-      screen->back();
-      break;
-    case UP_BTN_MASK:
-      screen->up();
-      break;
-    case DOWN_BTN_MASK:
-      screen->down();
-      break;
-    default:
-      break;
+    case MENU_BTN_MASK: screen->menu(); break;
+    case BACK_BTN_MASK: screen->back(); break;
+    case UP_BTN_MASK:   screen->up();   break;
+    case DOWN_BTN_MASK: screen->down(); break;
+    default:                            break;
   }
-
   fastEventLoop();
 }
 
@@ -202,7 +192,6 @@ void Watchy::showWatchFace(bool partialRefresh, Screen *s) {
   display.init(
       0, false);  //_initial_refresh to false to prevent full update on init
   display.setFullWindow();
-  display.fillScreen(s->bgColor);
   display.setTextColor((s->bgColor == GxEPD_WHITE ? GxEPD_BLACK : GxEPD_WHITE));
   s->show();
   display.display(partialRefresh);  // partial refresh
