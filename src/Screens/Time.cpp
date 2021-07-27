@@ -13,8 +13,7 @@ const char *smallNumbers[] = {"oh",      "one",       "two",      "three",
                               "eight",   "nine",      "ten",      "eleven",
                               "twelve",  "thirteen",  "fourteen", "fifteen",
                               "sixteen", "seventeen", "eighteen", "nineteen"};
-const char *decades[] = {"oh",  nullptr, "twenty",
-                         "thirty", "forty", "fifty"};
+const char *decades[] = {"oh", nullptr, "twenty", "thirty", "forty", "fifty"};
 
 void Time::show() {
   tmElements_t currentTime;
@@ -46,7 +45,9 @@ void Time::show() {
     display.println(smallNumbers[t.tm_min]);
   } else if (t.tm_min <= 59) {
     display.println(decades[t.tm_min / 10]);
+    if (t.tm_min % 10 != 0) {
     display.println(smallNumbers[t.tm_min % 10]);
+    }
   }
 
   // date
