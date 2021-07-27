@@ -18,8 +18,9 @@ Menu::Menu(MenuItem *mis, const int8_t ms, Screen *p)
 }
 
 void Menu::show() {
-    const uint16_t fgColor =
+  const uint16_t fgColor =
       (screen->bgColor == GxEPD_WHITE ? GxEPD_BLACK : GxEPD_WHITE);
+  Watchy::display.fillScreen(bgColor);
   display.setFont(&FreeMonoBold9pt7b);
 
   for (uint8_t i = 0; i < size; i++) {
