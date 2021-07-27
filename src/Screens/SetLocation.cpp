@@ -4,6 +4,8 @@
 #include <Wifi.h>
 #include <esp_http_client.h>
 
+#include "Fonts/FreeSans12pt7b.h"
+
 // these should move into Watchy
 RTC_DATA_ATTR float SetLocation::lat = DEFAULT_LOCATION_LATITUDE;
 RTC_DATA_ATTR float SetLocation::lon = DEFAULT_LOCATION_LONGDITUDE;
@@ -89,6 +91,7 @@ void SetLocation::show() {
     printSetLocationState(bgColor);
     return;
   }
+  Watchy::display.setFont(&FreeSans12pt7b);
   setLocationState = waitingForWifi;
   displayMsg("\nWaiting for Wifi", bgColor);
   if (Watchy::connectWiFi()) {
