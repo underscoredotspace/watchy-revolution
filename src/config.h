@@ -37,6 +37,7 @@ const int WEATHER_UPDATE_INTERVAL = 30; //minutes
 constexpr const char * WIFI_AP_SSID = "Watchy AP";
 //set time
 const int YEAR_OFFSET = 1970;
+constexpr const char *TZ = "AEST-10AEDT,M10.1.0,M4.1.0/3";
 
 //BLE OTA
 constexpr const char * BLE_DEVICE_NAME = "Watchy BLE OTA";
