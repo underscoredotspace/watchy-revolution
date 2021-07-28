@@ -5,5 +5,5 @@
 class TimeScreen : public Screen {
  public:
   TimeScreen() : Screen() {}
-  void show();
+  void show() override;
 };
