@@ -20,23 +20,20 @@ void MenuScreen::show() {
   const uint16_t fgColor =
       (screen->bgColor == GxEPD_WHITE ? GxEPD_BLACK : GxEPD_WHITE);
   Watchy::display.fillScreen(bgColor);
-  display.setFont(&FreeMonoBold9pt7b);
+  const GFXfont &font = FreeMonoBold9pt7b;
+  display.setFont(&font);
 
+  int16_t yPos = 0;
   for (uint8_t i = 0; i < size; i++) {
-    int16_t yPos = 30 + (MENU_HEIGHT * i);
-    display.setCursor(0, yPos);
     if (i == index) {
-      int16_t x1, y1;
-      uint16_t w, h;
-
-      display.getTextBounds(items[i].name, 0, yPos, &x1, &y1, &w, &h);
-      display.fillRect(x1 - 1, y1 - 10, 200, h + 15, fgColor);
+      display.fillRect(0, yPos+font.yAdvance/2, DISPLAY_WIDTH, MENU_HEIGHT, fgColor);
       display.setTextColor(bgColor);
-      display.println(items[i].name);
     } else {
       display.setTextColor(fgColor);
-      display.println(items[i].name);
     }
+    yPos += MENU_HEIGHT;
+    display.setCursor(0, yPos);
+    display.println(items[i].name);
   }
 }
 
