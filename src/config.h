@@ -49,4 +49,9 @@ const int SOFTWARE_VERSION_PATCH = 0;
 const int HARDWARE_VERSION_MAJOR = 1;
 const int HARDWARE_VERSION_MINOR = 0;
 
-#define DEBUG(...) ESP_LOGI(TAG, __VA_ARGS__)
+// debugging macros defined in DEBUG releases
+#ifdef DEBUG
+#define LOGI(...) ESP_LOGI(TAG, __VA_ARGS__)
+#else
+#define LOGI(...)
+#endif
