@@ -1,6 +1,6 @@
-#include "config.h"  // should be first
+#include "SyncTimeScreen.h"
 
-#include "SyncTime.h"
+#include "config.h"  // should be first
 
 #include <Wifi.h>
 

@@ -1,4 +1,4 @@
-#include "ShowWifi.h"
+#include "ShowWifiScreen.h"
 
 #include "Fonts/FreeSans24pt7b.h"
 #include "Watchy.h"

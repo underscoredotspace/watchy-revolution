@@ -1,7 +1,7 @@
 #include "Watchy.h"
 
 #include "Screen.h"
-#include "Screens/SetLocation.h" // bad hack
+#include "Screens/SetLocationScreen.h" // bad hack
 
 using namespace Watchy;
 

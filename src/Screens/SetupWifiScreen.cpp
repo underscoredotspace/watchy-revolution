@@ -1,4 +1,4 @@
-#include "SetupWifi.h"
+#include "SetupWifiScreen.h"
 
 #include "Screen.h"
 #include "Watchy.h"
