@@ -75,9 +75,8 @@ void SetLocationScreen::show() {
     config.event_handler = _http_event_handle;
     esp_http_client_handle_t client = esp_http_client_init(&config);
     esp_err_t err = esp_http_client_perform(client);
-
     if (err == ESP_OK) {
-      auto httpResponseCode = esp_http_client_get_status_code(client);
+      int httpResponseCode = esp_http_client_get_status_code(client);
       if (httpResponseCode != 200) {
         setLocationState = httpResponseErr;
         Watchy::display.printf("\nhttp failed code %d", httpResponseCode);
