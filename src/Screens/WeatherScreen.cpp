@@ -124,7 +124,6 @@ static const char *weatherConditionCodeToString(int16_t weatherConditionCode) {
 void WeatherScreen::show() {
   display.setFont(&FreeSans12pt7b);
   display.setTextWrap(true);
-  display.setCursor(0, 0);
   weatherData wd = getWeatherData();
   display.printf("\n%d deg\n%s", wd.temperature,
                  weatherConditionCodeToString(wd.weatherConditionCode));

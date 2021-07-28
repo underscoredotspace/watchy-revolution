@@ -19,11 +19,12 @@ class IconScreen : public Screen {
     Watchy::display.setFont(font);
     int16_t x1, y1;
     uint16_t w, h;
-    drawRLEBitmap(Watchy::display, (200 - rleImage->w) / 2,
-                  (200 - rleImage->h) / 2 / 2, rleImage, fgColor);
     Watchy::display.getTextBounds(label, 0, 0, &x1, &y1, &w, &h);
-    // 170 should be 200 - baseline, but most font baselines are bogus
-    Watchy::display.setCursor((200 - w) / 2, 170);
+    Watchy::display.fillScreen(bgColor);
+    int space = (200 - (rleImage->h + h)) / 3;
+    drawRLEBitmap(Watchy::display, (200 - rleImage->w) / 2,
+                  space, rleImage, fgColor);
+    Watchy::display.setCursor((200 - w) / 2, (200 - h - space));
     Watchy::display.print(label);
   }
 };

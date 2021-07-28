@@ -5,7 +5,6 @@
 
 void ShowOrientationScreen::showMe() {
   Watchy::display.fillScreen(bgColor);
-  Watchy::display.setCursor(0, 0);
   Accel acc;
   if (Watchy::sensor.getAccel(acc)) {
     Watchy::display.printf("\n  X: %d", acc.x);

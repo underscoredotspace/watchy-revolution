@@ -57,7 +57,6 @@ void timeSyncCallback(struct timeval *tv) {
 
 void SyncTimeScreen::show() {
   Watchy::display.setFont(&FreeSans12pt7b);
-  Watchy::display.setCursor(0, 0);
   if (showSyncState()) {
     return;
   }

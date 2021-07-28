@@ -193,6 +193,7 @@ void Watchy::showWatchFace(bool partialRefresh, Screen *s) {
       0, false);  //_initial_refresh to false to prevent full update on init
   display.setFullWindow();
   display.setTextColor((s->bgColor == GxEPD_WHITE ? GxEPD_BLACK : GxEPD_WHITE));
+  display.setCursor(0,0);
   s->show();
   display.display(partialRefresh);  // partial refresh
 }

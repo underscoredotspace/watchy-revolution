@@ -8,8 +8,7 @@ using namespace Watchy;
 class : public Screen {
   void show() {
     display.setFont(&FreeMonoBold9pt7b);
-    display.setCursor(0, 30);
-    display.println("BLE Connected!");
+    display.println("\nBLE Connected!");
     display.println();
     display.println("Waiting for");
     display.println("upload...");
@@ -19,8 +18,7 @@ class : public Screen {
 class : public Screen {
   void show() {
     display.setFont(&FreeMonoBold9pt7b);
-    display.setCursor(0, 30);
-    display.println("Download");
+    display.println("\nDownload");
     display.println("completed!");
     display.println();
     display.println("Rebooting...");
@@ -30,8 +28,7 @@ class : public Screen {
 class : public Screen {
   void show() {
     display.setFont(&FreeMonoBold9pt7b);
-    display.setCursor(0, 30);
-    display.println("BLE Disconnected!");
+    display.println("\nBLE Disconnected!");
     display.println();
     display.println("exiting...");
   }
@@ -50,8 +47,7 @@ void btPoll(Screen *s) {
     updateFWDownloadingScreen(BLE &bt) : Screen(), BT(bt) {}
     void show() {
       display.setFont(&FreeMonoBold9pt7b);
-      display.setCursor(0, 30);
-      display.println("Downloading");
+      display.println("\nDownloading");
       display.println("firmware:");
       display.println();
       display.printf("%d bytes", BT.howManyBytes());
@@ -103,8 +99,7 @@ void btPoll(Screen *s) {
 class : public Screen {
   void show() {
     display.setFont(&FreeMonoBold9pt7b);
-    display.setCursor(0, 30);
-    display.println("Bluetooth Started");
+    display.println("\nBluetooth Started");
     display.println();
     display.println("Watchy BLE OTA");
     display.println();
@@ -117,8 +112,7 @@ class : public Screen {
 
 void UpdateFWScreen::show() {
   display.setFont(&FreeMonoBold9pt7b);
-  display.setCursor(0, 30);
-  display.println("Please Visit");
+  display.println("\nPlease Visit");
   display.println("watchy.sqfmi.com");
   display.println("with a Bluetooth");
   display.println("enabled device");

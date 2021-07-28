@@ -8,7 +8,7 @@
 using namespace Watchy;
 
 // inspired by http://rosettacode.org/wiki/Number_names#C.2B.2B
-const char *smallNumbers[] = {"oh",      "one",       "two",      "three",
+const char *smallNumbers[] = {"",        "one",       "two",      "three",
                               "four",    "five",      "six",      "seven",
                               "eight",   "nine",      "ten",      "eleven",
                               "twelve",  "thirteen",  "fourteen", "fifteen",
@@ -25,12 +25,15 @@ void TimeScreen::show() {
   tm t;
   localtime_r(&tt, &t);
 
-  // hour, just one line
+  Watchy::display.fillScreen(bgColor);
+
+  // hours
   display.setFont(&FreeSansBold24pt7b);
+  // fudge height up a bit because baseline is too low
   display.setCursor(0, -5);
   display.printf("\n%s\n", smallNumbers[(t.tm_hour + 11) % 12 + 1]);  // 24->12
 
-  // minutes, can be up to two lines
+  // minutes
   display.setFont(&FreeSans24pt7b);
   if (t.tm_min == 0) {
     // 0: exactly on the hour
@@ -42,12 +45,12 @@ void TimeScreen::show() {
       display.println("o'clock");
     }
   } else if (10 <= t.tm_min && t.tm_min < 20) {
+    // 10-19
     display.println(smallNumbers[t.tm_min]);
   } else if (t.tm_min <= 59) {
+    // 1-9, 20-59
     display.println(decades[t.tm_min / 10]);
-    if (t.tm_min % 10 != 0) {
     display.println(smallNumbers[t.tm_min % 10]);
-    }
   }
 
   // date
