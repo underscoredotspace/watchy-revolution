@@ -43,9 +43,6 @@ esp_err_t _http_event_handle(esp_http_client_event_t *evt) {
                            SetLocationScreen::lon);
     Watchy::display.printf("\ntz %s", SetLocationScreen::timezone);
     Watchy::display.printf("\nip %s", SetLocationScreen::ip.toString().c_str());
-    DEBUG("success\nlat %f, lon %f, tz %s, ip %s\n", SetLocationScreen::lat,
-          SetLocationScreen::lon, SetLocationScreen::timezone,
-          SetLocationScreen::ip.toString().c_str());
   }
   return ESP_OK;
 }
