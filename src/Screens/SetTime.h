@@ -2,7 +2,7 @@
 
 #include "Screen.h"
 
-class SetTime : public Screen {
+class SetTimeScreen : public Screen {
  private:
   static uint8_t setIndex;
 
@@ -14,7 +14,7 @@ class SetTime : public Screen {
   int8_t year;
 
  public:
-  SetTime(Screen *p = nullptr) : Screen(p) {}
+  SetTimeScreen() : Screen() {}
   void show() override;
   void up() override;
   void down() override;

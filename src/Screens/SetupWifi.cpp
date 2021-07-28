@@ -19,7 +19,7 @@ void _configModeCallback(WiFiManager *myWiFiManager) {
   display.hibernate();
 }
 
-void SetupWifi::show() {
+void SetupWifiScreen::show() {
   // this is a little ugly the show() method blocks without
   // showing anything in autoConnect, and lets _configModeCallback
   // set the display
@@ -72,7 +72,7 @@ void SetupWifi::show() {
   display.hibernate();
 }
 
-void SetupWifi::back() {
+void SetupWifiScreen::back() {
   wifiSetupState = start;
   Screen::back();
 }

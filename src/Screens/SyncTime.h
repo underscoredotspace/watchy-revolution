@@ -2,7 +2,7 @@
 
 #include "Screen.h"
 
-class SyncTime : public Screen {
+class SyncTimeScreen : public Screen {
  public:
   // these should probably live somewhere else (like in Watchy)
   // but can keep them here for now
@@ -10,7 +10,7 @@ class SyncTime : public Screen {
   static const char *ntpServer;
 
  public:
-  SyncTime(Screen *p = nullptr) : Screen(p) {}
+  SyncTimeScreen() : Screen() {}
   void show() override;
   void back() override;
 };

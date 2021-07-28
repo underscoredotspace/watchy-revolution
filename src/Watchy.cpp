@@ -220,7 +220,7 @@ weatherData Watchy::getWeatherData() {
       char weatherQueryURL[weatherQueryURLSize];
       snprintf(weatherQueryURL, weatherQueryURLSize,
                "%s?lat=%8.4f&lon=%8.4f&units=%s&appid=%s", OPENWEATHERMAP_URL,
-               SetLocation::lat, SetLocation::lon, TEMP_UNIT,
+               SetLocationScreen::lat, SetLocationScreen::lon, TEMP_UNIT,
                OPENWEATHERMAP_APIKEY);
       http.begin(weatherQueryURL);
       int httpResponseCode = http.GET();

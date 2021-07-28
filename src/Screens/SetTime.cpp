@@ -14,10 +14,10 @@ bool blink;
 bool revert;
 bool commit;
 
-RTC_DATA_ATTR uint8_t SetTime::setIndex;
+RTC_DATA_ATTR uint8_t SetTimeScreen::setIndex;
 
 typedef struct {
-  int8_t SetTime::*val;
+  int8_t SetTimeScreen::*val;
   int8_t min;
   int8_t max;
 } Field;
@@ -34,14 +34,14 @@ void incrMax(int8_t &val, int8_t &min, int8_t &max) {
   }
 }
 
-Field fields[] = {{&SetTime::hour, 0, 23},
-                  {&SetTime::minute, 0, 59},
-                  {&SetTime::year, 20, 99},
-                  {&SetTime::month, 1, 12},
-                  {&SetTime::day, 1, 31}};
+Field fields[] = {{&SetTimeScreen::hour, 0, 23},
+                  {&SetTimeScreen::minute, 0, 59},
+                  {&SetTimeScreen::year, 20, 99},
+                  {&SetTimeScreen::month, 1, 12},
+                  {&SetTimeScreen::day, 1, 31}};
 const uint8_t numFields = sizeof(fields) / sizeof(fields[0]);
 
-void SetTime::show() {
+void SetTimeScreen::show() {
   tmElements_t currentTime;
   RTC.read(currentTime);
 
@@ -134,17 +134,17 @@ void SetTime::show() {
   Watchy::setScreen(parent ? parent : Watchy::defaultScreen);
 }
 
-void SetTime::up() {
+void SetTimeScreen::up() {
   decrMin(this->*(fields[setIndex].val), fields[setIndex].min,
           fields[setIndex].max);
 }
 
-void SetTime::down() {
+void SetTimeScreen::down() {
   incrMax(this->*(fields[setIndex].val), fields[setIndex].min,
           fields[setIndex].max);
 }
 
-void SetTime::back() {
+void SetTimeScreen::back() {
   if (setIndex == 0) {
     revert = true;
   } else {
@@ -152,7 +152,7 @@ void SetTime::back() {
   }
 }
 
-void SetTime::menu() {
+void SetTimeScreen::menu() {
   if (setIndex == numFields - 1) {
     commit = true;
   } else {

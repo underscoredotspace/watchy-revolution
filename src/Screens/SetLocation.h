@@ -2,7 +2,7 @@
 
 #include "Screen.h"
 
-class SetLocation : public Screen {
+class SetLocationScreen : public Screen {
  private:
   bool setting;
 
@@ -14,7 +14,7 @@ class SetLocation : public Screen {
   static IPAddress ip;
 
  public:
-  SetLocation(Screen *p = nullptr) : Screen(p) {}
+  SetLocationScreen() : Screen() {}
   void show() override;
   void back() override;
 };

@@ -10,8 +10,8 @@
 #include "icons.h"
 #include "time.h"
 
-RTC_DATA_ATTR const char *SyncTime::tz = TZ;
-RTC_DATA_ATTR const char *SyncTime::ntpServer = NTP_SERVER;
+RTC_DATA_ATTR const char *SyncTimeScreen::tz = TZ;
+RTC_DATA_ATTR const char *SyncTimeScreen::ntpServer = NTP_SERVER;
 RTC_DATA_ATTR enum SyncState {
   ready,
   waitingForSync,
@@ -55,7 +55,7 @@ void timeSyncCallback(struct timeval *tv) {
   showSyncState();
 }
 
-void SyncTime::show() {
+void SyncTimeScreen::show() {
   Watchy::display.setFont(&FreeSans12pt7b);
   Watchy::display.setCursor(0, 0);
   if (showSyncState()) {
@@ -87,7 +87,7 @@ void SyncTime::show() {
   showSyncState();
 }
 
-void SyncTime::back() {
+void SyncTimeScreen::back() {
   syncState = ready;
   Screen::back();
 }

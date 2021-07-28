@@ -2,9 +2,9 @@
 
 #include "Screen.h"
 
-class UpdateFW : public Screen {
+class UpdateFWScreen : public Screen {
  public:
-  UpdateFW(Screen *p = nullptr) : Screen(p) {}
+  UpdateFWScreen() : Screen() {}
   void show() override;
   void menu() override;
 };

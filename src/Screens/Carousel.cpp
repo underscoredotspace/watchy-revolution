@@ -1,13 +1,12 @@
-#include "Carousel.h"
+#include "CarouselScreen.h"
 
 #include "Watchy.h"
 
 using namespace Watchy;
 
-RTC_DATA_ATTR int8_t Carousel::index;
+RTC_DATA_ATTR int8_t CarouselScreen::index;
 
-Carousel::Carousel(CarouselItem *cis, const int8_t cs, Screen *p)
-    : Screen(p), items(cis), size(cs) {
+CarouselScreen::CarouselScreen(CarouselItem *cis, const int8_t cs) : Screen(), items(cis), size(cs) {
   for (int i = 0; i < size; i++) {
     if (items[i].splash != nullptr) {
       items[i].splash->parent = this;
@@ -18,22 +17,22 @@ Carousel::Carousel(CarouselItem *cis, const int8_t cs, Screen *p)
   }
 }
 
-void Carousel::show() {
+void CarouselScreen::show() {
   Watchy::showWatchFace(true, items[index].splash);
 }
 
-void Carousel::menu() {
+void CarouselScreen::menu() {
   if (items[index].child != nullptr) {
     Watchy::setScreen(items[index].child);
   }
 }
 
-void Carousel::back() {
+void CarouselScreen::back() {
   index = 0;
   show();
 }
 
-void Carousel::up() {
+void CarouselScreen::up() {
   index--;
   if (index < 0) {
     index = size - 1;
@@ -41,7 +40,7 @@ void Carousel::up() {
   show();
 }
 
-void Carousel::down() {
+void CarouselScreen::down() {
   index++;
   if (index >= size) {
     index = 0;

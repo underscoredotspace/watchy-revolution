@@ -1,6 +1,6 @@
-#include "Carousel.h"
+#include "CarouselScreen.h"
 #include "Fonts/FreeSans24pt7b.h"
-#include "Icon.h"
+#include "IconScreen.h"
 #include "Menu.h"
 #include "icons.h"
 #include "SetLocation.h"
@@ -17,11 +17,11 @@
 #include "Watchy.h"
 #include "Weather.h"
 
-SetTime setTimeScreen;
-SetupWifi setupWifi;
-UpdateFW updateFW;
-SyncTime syncTime;
-SetLocation setLocation;
+SetTimeScreen setTimeScreen;
+SetupWifiScreen setupWifi;
+UpdateFWScreen updateFW;
+SyncTimeScreen syncTime;
+SetLocationScreen setLocation;
 
 MenuItem menuItems[] = {{"Set Time", &setTimeScreen},
                         {"Setup WiFi", &setupWifi},
@@ -29,21 +29,21 @@ MenuItem menuItems[] = {{"Set Time", &setTimeScreen},
                         {"Sync Time", &syncTime},
                         {"Set Location", &setLocation}};
 
-Menu menu(menuItems, sizeof(menuItems) / sizeof(menuItems[0]));
+MenuScreen menu(menuItems, sizeof(menuItems) / sizeof(menuItems[0]));
 
-Time timeScreen;
-Weather weather;
-Icon battery(&rle_battery, "battery", &FreeSans24pt7b);
-Icon steps(&rle_steps, "steps", &FreeSans24pt7b);
-Icon orientation(&rle_orientation, "orient", &FreeSans24pt7b);
-Icon bluetooth(&rle_bluetooth, "bluetooth", &FreeSans24pt7b);
-Icon wifi(&rle_wifi, "wifi", &FreeSans24pt7b);
-Icon settings(&rle_settings, "settings", &FreeSans24pt7b);
-ShowBattery showBattery;
-ShowBluetooth showBluetooth;
-ShowOrientation showOrientation;
-ShowSteps showSteps;
-ShowWifi showWifi;
+TimeScreen timeScreen;
+WeatherScreen weather;
+IconScreen battery(&rle_battery, "battery", &FreeSans24pt7b);
+IconScreen steps(&rle_steps, "steps", &FreeSans24pt7b);
+IconScreen orientation(&rle_orientation, "orient", &FreeSans24pt7b);
+IconScreen bluetooth(&rle_bluetooth, "bluetooth", &FreeSans24pt7b);
+IconScreen wifi(&rle_wifi, "wifi", &FreeSans24pt7b);
+IconScreen settings(&rle_settings, "settings", &FreeSans24pt7b);
+ShowBatteryScreen showBattery;
+ShowBluetoothScreen showBluetooth;
+ShowOrientationScreen showOrientation;
+ShowStepsScreen showSteps;
+ShowWifiScreen showWifi;
 
 CarouselItem carouselItems[] = {{&timeScreen, nullptr},
                                 {&weather, nullptr},
@@ -54,7 +54,7 @@ CarouselItem carouselItems[] = {{&timeScreen, nullptr},
                                 {&wifi, &showWifi},
                                 {&settings, &menu}};
 
-Carousel carousel(carouselItems,
+CarouselScreen carousel(carouselItems,
                   sizeof(carouselItems) / sizeof(carouselItems[0]));
 
 void setup() {

@@ -2,13 +2,13 @@
 
 #include "Screen.h"
 
- class ShowOrientation : public Screen {
+ class ShowOrientationScreen : public Screen {
  private:
   bool showing;
   void showMe();
 
  public:
-  ShowOrientation(Screen *p = nullptr) : Screen(p) {}
+  ShowOrientationScreen() : Screen() {}
   void show() override;
   void back() override;
 };

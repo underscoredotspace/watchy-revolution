@@ -7,7 +7,7 @@ typedef struct {
   Screen *screen;
 } MenuItem;
 
-class Menu : public Screen {
+class MenuScreen : public Screen {
  private:
   static int8_t index;
   MenuItem *items;  // array of MenuItems
@@ -15,7 +15,7 @@ class Menu : public Screen {
   static bool active;
 
  public:
-  Menu(MenuItem *mis, const int8_t ms, Screen *p = nullptr);
+  MenuScreen(MenuItem *mis, const int8_t ms);
   void show() override;
   void menu() override;
   void back() override;

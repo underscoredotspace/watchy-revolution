@@ -2,8 +2,8 @@
 
 #include "Screen.h"
 
-class Weather : public Screen {
+class WeatherScreen : public Screen {
  public:
-  Weather(Screen *p = nullptr) : Screen(p) {}
+  WeatherScreen() : Screen() {}
   void show() override;
 };

@@ -4,14 +4,14 @@
 #include "Screen.h"
 #include "rle.h"
 
-class Icon : public Screen {
+class IconScreen : public Screen {
  protected:
   const rle *rleImage;
   const char *label;
   const GFXfont *font;
 
  public:
-  Icon(const rle *r, const char *l, const GFXfont *f)
+  IconScreen(const rle *r, const char *l, const GFXfont *f)
       : Screen(), rleImage(r), label(l), font(f) {}
   void show() override {
     const uint16_t fgColor =

@@ -9,7 +9,7 @@ typedef struct {
   Screen *child;  // can be nullptr
 } CarouselItem;
 
-class Carousel : public Screen {
+class CarouselScreen : public Screen {
  private:
   static int8_t index;  // really this can only be a singleton for now
   CarouselItem *items;
@@ -17,7 +17,7 @@ class Carousel : public Screen {
   static bool active;
 
  public:
-  Carousel(CarouselItem *cis, const int8_t cs, Screen *p = nullptr);
+  CarouselScreen(CarouselItem *cis, const int8_t cs);
   void show() override;
   void menu() override;
   void back() override;

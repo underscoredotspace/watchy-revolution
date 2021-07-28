@@ -115,7 +115,7 @@ class : public Screen {
   }
 } updateFWBeginScreen;
 
-void UpdateFW::show() {
+void UpdateFWScreen::show() {
   display.setFont(&FreeMonoBold9pt7b);
   display.setCursor(0, 30);
   display.println("Please Visit");
@@ -131,4 +131,4 @@ void UpdateFW::show() {
   BLE BT;
 }
 
-void UpdateFW::menu() { setScreen(&updateFWBeginScreen); }
+void UpdateFWScreen::menu() { setScreen(&updateFWBeginScreen); }

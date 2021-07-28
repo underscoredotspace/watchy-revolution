@@ -15,12 +15,12 @@ const char *smallNumbers[] = {"oh",      "one",       "two",      "three",
                               "sixteen", "seventeen", "eighteen", "nineteen"};
 const char *decades[] = {"oh", nullptr, "twenty", "thirty", "forty", "fifty"};
 
-void Time::show() {
+void TimeScreen::show() {
   tmElements_t currentTime;
   Watchy::RTC.read(currentTime);
   time_t tt = makeTime(currentTime);
 
-  setenv("TZ", SyncTime::tz, 1);
+  setenv("TZ", SyncTimeScreen::tz, 1);
   tzset();
   tm t;
   localtime_r(&tt, &t);

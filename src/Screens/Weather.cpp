@@ -122,7 +122,7 @@ static const char *weatherConditionCodeToString(int16_t weatherConditionCode) {
   }
 }
 
-void Weather::show() {
+void WeatherScreen::show() {
   display.setFont(&FreeSans12pt7b);
   display.setTextWrap(true);
   display.setCursor(0, 0);

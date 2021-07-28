@@ -3,7 +3,7 @@
 #include "Fonts/FreeSans24pt7b.h"
 #include "Watchy.h"
 
-void ShowBluetooth::show() {
+void ShowBluetoothScreen::show() {
   Watchy::display.setFont(&FreeSans24pt7b);
   Watchy::display.setCursor(0, 0);
   Watchy::display.printf("\nbluetooth\nis");

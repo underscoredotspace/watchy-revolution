@@ -2,8 +2,8 @@
 
 #include "Screen.h"
 
-class ShowSteps : public Screen {
+class ShowStepsScreen : public Screen {
  public:
-  ShowSteps(Screen *p = nullptr) : Screen(p) {}
+  ShowStepsScreen() : Screen() {}
   void show() override;
 };

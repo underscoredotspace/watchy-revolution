@@ -7,10 +7,10 @@
 #include "Fonts/FreeSans12pt7b.h"
 
 // these should move into Watchy
-RTC_DATA_ATTR float SetLocation::lat = DEFAULT_LOCATION_LATITUDE;
-RTC_DATA_ATTR float SetLocation::lon = DEFAULT_LOCATION_LONGDITUDE;
-RTC_DATA_ATTR char SetLocation::timezone[50];
-RTC_DATA_ATTR IPAddress SetLocation::ip;
+RTC_DATA_ATTR float SetLocationScreen::lat = DEFAULT_LOCATION_LATITUDE;
+RTC_DATA_ATTR float SetLocationScreen::lon = DEFAULT_LOCATION_LONGDITUDE;
+RTC_DATA_ATTR char SetLocationScreen::timezone[50];
+RTC_DATA_ATTR IPAddress SetLocationScreen::ip;
 RTC_DATA_ATTR enum {
   ready,
   waitingForWifi,
@@ -26,20 +26,20 @@ esp_err_t _http_event_handle(esp_http_client_event_t *evt) {
     case HTTP_EVENT_ON_DATA:
       if (!esp_http_client_is_chunked_response(evt->client)) {
         JSONVar responseObject = JSON.parse((const char *)evt->data);
-        SetLocation::lat = double(responseObject["lat"]);
-        SetLocation::lon = double(responseObject["lon"]);
-        strncpy(SetLocation::timezone, responseObject["timezone"], 50);
-        SetLocation::ip.fromString(responseObject["query"]);
+        SetLocationScreen::lat = double(responseObject["lat"]);
+        SetLocationScreen::lon = double(responseObject["lon"]);
+        strncpy(SetLocationScreen::timezone, responseObject["timezone"], 50);
+        SetLocationScreen::ip.fromString(responseObject["query"]);
         setLocationState = success;
         Watchy::display.printf("\nsuccess");
-        Watchy::display.printf("\nlat %8.4f\nlon %8.4f", SetLocation::lat,
-                               SetLocation::lon);
-        Watchy::display.printf("\ntz %s", SetLocation::timezone);
-        Watchy::display.printf("\nip %s", SetLocation::ip.toString().c_str());
+        Watchy::display.printf("\nlat %8.4f\nlon %8.4f", SetLocationScreen::lat,
+                               SetLocationScreen::lon);
+        Watchy::display.printf("\ntz %s", SetLocationScreen::timezone);
+        Watchy::display.printf("\nip %s", SetLocationScreen::ip.toString().c_str());
         Watchy::display.printf("\npress back to exit");
-        DEBUG("success\nlat %f, lon %f, tz %s, ip %s\n", SetLocation::lat,
-              SetLocation::lon, SetLocation::timezone,
-              SetLocation::ip.toString().c_str());
+        DEBUG("success\nlat %f, lon %f, tz %s, ip %s\n", SetLocationScreen::lat,
+              SetLocationScreen::lon, SetLocationScreen::timezone,
+              SetLocationScreen::ip.toString().c_str());
       }
       break;
     default:
@@ -84,7 +84,7 @@ void printSetLocationState(uint16_t bgColor) {
   }
 }
 
-void SetLocation::show() {
+void SetLocationScreen::show() {
   // http://ip-api.com/json?fields=57792
   // {"status":"success","lat":-27.4649,"lon":153.028,"timezone":"Australia/Brisbane","query":"202.144.174.72"}
   if (setLocationState != ready) {  // not sure how we get here...
@@ -130,7 +130,7 @@ void SetLocation::show() {
   }
 }
 
-void SetLocation::back() {
+void SetLocationScreen::back() {
   setLocationState = ready;
   Screen::back();
 }

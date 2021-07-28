@@ -6,10 +6,9 @@ using namespace Watchy;
 
 const int MENU_HEIGHT = 30;
 
-RTC_DATA_ATTR int8_t Menu::index;
+RTC_DATA_ATTR int8_t MenuScreen::index;
 
-Menu::Menu(MenuItem *mis, const int8_t ms, Screen *p)
-    : Screen(p), items(mis), size(ms) {
+MenuScreen::MenuScreen(MenuItem *mis, const int8_t ms) : Screen(), items(mis), size(ms) {
   for (int i = 0; i < size; i++) {
     if (items[i].screen != nullptr) {
       items[i].screen->parent = this;
@@ -17,7 +16,7 @@ Menu::Menu(MenuItem *mis, const int8_t ms, Screen *p)
   }
 }
 
-void Menu::show() {
+void MenuScreen::show() {
   const uint16_t fgColor =
       (screen->bgColor == GxEPD_WHITE ? GxEPD_BLACK : GxEPD_WHITE);
   Watchy::display.fillScreen(bgColor);
@@ -41,11 +40,11 @@ void Menu::show() {
   }
 }
 
-void Menu::menu() { Watchy::setScreen(items[index].screen); }
+void MenuScreen::menu() { Watchy::setScreen(items[index].screen); }
 
-void Menu::back() { setScreen(parent); }
+void MenuScreen::back() { setScreen(parent); }
 
-void Menu::up() {
+void MenuScreen::up() {
   index--;
   if (index < 0) {
     index = size - 1;
@@ -53,7 +52,7 @@ void Menu::up() {
   showWatchFace(true);
 }
 
-void Menu::down() {
+void MenuScreen::down() {
   index++;
   if (index >= size) {
     index = 0;
