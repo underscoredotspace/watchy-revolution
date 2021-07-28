@@ -2,7 +2,6 @@
 #include "Fonts/FreeSans24pt7b.h"
 #include "IconScreen.h"
 #include "MenuScreen.h"
-#include "icons.h"
 #include "SetLocationScreen.h"
 #include "SetTimeScreen.h"
 #include "SetupWifiScreen.h"
@@ -16,6 +15,7 @@
 #include "UpdateFWScreen.h"
 #include "Watchy.h"
 #include "WeatherScreen.h"
+#include "icons.h"
 
 SetTimeScreen setTimeScreen;
 SetupWifiScreen setupWifi;
@@ -55,10 +55,13 @@ CarouselItem carouselItems[] = {{&timeScreen, nullptr},
                                 {&settings, &menu}};
 
 CarouselScreen carousel(carouselItems,
-                  sizeof(carouselItems) / sizeof(carouselItems[0]));
+                        sizeof(carouselItems) / sizeof(carouselItems[0]));
 
 void setup() {
+#ifdef DEBUG
   Serial.begin(115200);
+#endif
+  LOGI(); // fail if debugging macros not defined
   Watchy::defaultScreen = &carousel;
   Watchy::init();
 }
