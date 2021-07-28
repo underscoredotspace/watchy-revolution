@@ -21,10 +21,12 @@ class IconScreen : public Screen {
     uint16_t w, h;
     Watchy::display.getTextBounds(label, 0, 0, &x1, &y1, &w, &h);
     Watchy::display.fillScreen(bgColor);
-    int space = (200 - (rleImage->h + h)) / 3;
-    drawRLEBitmap(Watchy::display, (200 - rleImage->w) / 2,
-                  space, rleImage, fgColor);
-    Watchy::display.setCursor((200 - w) / 2, (200 - h - space));
+    // even space between top<->icon<->label<->bottom
+    int space = (DISPLAY_HEIGHT - (rleImage->h + h)) / 3;
+    drawRLEBitmap(Watchy::display, (DISPLAY_WIDTH - rleImage->w) / 2, space, rleImage,
+                  fgColor);
+    // want y1+h to be space above DISPLAY_HEIGHT
+    Watchy::display.setCursor((DISPLAY_WIDTH - w) / 2, (DISPLAY_HEIGHT - space - (y1 + h)));
     Watchy::display.print(label);
   }
 };
