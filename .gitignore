@@ -34,3 +34,4 @@ nbproject
 
 # ignore temp files
 .temp
+output.map
