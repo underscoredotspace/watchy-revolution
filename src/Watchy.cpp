@@ -21,8 +21,6 @@ Screen *Watchy::defaultScreen = nullptr;
 RTC_DATA_ATTR BMA423 Watchy::sensor;
 RTC_DATA_ATTR bool Watchy::WIFI_CONFIGURED;
 RTC_DATA_ATTR bool Watchy::BLE_CONFIGURED;
-RTC_DATA_ATTR weatherData currentWeather;
-RTC_DATA_ATTR int weatherIntervalCounter = WEATHER_UPDATE_INTERVAL;
 
 String getValue(String data, char separator, int index) {
   int found = 0;
@@ -205,52 +203,6 @@ void Watchy::setScreen(Screen *s) {
   }
   screen = s;
   showWatchFace(true);
-}
-
-weatherData Watchy::getWeatherData() {
-  if (weatherIntervalCounter >=
-      WEATHER_UPDATE_INTERVAL) {  // only update if WEATHER_UPDATE_INTERVAL has
-                                  // elapsed i.e. 30 minutes
-    if (connectWiFi()) {  // Use Weather API for live data if WiFi is connected
-      HTTPClient http;
-      http.setConnectTimeout(3000);  // 3 second max timeout
-      const unsigned int weatherQueryURLSize =
-          strlen(OPENWEATHERMAP_URL) + strlen("?lat=") + 8 + strlen("&lon=") +
-          8 + strlen("&units=") + strlen(TEMP_UNIT) + strlen("&appid=") +
-          strlen(OPENWEATHERMAP_APIKEY) + 1;
-      char weatherQueryURL[weatherQueryURLSize];
-      snprintf(weatherQueryURL, weatherQueryURLSize,
-               "%s?lat=%8.4f&lon=%8.4f&units=%s&appid=%s", OPENWEATHERMAP_URL,
-               SetLocationScreen::lat, SetLocationScreen::lon, TEMP_UNIT,
-               OPENWEATHERMAP_APIKEY);
-      http.begin(weatherQueryURL);
-      int httpResponseCode = http.GET();
-      if (httpResponseCode == 200) {
-        String payload = http.getString();
-        JSONVar responseObject = JSON.parse(payload);
-        currentWeather.temperature = int(responseObject["main"]["temp"]);
-        currentWeather.weatherConditionCode =
-            int(responseObject["weather"][0]["id"]);
-      } else {
-        // http error
-      }
-      http.end();
-      // turn off radios
-      WiFi.mode(WIFI_OFF);
-      btStop();
-    } else {  // No WiFi, use RTC Temperature
-      uint8_t temperature = RTC.temperature() / 4;  // celsius
-      if (strcmp(TEMP_UNIT, "imperial") == 0) {
-        temperature = temperature * 9. / 5. + 32.;  // fahrenheit
-      }
-      currentWeather.temperature = temperature;
-      currentWeather.weatherConditionCode = 800;
-    }
-    weatherIntervalCounter = 0;
-  } else {
-    weatherIntervalCounter++;
-  }
-  return currentWeather;
 }
 
 float Watchy::getBatteryVoltage() {
