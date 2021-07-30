@@ -16,13 +16,10 @@ const char *smallNumbers[] = {"",        "one",       "two",      "three",
 const char *decades[] = {"oh", nullptr, "twenty", "thirty", "forty", "fifty"};
 
 void TimeScreen::show() {
-  tmElements_t currentTime;
-  Watchy::RTC.read(currentTime);
-  time_t tt = makeTime(currentTime);
-
   setenv("TZ", SyncTimeScreen::tz, 1);
   tzset();
   tm t;
+  time_t tt = now();
   localtime_r(&tt, &t);
 
   Watchy::display.fillScreen(bgColor);
