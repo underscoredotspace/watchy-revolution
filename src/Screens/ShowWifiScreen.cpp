@@ -4,6 +4,7 @@
 #include "Watchy.h"
 
 void ShowWifiScreen::show() {
+  Watchy::display.fillScreen(bgColor);
   Watchy::display.setFont(&FreeSans24pt7b);
   Watchy::display.printf("\nwifi\nis");
   if (!Watchy::WIFI_CONFIGURED) {

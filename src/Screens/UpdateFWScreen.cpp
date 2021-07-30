@@ -1,5 +1,6 @@
 #include "UpdateFWScreen.h"
 
+#include "Fonts/FreeMonoBold9pt7b.h"
 #include "Screen.h"
 #include "Watchy.h"
 
@@ -7,6 +8,7 @@ using namespace Watchy;
 
 class : public Screen {
   void show() {
+    Watchy::display.fillScreen(bgColor);
     display.setFont(&FreeMonoBold9pt7b);
     display.println("\nBLE Connected!");
     display.println();
@@ -17,6 +19,7 @@ class : public Screen {
 
 class : public Screen {
   void show() {
+    Watchy::display.fillScreen(bgColor);
     display.setFont(&FreeMonoBold9pt7b);
     display.println("\nDownload");
     display.println("completed!");
@@ -27,6 +30,7 @@ class : public Screen {
 
 class : public Screen {
   void show() {
+    Watchy::display.fillScreen(bgColor);
     display.setFont(&FreeMonoBold9pt7b);
     display.println("\nBLE Disconnected!");
     display.println();
@@ -46,6 +50,7 @@ void btPoll(Screen *s) {
    public:
     updateFWDownloadingScreen(BLE &bt) : Screen(), BT(bt) {}
     void show() {
+      Watchy::display.fillScreen(bgColor);
       display.setFont(&FreeMonoBold9pt7b);
       display.println("\nDownloading");
       display.println("firmware:");
@@ -98,6 +103,7 @@ void btPoll(Screen *s) {
 
 class : public Screen {
   void show() {
+    Watchy::display.fillScreen(bgColor);
     display.setFont(&FreeMonoBold9pt7b);
     display.println("\nBluetooth Started");
     display.println();
@@ -111,6 +117,7 @@ class : public Screen {
 } updateFWBeginScreen;
 
 void UpdateFWScreen::show() {
+  Watchy::display.fillScreen(bgColor);
   display.setFont(&FreeMonoBold9pt7b);
   display.println("\nPlease Visit");
   display.println("watchy.sqfmi.com");

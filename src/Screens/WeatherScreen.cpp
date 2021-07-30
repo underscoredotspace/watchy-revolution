@@ -123,6 +123,7 @@ static const char *weatherConditionCodeToString(int16_t weatherConditionCode) {
 }
 
 void WeatherScreen::show() {
+  Watchy::display.fillScreen(bgColor);
   display.setFont(&FreeSans12pt7b);
   display.setTextWrap(true);
   weatherData wd = GetWeatherScreen::getWeatherData();

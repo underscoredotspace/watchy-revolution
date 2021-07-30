@@ -23,6 +23,7 @@ void SetupWifiScreen::show() {
   // this is a little ugly the show() method blocks without
   // showing anything in autoConnect, and lets _configModeCallback
   // set the display
+  Watchy::display.fillScreen(bgColor);
   display.setFont(&FreeMonoBold9pt7b);
   display.setCursor(0, 30);
 

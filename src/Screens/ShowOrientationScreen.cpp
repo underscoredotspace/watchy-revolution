@@ -43,6 +43,7 @@ void ShowOrientationScreen::showMe() {
 }
 
 void ShowOrientationScreen::show() {
+  Watchy::display.fillScreen(bgColor);
   Watchy::display.setFont(&FreeSans12pt7b);
   showing = true;
   while (showing) {
