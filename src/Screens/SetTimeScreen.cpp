@@ -129,6 +129,7 @@ void SetTimeScreen::show() {
     tm.Second = 0;
 
     time_t t = makeTime(tm) + FUDGE;
+    setTime(t);
     RTC.set(t);
   }
   setIndex = 0;  // make sure we start at the beginning if we come back

@@ -16,34 +16,41 @@ RTC_DATA_ATTR enum SyncState {
   ready,
   waitingForSync,
   wifiFailed,
-  syncFailed,
+  syncTimeout,
   syncSucceeded,
+  setFailed,
   numSyncStates
 } syncState = ready;
 
-const char *syncStateMsgs[numSyncStates] = {"\nready", "\nsynchronizing",
+const char *syncStateMsgs[numSyncStates] = {"\nready", 
+                                            "\nsynchronizing",
                                             "\nwifi connect failed",
-                                            "\nsync failed", "\nsuccess"};
+                                            "\nsync timout", 
+                                            "\nsuccess",
+                                            "\nset time failed"};
 
 void timeSyncCallback(struct timeval *tv) {
+  setTime(tv->tv_sec); // set system time
   // consider using tv.tv_usec as well
   struct tm t;
-  localtime_r(&tv->tv_sec, &t);
+  localtime_r(&tv->tv_sec, &t); // assumes tzset and setenv(TZ)
   Watchy::display.print(&t, "\n%A\n%B %d %Y\n%H.%M.%S");
   tmElements_t te;
   breakTime(tv->tv_sec, te);
-  Watchy::RTC.write(te);
-  syncState = syncSucceeded;
+  if (Watchy::RTC.write(te) == 0) { // set RTC
+    syncState = syncSucceeded;
+  } else {
+    syncState = setFailed;
+  }
   Watchy::display.print(syncStateMsgs[syncState]);
 }
 
 void SyncTimeScreen::show() {
+  Watchy::display.fillScreen(bgColor);
   Watchy::display.setFont(&FreeSans12pt7b);
   if (syncState != ready) {
     Watchy::display.print(syncStateMsgs[syncState]);
   } else {
-    time_t tt;
-    time(&tt);
     syncState = waitingForSync;
     Watchy::display.print(syncStateMsgs[syncState]);
     Watchy::display.display(true);
@@ -61,7 +68,7 @@ void SyncTimeScreen::show() {
         delay(10);
       }
       if (syncState == waitingForSync) {
-        syncState = syncFailed;
+        syncState = syncTimeout;
         Watchy::display.print(syncStateMsgs[syncState]);
       }
     }

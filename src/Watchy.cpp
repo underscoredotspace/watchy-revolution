@@ -46,6 +46,15 @@ void Watchy::init(String datetime) {
     screen = defaultScreen;
   }
 
+  // sync ESP32 clocks to RTC
+  tmElements_t currentTime;
+  if (Watchy::RTC.read(currentTime) == 0) {
+    time_t t = makeTime(currentTime);
+    setTime(t);
+    // timeval tv = {t, 0};
+    // settimeofday(&tv, nullptr);
+  }
+
   switch (wakeup_reason) {
 #ifdef ESP_RTC
     case ESP_SLEEP_WAKEUP_TIMER:  // ESP Internal RTC
