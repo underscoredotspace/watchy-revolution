@@ -1,132 +1,86 @@
 #include "WeatherScreen.h"
 
 #include "Fonts/FreeSans12pt7b.h"
-#include "GetWeatherScreen.h"
+#include "GetWeather.h"
 
 using namespace Watchy;
 
-static const char *weatherConditionCodeToString(int16_t weatherConditionCode) {
-  switch (weatherConditionCode) {
-    case 200:
-      return "thunderstorm & light rain";
-    case 201:
-      return "thunderstorm & rain";
-    case 202:
-      return "thunderstorm & heavy rain";
-    case 210:
-      return "light thunderstorm";
-    case 211:
-      return "thunderstorm";
-    case 212:
-      return "heavy thunderstorm";
-    case 221:
-      return "ragged thunderstorm";
-    case 230:
-      return "thunderstorm & light drizzle";
-    case 231:
-      return "thunderstorm & drizzle";
-    case 232:
-      return "thunderstorm & heavy drizzle";
-    case 300:
-      return "light drizzle";
-    case 301:
-      return "drizzle";
-    case 302:
-      return "heavy drizzle";
-    case 310:
-      return "light drizzle rain";
-    case 311:
-      return "drizzle rain";
-    case 312:
-      return "heavy drizzle rain";
-    case 313:
-      return "drizzle & rain showers";
-    case 314:
-      return "drizzle & heavy rain showers";
-    case 321:
-      return "drizzle showers";
-    case 500:
-      return "light rain";
-    case 501:
-      return "moderate rain";
-    case 502:
-      return "heavy rain";
-    case 503:
-      return "very heavy rain";
-    case 504:
-      return "extreme rain";
-    case 511:
-      return "freezing rain";
-    case 520:
-      return "light rain showers";
-    case 521:
-      return "rain showers";
-    case 522:
-      return "heavy rain showers";
-    case 531:
-      return "ragged rain showers";
-    case 600:
-      return "light snow";
-    case 601:
-      return "snow";
-    case 602:
-      return "heavy snow";
-    case 611:
-      return "sleet";
-    case 612:
-      return "light sleet showers";
-    case 613:
-      return "sleet showers";
-    case 615:
-      return "light rain & snow";
-    case 616:
-      return "rain & snow";
-    case 620:
-      return "light snow showers";
-    case 621:
-      return "snow showers";
-    case 622:
-      return "heavy snow showers";
-    case 701:
-      return "mist";
-    case 711:
-      return "smoke";
-    case 721:
-      return "haze";
-    case 731:
-      return "sand/dust whirls";
-    case 741:
-      return "fog";
-    case 751:
-      return "sand";
-    case 761:
-      return "dust";
-    case 762:
-      return "volcanic ash";
-    case 771:
-      return "squalls";
-    case 781:
-      return "tornado";
-    case 800:
-      return "clear";  // <= 10%
-    case 801:
-      return "light clouds";  // 11-25%
-    case 802:
-      return "partly cloudy";  // 26-50%
-    case 803:
-      return "mostly cloudy";  // 51-80%
-    case 804:
-      return "cloudy";  // > 80%
-    default:
-      return "unknown";
+// should be std::unordered_map<uint16_t, const char*>
+// sadly that is about 4k larger. :(
+const struct {
+  const int16_t code;
+  const char *msg;
+} codeMap[] = {
+    {200, "thunderstorm & light rain"},
+    {201, "thunderstorm & rain"},
+    {202, "thunderstorm & heavy rain"},
+    {210, "light thunderstorm"},
+    {211, "thunderstorm"},
+    {212, "heavy thunderstorm"},
+    {221, "ragged thunderstorm"},
+    {230, "thunderstorm & light drizzle"},
+    {231, "thunderstorm & drizzle"},
+    {232, "thunderstorm & heavy drizzle"},
+    {300, "light drizzle"},
+    {301, "drizzle"},
+    {302, "heavy drizzle"},
+    {310, "light drizzle rain"},
+    {311, "drizzle rain"},
+    {312, "heavy drizzle rain"},
+    {313, "drizzle & rain showers"},
+    {314, "drizzle & heavy rain showers"},
+    {321, "drizzle showers"},
+    {500, "light rain"},
+    {501, "moderate rain"},
+    {502, "heavy rain"},
+    {503, "very heavy rain"},
+    {504, "extreme rain"},
+    {511, "freezing rain"},
+    {520, "light rain showers"},
+    {521, "rain showers"},
+    {522, "heavy rain showers"},
+    {531, "ragged rain showers"},
+    {600, "light snow"},
+    {601, "snow"},
+    {602, "heavy snow"},
+    {611, "sleet"},
+    {612, "light sleet showers"},
+    {613, "sleet showers"},
+    {615, "light rain & snow"},
+    {616, "rain & snow"},
+    {620, "light snow showers"},
+    {621, "snow showers"},
+    {622, "heavy snow showers"},
+    {701, "mist"},
+    {711, "smoke"},
+    {721, "haze"},
+    {731, "sand/dust whirls"},
+    {741, "fog"},
+    {751, "sand"},
+    {761, "dust"},
+    {762, "volcanic ash"},
+    {771, "squalls"},
+    {781, "tornado"},
+    {800, "clear"},          // <= 10%
+    {801, "light clouds"},   // 11-25%
+    {802, "partly cloudy"},  // 26-50%
+    {803, "mostly cloudy"},  // 51-80%
+    {804, "cloudy"}          // > 80%
+};
+
+const char* weatherConditionCodeToString(uint16_t code) {
+  // linear scan is ok for ~55 elements.
+  for (uint16_t i = 0; i < sizeof(codeMap)/sizeof(codeMap[0]); i++) {
+    if (codeMap[i].code == code) { return codeMap[i].msg; }
   }
+  return "unknown";
 }
 
 void WeatherScreen::show() {
   Watchy::display.fillScreen(bgColor);
   display.setFont(&FreeSans12pt7b);
   display.setTextWrap(true);
-  weatherData wd = GetWeatherScreen::getWeatherData();
+  auto wd = Watchy_GetWeather::getWeather();
   display.printf("\n%d deg\n%s", wd.temperature,
                  weatherConditionCodeToString(wd.weatherConditionCode));
 }

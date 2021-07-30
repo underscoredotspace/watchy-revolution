@@ -6,9 +6,11 @@
 #include <esp_http_client.h>
 
 #include "Fonts/FreeSans12pt7b.h"
-#include "GetWeatherScreen.h"
 
 // these should move into Watchy
+// default location is Melbourne Australia
+constexpr const float DEFAULT_LOCATION_LATITUDE = 37.8136;
+constexpr const float DEFAULT_LOCATION_LONGDITUDE = -144.9631;
 RTC_DATA_ATTR float SetLocationScreen::lat = DEFAULT_LOCATION_LATITUDE;
 RTC_DATA_ATTR float SetLocationScreen::lon = DEFAULT_LOCATION_LONGDITUDE;
 RTC_DATA_ATTR char SetLocationScreen::timezone[50];
