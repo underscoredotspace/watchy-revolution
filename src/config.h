@@ -24,15 +24,6 @@
 const int DISPLAY_WIDTH = 200;
 const int DISPLAY_HEIGHT = 200;
 
-//weather api
-// default location is Melbourne Australia
-constexpr const float DEFAULT_LOCATION_LATITUDE = 37.8136;
-constexpr const float DEFAULT_LOCATION_LONGDITUDE = -144.9631;
-constexpr const char * OPENWEATHERMAP_APIKEY = "f058fe1cad2afe8e2ddc5d063a64cecb"; //use your own API key :)
-constexpr const char * OPENWEATHERMAP_URL = "http://api.openweathermap.org/data/2.5/weather?";
-constexpr const char * TEMP_UNIT = "metric"; //use "imperial" for Fahrenheit"
-const int WEATHER_UPDATE_INTERVAL = 30; //minutes
-
 //wifi
 constexpr const char * WIFI_AP_SSID = "Watchy AP";
 //set time

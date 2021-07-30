@@ -1,10 +1,12 @@
 #include "SetLocationScreen.h"
 
+#include <Arduino_JSON.h>
 #include <IPAddress.h>
 #include <Wifi.h>
 #include <esp_http_client.h>
 
 #include "Fonts/FreeSans12pt7b.h"
+#include "GetWeatherScreen.h"
 
 // these should move into Watchy
 RTC_DATA_ATTR float SetLocationScreen::lat = DEFAULT_LOCATION_LATITUDE;

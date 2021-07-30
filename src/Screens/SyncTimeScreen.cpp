@@ -17,31 +17,13 @@ RTC_DATA_ATTR enum SyncState {
   waitingForSync,
   wifiFailed,
   syncFailed,
-  syncSucceeded
+  syncSucceeded,
+  numSyncStates
 } syncState = ready;
 
-bool showSyncState() {
-  switch (syncState) {
-    case ready:
-      return false;
-    case waitingForSync:
-      Watchy::display.print("\nsynchronizing");
-      break;
-    case wifiFailed:
-      Watchy::display.print("\nwifi connect failed");
-      break;
-    case syncFailed:
-      Watchy::display.print("\nsync failed");
-      break;
-    case syncSucceeded:
-      Watchy::display.print("\nsuccess");
-      break;
-    default:
-      break;
-  }
-  Watchy::display.print("\npress back to exit");
-  return true;
-}
+const char *syncStateMsgs[numSyncStates] = {"\nready", "\nsynchronizing",
+                                            "\nwifi connect failed",
+                                            "\nsync failed", "\nsuccess"};
 
 void timeSyncCallback(struct timeval *tv) {
   // consider using tv.tv_usec as well
@@ -52,38 +34,39 @@ void timeSyncCallback(struct timeval *tv) {
   breakTime(tv->tv_sec, te);
   Watchy::RTC.write(te);
   syncState = syncSucceeded;
-  showSyncState();
+  Watchy::display.print(syncStateMsgs[syncState]);
 }
 
 void SyncTimeScreen::show() {
   Watchy::display.setFont(&FreeSans12pt7b);
-  if (showSyncState()) {
-    return;
-  }
-  time_t tt;
-  time(&tt);
-  syncState = waitingForSync;
-  showSyncState();
-  Watchy::display.display(true);
-  Watchy::display.fillScreen(bgColor);
-  Watchy::display.setCursor(0, 0);
+  if (syncState != ready) {
+    Watchy::display.print(syncStateMsgs[syncState]);
+  } else {
+    time_t tt;
+    time(&tt);
+    syncState = waitingForSync;
+    Watchy::display.print(syncStateMsgs[syncState]);
+    Watchy::display.display(true);
+    Watchy::display.fillScreen(bgColor);
+    Watchy::display.setCursor(0, 0);
 
-  if (!Watchy::connectWiFi()) {
-    syncState = wifiFailed;
-    showSyncState();
-    return;
-  }
-  sntp_set_time_sync_notification_cb(timeSyncCallback);
-  configTzTime(tz, ntpServer);
-  uint32_t timeout = millis() + 5000;
-  while (millis() < timeout) {
-    if (syncState == syncSucceeded) {
-      return;
+    if (!Watchy::connectWiFi()) {
+      syncState = wifiFailed;
+      Watchy::display.print(syncStateMsgs[syncState]);
+    } else {
+      sntp_set_time_sync_notification_cb(timeSyncCallback);
+      configTzTime(tz, ntpServer);
+      uint32_t timeout = millis() + 5000;
+      while (millis() < timeout && syncState == waitingForSync) {
+        delay(10);
+      }
+      if (syncState == waitingForSync) {
+        syncState = syncFailed;
+        Watchy::display.print(syncStateMsgs[syncState]);
+      }
     }
-    delay(10);
   }
-  syncState = syncFailed;
-  showSyncState();
+  Watchy::display.print("\npress back to exit");
 }
 
 void SyncTimeScreen::back() {

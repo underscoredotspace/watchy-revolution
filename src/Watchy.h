@@ -3,7 +3,6 @@
 #include <Arduino.h>
 #include <WiFiManager.h>
 #include <HTTPClient.h>
-#include <Arduino_JSON.h>
 #include <DS3232RTC.h>
 #include <GxEPD2_BW.h>
 #include <Wire.h>
@@ -16,11 +15,6 @@
 class Screen;
 
 namespace Watchy {
-typedef struct weatherData {
-  int8_t temperature;
-  int16_t weatherConditionCode;
-} weatherData;
-
 extern DS3232RTC RTC;
 extern GxEPD2_BW<GxEPD2_154_D67, GxEPD2_154_D67::HEIGHT> display;
 extern tmElements_t currentTime;
@@ -40,7 +34,6 @@ void showUpdateFW();
 void setTime();
 void setupWifi();
 bool connectWiFi();
-weatherData getWeatherData();
 
 void showWatchFace(bool partialRefresh, Screen *s = screen);
 void setScreen(Screen *s);

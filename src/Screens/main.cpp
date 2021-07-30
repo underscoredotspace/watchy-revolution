@@ -1,5 +1,6 @@
 #include "CarouselScreen.h"
 #include "Fonts/FreeSans24pt7b.h"
+#include "GetWeatherScreen.h"
 #include "IconScreen.h"
 #include "MenuScreen.h"
 #include "SetLocationScreen.h"
@@ -22,12 +23,14 @@ SetupWifiScreen setupWifi;
 UpdateFWScreen updateFW;
 SyncTimeScreen syncTime;
 SetLocationScreen setLocation;
+GetWeatherScreen getWeather;
 
 MenuItem menuItems[] = {{"Set Time", &setTimeScreen},
                         {"Setup WiFi", &setupWifi},
                         {"Update Firmware", &updateFW},
                         {"Sync Time", &syncTime},
-                        {"Set Location", &setLocation}};
+                        {"Set Location", &setLocation},
+                        {"Get Weather", &getWeather}};
 
 MenuScreen menu(menuItems, sizeof(menuItems) / sizeof(menuItems[0]));
 

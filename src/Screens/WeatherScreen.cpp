@@ -1,6 +1,7 @@
 #include "WeatherScreen.h"
 
 #include "Fonts/FreeSans12pt7b.h"
+#include "GetWeatherScreen.h"
 
 using namespace Watchy;
 
@@ -124,7 +125,7 @@ static const char *weatherConditionCodeToString(int16_t weatherConditionCode) {
 void WeatherScreen::show() {
   display.setFont(&FreeSans12pt7b);
   display.setTextWrap(true);
-  weatherData wd = getWeatherData();
+  weatherData wd = GetWeatherScreen::getWeatherData();
   display.printf("\n%d deg\n%s", wd.temperature,
                  weatherConditionCodeToString(wd.weatherConditionCode));
 }
