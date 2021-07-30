@@ -1,6 +1,7 @@
 #include "MenuScreen.h"
 
 #include "Watchy.h"
+#include "Fonts/FreeMonoBold9pt7b.h"
 
 using namespace Watchy;
 

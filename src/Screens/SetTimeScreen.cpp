@@ -1,5 +1,7 @@
 #include "SetTimeScreen.h"
 
+#include "DSEG7Classic_Bold28pt7b.h"
+#include "Fonts/FreeMonoBold9pt7b.h"
 #include "Watchy.h"
 
 using namespace Watchy;
@@ -67,7 +69,7 @@ void SetTimeScreen::show() {
           (screen->bgColor == GxEPD_WHITE ? GxEPD_BLACK : GxEPD_WHITE);
 
       display.fillScreen(screen->bgColor);
-      display.setFont(&DSEG7_Classic_Bold_53);
+      display.setFont(&DSEG7Classic_Bold28pt7b);
       display.setTextColor(fgColor);
 
       display.setCursor(5, 80);

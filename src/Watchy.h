@@ -6,8 +6,6 @@
 #include <DS3232RTC.h>
 #include <GxEPD2_BW.h>
 #include <Wire.h>
-#include <Fonts/FreeMonoBold9pt7b.h>
-#include "DSEG7_Classic_Bold_53.h"
 #include "BLE.h"
 #include "bma.h"
 #include "config.h"
@@ -31,7 +29,6 @@ void showBattery();
 void showBuzz();
 void showAccelerometer();
 void showUpdateFW();
-void setTime();
 void setupWifi();
 bool connectWiFi();
 

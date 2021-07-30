@@ -1,5 +1,6 @@
 #include "SetupWifiScreen.h"
 
+#include "Fonts/FreeMonoBold9pt7b.h"
 #include "Screen.h"
 #include "Watchy.h"
 
