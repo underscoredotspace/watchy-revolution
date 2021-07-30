@@ -64,7 +64,7 @@ void setup() {
 #ifdef DEBUG
   Serial.begin(115200);
 #endif
-  LOGI(); // fail if debugging macros not defined
+  LOGD(); // fail if debugging macros not defined
   Watchy::defaultScreen = &carousel;
   Watchy::init();
 }
