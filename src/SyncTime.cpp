@@ -3,7 +3,6 @@
 #include <Wifi.h>
 
 #include "Watchy.h"
-#include "config.h"  // should be first
 #include "time.h"
 
 namespace Watchy_SyncTime {
@@ -21,24 +20,28 @@ void timeSyncCallback(struct timeval *tv) {
   // consider using tv.tv_usec as well
   setTime(tv->tv_sec);          // set system time
   Watchy::RTC.set(tv->tv_sec);  // set RTC
+  settimeofday(tv, nullptr);    // set posix
   sntp_set_sync_status(SNTP_SYNC_STATUS_COMPLETED);
 }
 
-void syncTime() {
+SyncResult syncTime() {
   if (!Watchy::connectWiFi()) {
-    return;  // failed
+    return Watchy_SyncTime::wifiFailed;  // failed
   }
   if (sntp_get_sync_status() != SNTP_SYNC_STATUS_RESET) {
     // SNTP busy
     LOGI("%d", sntp_get_sync_status());
-    return;
+    return Watchy_SyncTime::waiting;
   }
   sntp_set_time_sync_notification_cb(timeSyncCallback);
   configTzTime(tz, ntpServer);
   uint32_t timeout = millis() + 5000;  // 5 sec timeout
-  while (millis() < timeout &&
-         sntp_get_sync_status() != SNTP_SYNC_STATUS_COMPLETED) {
+  while (millis() < timeout) {
+    if (sntp_get_sync_status() == SNTP_SYNC_STATUS_COMPLETED) {
+      return Watchy_SyncTime::success;
+    }
     delay(10);  // or yield
   }
+  return Watchy_SyncTime::timeout;
 }
 }  // namespace Watchy_SyncTime

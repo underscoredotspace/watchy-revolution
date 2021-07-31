@@ -5,5 +5,14 @@ namespace Watchy_SyncTime {
 extern const char *tz;
 extern const char *ntpServer;
 
-extern void syncTime();
+typedef enum {
+  ready,
+  waiting,
+  wifiFailed,
+  timeout,
+  success,
+  numSyncStates
+} SyncResult;
+
+extern SyncResult syncTime();
 };  // namespace Watchy_SyncTime
