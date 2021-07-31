@@ -19,18 +19,18 @@
 #include "icons.h"
 
 SetTimeScreen setTimeScreen;
-SetupWifiScreen setupWifi;
-UpdateFWScreen updateFW;
-SyncTimeScreen syncTime;
-SetLocationScreen setLocation;
-GetWeatherScreen getWeather;
+SetupWifiScreen setupWifiScreen;
+UpdateFWScreen updateFWScreen;
+SyncTimeScreen syncTimeScreen;
+SetLocationScreen setLocationScreen;
+GetWeatherScreen getWeatherScreen;
 
 MenuItem menuItems[] = {{"Set Time", &setTimeScreen},
-                        {"Setup WiFi", &setupWifi},
-                        {"Update Firmware", &updateFW},
-                        {"Sync Time", &syncTime},
-                        {"Set Location", &setLocation},
-                        {"Get Weather", &getWeather}};
+                        {"Setup WiFi", &setupWifiScreen},
+                        {"Update Firmware", &updateFWScreen},
+                        {"Sync Time", &syncTimeScreen},
+                        {"Set Location", &setLocationScreen},
+                        {"Get Weather", &getWeatherScreen}};
 
 MenuScreen menu(menuItems, sizeof(menuItems) / sizeof(menuItems[0]));
 
