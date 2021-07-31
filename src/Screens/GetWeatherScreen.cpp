@@ -9,31 +9,38 @@
 
 RTC_DATA_ATTR enum GetWeatherState {
   ready,
-  waitingForSync,
-  wifiFailed,
-  httpGetFailed,
-  getWeatherSuccess,
-  numGetWeatherStates
+  waiting,
+  done
 } getWeatherState = ready;
 
-const char *getWeatherMsgs[numGetWeatherStates] = {
-    "\nready", "\nsynchronizing", "\nwifi connect failed", "\nhttp get failed",
-    "\nsuccess"};
+void printWeather(Watchy_GetWeather::weatherData wd) {
+  Watchy::display.printf("\nsuccess\nTemp %d\nWeather %d", wd.temperature,
+                         wd.weatherConditionCode);
+}
 
 void GetWeatherScreen::show() {
   Watchy::display.fillScreen(bgColor);
   Watchy::display.setFont(&FreeSans12pt7b);
-  if (getWeatherState != ready) {
-    Watchy::display.print(getWeatherMsgs[getWeatherState]);
-  } else {
-    getWeatherState = waitingForSync;
-    Watchy::display.print(getWeatherMsgs[getWeatherState]);
-    Watchy::display.display(true);
-    Watchy::display.fillScreen(bgColor);
-    Watchy::display.setCursor(0, 0);
-    auto weather = Watchy_GetWeather::getWeather();
-    Watchy::display.printf("Temp %d, Weather %d", weather.temperature,
-                           weather.weatherConditionCode);
+  switch (getWeatherState) {
+    case ready: {
+      getWeatherState = waiting;
+      Watchy::display.print("\nwaiting");
+      Watchy::display.display(true);
+      Watchy::display.fillScreen(bgColor);
+      Watchy::display.setCursor(0, 0);
+      auto weather = Watchy_GetWeather::getWeather();
+      getWeatherState = done;
+      printWeather(weather);
+      break;
+    }
+    case waiting:
+      Watchy::display.print("\nwaiting");
+      break;
+    case done:
+      printWeather(Watchy_GetWeather::getWeather());
+      break;
+    default:
+      return;
   }
   Watchy::display.print("\npress back to exit");
 }
