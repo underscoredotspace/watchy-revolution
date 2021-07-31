@@ -68,10 +68,23 @@ const struct {
     {804, "cloudy"}          // > 80%
 };
 
+constexpr const uint16_t NumCodeMap = sizeof(codeMap) / sizeof(codeMap[0]);
+
 const char* weatherConditionCodeToString(uint16_t code) {
-  // linear scan is ok for ~55 elements.
-  for (uint16_t i = 0; i < sizeof(codeMap)/sizeof(codeMap[0]); i++) {
-    if (codeMap[i].code == code) { return codeMap[i].msg; }
+  static_assert(NumCodeMap > 0, "codeMap should not be empty");
+
+  auto i = &codeMap[0];
+  auto x = &codeMap[NumCodeMap];
+  while (x - i > 1) {
+    auto m = i + ((x - i) / 2);
+    if (m->code > code) {
+      x = m;
+    } else {
+      i = m;
+    }
+  }
+  if (i->code == code) {
+    return i->msg;
   }
   return "unknown";
 }
