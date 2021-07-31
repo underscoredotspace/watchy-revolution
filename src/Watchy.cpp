@@ -51,8 +51,8 @@ void Watchy::init(String datetime) {
   if (Watchy::RTC.read(currentTime) == 0) {
     time_t t = makeTime(currentTime);
     setTime(t);
-    // timeval tv = {t, 0};
-    // settimeofday(&tv, nullptr);
+    timeval tv = {t, 0};
+    settimeofday(&tv, nullptr);
   }
 
   switch (wakeup_reason) {
