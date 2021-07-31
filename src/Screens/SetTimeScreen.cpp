@@ -131,6 +131,8 @@ void SetTimeScreen::show() {
     time_t t = makeTime(tm) + FUDGE;
     setTime(t);
     RTC.set(t);
+    timeval tv = {t, 0};
+    settimeofday(&tv, nullptr);
   }
   setIndex = 0;  // make sure we start at the beginning if we come back
 
