@@ -3,7 +3,7 @@
 #include "Fonts/FreeSans24pt7b.h"
 #include "Fonts/FreeSans9pt7b.h"
 #include "Fonts/FreeSansBold24pt7b.h"
-#include "SyncTimeScreen.h"
+#include "SyncTime.h"
 
 using namespace Watchy;
 
@@ -16,7 +16,7 @@ const char *smallNumbers[] = {"",        "one",       "two",      "three",
 const char *decades[] = {"oh", nullptr, "twenty", "thirty", "forty", "fifty"};
 
 void TimeScreen::show() {
-  setenv("TZ", SyncTimeScreen::tz, 1);
+  setenv("TZ", Watchy_SyncTime::tz, 1);
   tzset();
   tm t;
   time_t tt = now();
