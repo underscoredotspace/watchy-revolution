@@ -3,7 +3,7 @@
 #include <Arduino_JSON.h>
 #include <Wifi.h>
 
-#include "SetLocationScreen.h"
+#include "SetLocation.h"
 #include "Watchy.h"
 #include "config.h"  // should be first
 
@@ -39,7 +39,7 @@ weatherData getWeather() {
   char weatherQueryURL[weatherQueryURLSize];
   snprintf(weatherQueryURL, weatherQueryURLSize,
            "%s?lat=%.4f&lon=%.4f&units=%s&appid=%s", OPENWEATHERMAP_URL,
-           SetLocationScreen::lat, SetLocationScreen::lon, TEMP_UNIT,
+           Watchy_SetLocation::lat, Watchy_SetLocation::lon, TEMP_UNIT,
            OPENWEATHERMAP_APIKEY);
   http.begin(weatherQueryURL);
   int httpResponseCode = http.GET();
