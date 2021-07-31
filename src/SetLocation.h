@@ -4,9 +4,17 @@
 
 namespace Watchy_SetLocation {
 
-  extern float lat, lon;
-  extern char timezone[50];
-  extern IPAddress ip;
+extern float lat, lon;
+extern char timezone[50];
+extern uint32_t ip;
 
-  extern bool setLocation(); // returns false on failure
+typedef enum {
+  ok,
+  connectWifiFail,
+  badHttpResponseCode,
+  chunkedDataResponse,
+  espHttpClientRequestFail
+} SetLocationResult;
+
+extern SetLocationResult setLocation();
 }  // namespace Watchy_SetLocation
