@@ -38,10 +38,14 @@ SyncResult syncTime() {
   uint32_t timeout = millis() + 5000;  // 5 sec timeout
   while (millis() < timeout) {
     if (sntp_get_sync_status() == SNTP_SYNC_STATUS_COMPLETED) {
+      WiFi.mode(WIFI_OFF);
+      btStop();
       return Watchy_SyncTime::success;
     }
     delay(10);  // or yield
   }
+  WiFi.mode(WIFI_OFF);
+  btStop();
   return Watchy_SyncTime::timeout;
 }
 }  // namespace Watchy_SyncTime
