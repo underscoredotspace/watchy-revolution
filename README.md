@@ -53,16 +53,15 @@ class TimeScreen : public Screen {
 TimeScreen timeScreen;
 ```
 
-And in the main program, make `TimeScreen` the default
+And in the main program, make `TimeScreen` the initial screen on startup
 
 ```c++
 // main.cpp
 #include "TimeScreen.h"
-#include "ContentScreen.h"
 #include "Watchy.h"  //include the Watchy library
 
 void setup() {
-  Watchy::defaultScreen = &timeScreen;
+  if (Watchy::screen == nullptr) { Watchy::screen = &timeScreen; }
   Watchy::init();
 }
 
@@ -75,7 +74,7 @@ Manually coding the relationships between screens is tedious and error prone tho
 
 * Watchy is no longer a class, you don't have to instantiate it. Now it's a namespace, which means that any references to Watchy need to be prefixed with `Watchy::`
 * You need to call `Watchy::init` from your setup function.
-* You need to set `Watchy::defaultScreen` before calling `Watchy::init`
+* You need to initialize `Watchy::screen` on initial boot before calling `Watchy::init` (it's persistent after that)
 
 ### Additions to Watchy for Screens
 
