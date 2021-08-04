@@ -1,5 +1,8 @@
 #include "TimeScreen.h"
 
+#include <stdlib.h>
+#include <time.h>
+
 #include "Fonts/FreeSans24pt7b.h"
 #include "Fonts/FreeSans9pt7b.h"
 #include "Fonts/FreeSansBold24pt7b.h"
