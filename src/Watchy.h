@@ -17,7 +17,6 @@ extern DS3232RTC RTC;
 extern GxEPD2_BW<GxEPD2_154_D67, GxEPD2_154_D67::HEIGHT> display;
 extern tmElements_t currentTime;
 extern Screen *screen;
-extern Screen *defaultScreen;
 void init(String datetime = "");
 void deepSleep();
 float getBatteryVoltage();

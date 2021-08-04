@@ -136,7 +136,7 @@ void SetTimeScreen::show() {
   }
   setIndex = 0;  // make sure we start at the beginning if we come back
 
-  Watchy::setScreen(parent ? parent : Watchy::defaultScreen);
+  Watchy::setScreen(parent);
 }
 
 void SetTimeScreen::up() {
