@@ -33,13 +33,6 @@ MenuItem menuItems[] = {{"Set Time", &setTimeScreen},
                         {"Sync Time", &syncTimeScreen},
                         {"Set Location", &setLocationScreen},
                         {"Get Weather", &getWeatherScreen},
-                        {"Buzz", &buzzScreen},
-                        {"Set Time", &setTimeScreen},
-                        {"Setup WiFi", &setupWifiScreen},
-                        {"Update Firmware", &updateFWScreen},
-                        {"Sync Time", &syncTimeScreen},
-                        {"Set Location", &setLocationScreen},
-                        {"Get Weather", &getWeatherScreen},
                         {"Buzz", &buzzScreen}};
 
 MenuScreen menu(menuItems, sizeof(menuItems) / sizeof(menuItems[0]));
