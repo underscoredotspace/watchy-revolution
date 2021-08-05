@@ -36,16 +36,16 @@ SyncResult syncTime() {
   sntp_set_time_sync_notification_cb(timeSyncCallback);
   configTzTime(tz, ntpServer);
   uint32_t timeout = millis() + 5000;  // 5 sec timeout
+  SyncResult retVal = Watchy_SyncTime::timeout;
   while (millis() < timeout) {
     if (sntp_get_sync_status() == SNTP_SYNC_STATUS_COMPLETED) {
-      WiFi.mode(WIFI_OFF);
-      btStop();
-      return Watchy_SyncTime::success;
+      retVal = Watchy_SyncTime::success;
+      break;
     }
-    delay(10);  // or yield
+    delay(10);  // or yield or get event
   }
   WiFi.mode(WIFI_OFF);
   btStop();
-  return Watchy_SyncTime::timeout;
+  return retVal;
 }
 }  // namespace Watchy_SyncTime
