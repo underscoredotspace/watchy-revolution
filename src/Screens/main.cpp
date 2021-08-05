@@ -1,3 +1,4 @@
+#include "BuzzScreen.h"
 #include "CarouselScreen.h"
 #include "Fonts/FreeSans24pt7b.h"
 #include "GetWeatherScreen.h"
@@ -24,13 +25,22 @@ UpdateFWScreen updateFWScreen;
 SyncTimeScreen syncTimeScreen;
 SetLocationScreen setLocationScreen;
 GetWeatherScreen getWeatherScreen;
+BuzzScreen buzzScreen;
 
 MenuItem menuItems[] = {{"Set Time", &setTimeScreen},
                         {"Setup WiFi", &setupWifiScreen},
                         {"Update Firmware", &updateFWScreen},
                         {"Sync Time", &syncTimeScreen},
                         {"Set Location", &setLocationScreen},
-                        {"Get Weather", &getWeatherScreen}};
+                        {"Get Weather", &getWeatherScreen},
+                        {"Buzz", &buzzScreen},
+                        {"Set Time", &setTimeScreen},
+                        {"Setup WiFi", &setupWifiScreen},
+                        {"Update Firmware", &updateFWScreen},
+                        {"Sync Time", &syncTimeScreen},
+                        {"Set Location", &setLocationScreen},
+                        {"Get Weather", &getWeatherScreen},
+                        {"Buzz", &buzzScreen}};
 
 MenuScreen menu(menuItems, sizeof(menuItems) / sizeof(menuItems[0]));
 
