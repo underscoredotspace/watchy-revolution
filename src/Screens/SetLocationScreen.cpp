@@ -1,6 +1,6 @@
 #include "SetLocationScreen.h"
 
-#include "Fonts/FreeSans12pt7b.h"
+#include "OptimaLTStd12pt7b.h"
 #include "GetLocation.h"
 #include "IPAddress.h"
 
@@ -18,7 +18,7 @@ void printLocation(const Watchy_GetLocation::location *loc) {
 
 void SetLocationScreen::show() {
   Watchy::display.fillScreen(bgColor);
-  Watchy::display.setFont(&FreeSans12pt7b);
+  Watchy::display.setFont(OptimaLTStd12pt7b);
   switch (getLocationState) {
     case ready: {
       getLocationState = waiting;

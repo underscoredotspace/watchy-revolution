@@ -1,6 +1,6 @@
 #include "UpdateFWScreen.h"
 
-#include "Fonts/FreeMonoBold9pt7b.h"
+#include "OptimaLTStd12pt7b.h"
 #include "Screen.h"
 #include "Watchy.h"
 
@@ -9,7 +9,7 @@ using namespace Watchy;
 class : public Screen {
   void show() {
     Watchy::display.fillScreen(bgColor);
-    display.setFont(&FreeMonoBold9pt7b);
+    display.setFont(OptimaLTStd12pt7b);
     display.println("\nBLE Connected!");
     display.println();
     display.println("Waiting for");
@@ -20,7 +20,7 @@ class : public Screen {
 class : public Screen {
   void show() {
     Watchy::display.fillScreen(bgColor);
-    display.setFont(&FreeMonoBold9pt7b);
+    display.setFont(OptimaLTStd12pt7b);
     display.println("\nDownload");
     display.println("completed!");
     display.println();
@@ -31,7 +31,7 @@ class : public Screen {
 class : public Screen {
   void show() {
     Watchy::display.fillScreen(bgColor);
-    display.setFont(&FreeMonoBold9pt7b);
+    display.setFont(OptimaLTStd12pt7b);
     display.println("\nBLE Disconnected!");
     display.println();
     display.println("exiting...");
@@ -51,7 +51,7 @@ void btPoll(Screen *s) {
     updateFWDownloadingScreen(BLE &bt) : Screen(), BT(bt) {}
     void show() {
       Watchy::display.fillScreen(bgColor);
-      display.setFont(&FreeMonoBold9pt7b);
+      display.setFont(OptimaLTStd12pt7b);
       display.println("\nDownloading");
       display.println("firmware:");
       display.println();
@@ -104,7 +104,7 @@ void btPoll(Screen *s) {
 class : public Screen {
   void show() {
     Watchy::display.fillScreen(bgColor);
-    display.setFont(&FreeMonoBold9pt7b);
+    display.setFont(OptimaLTStd12pt7b);
     display.println("\nBluetooth Started");
     display.println();
     display.println("Watchy BLE OTA");
@@ -118,7 +118,7 @@ class : public Screen {
 
 void UpdateFWScreen::show() {
   Watchy::display.fillScreen(bgColor);
-  display.setFont(&FreeMonoBold9pt7b);
+  display.setFont(OptimaLTStd12pt7b);
   display.println("\nPlease Visit");
   display.println("watchy.sqfmi.com");
   display.println("with a Bluetooth");

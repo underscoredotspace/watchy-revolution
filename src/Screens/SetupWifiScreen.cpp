@@ -1,6 +1,6 @@
 #include "SetupWifiScreen.h"
 
-#include "Fonts/FreeMonoBold9pt7b.h"
+#include "OptimaLTStd12pt7b.h"
 #include "Screen.h"
 #include "Watchy.h"
 
@@ -25,7 +25,7 @@ void SetupWifiScreen::show() {
   // showing anything in autoConnect, and lets _configModeCallback
   // set the display
   Watchy::display.fillScreen(bgColor);
-  display.setFont(&FreeMonoBold9pt7b);
+  display.setFont(OptimaLTStd12pt7b);
   display.setCursor(0, 30);
 
   switch (wifiSetupState) {

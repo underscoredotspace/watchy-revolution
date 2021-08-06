@@ -3,9 +3,9 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include "Fonts/FreeSans24pt7b.h"
-#include "Fonts/FreeSans9pt7b.h"
-#include "Fonts/FreeSansBold24pt7b.h"
+#include "OptimaLTStd22pt7b.h"
+#include "OptimaLTStd7pt7b.h"
+#include "OptimaLTStd_Bold22pt7b.h"
 #include "GetLocation.h"
 
 using namespace Watchy;
@@ -28,13 +28,13 @@ void TimeScreen::show() {
   Watchy::display.fillScreen(bgColor);
 
   // hours
-  display.setFont(&FreeSansBold24pt7b);
+  display.setFont(OptimaLTStd_Bold22pt7b);
   // fudge height up a bit because baseline is too low
   display.setCursor(0, -5);
   display.printf("\n%s\n", smallNumbers[(t.tm_hour + 11) % 12 + 1]);  // 24->12
 
   // minutes
-  display.setFont(&FreeSans24pt7b);
+  display.setFont(OptimaLTStd22pt7b);
   if (t.tm_min == 0) {
     // 0: exactly on the hour
     if (t.tm_hour == 0) {
@@ -55,6 +55,6 @@ void TimeScreen::show() {
 
   // date
   display.setCursor(0, 195);
-  display.setFont(&FreeSans9pt7b);
+  display.setFont(OptimaLTStd7pt7b);
   display.print(&t, "%a, %B %d %Y %Z");
 }

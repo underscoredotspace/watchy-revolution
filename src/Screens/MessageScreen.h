@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Adafruit_GFX.h"
-#include "Fonts/FreeSans12pt7b.h"
+#include "OptimaLTStd12pt7b.h"
 #include "Screen.h"
 
 class MessageScreen : public Screen {
@@ -11,7 +11,7 @@ class MessageScreen : public Screen {
   const GFXfont *font;
 
  public:
-  MessageScreen(const GFXfont *f = &FreeSans12pt7b) : Screen(), font(f) {}
+  MessageScreen(const GFXfont *f = OptimaLTStd12pt7b) : Screen(), font(f) {}
   void show() override;
   void back() override;
   static void clear();
