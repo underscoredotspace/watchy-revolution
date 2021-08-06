@@ -31,7 +31,7 @@ weatherData getWeather() {
 
   // WiFi is connected Use Weather API for live data
   HTTPClient http;
-  http.setConnectTimeout(5000);  // 5 second max timeout
+  http.setConnectTimeout(10000);  // 10 second max timeout
   const unsigned int weatherQueryURLSize =
       strlen(OPENWEATHERMAP_URL) + strlen("?lat=") + 8 + strlen("&lon=") + 8 +
       strlen("&units=") + strlen(TEMP_UNIT) + strlen("&appid=") +
