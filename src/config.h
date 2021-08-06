@@ -42,9 +42,11 @@ const int HARDWARE_VERSION_MINOR = 0;
 
 // debugging macros defined in DEBUG releases
 #ifdef DEBUG
+#define LOGE(...) ESP_LOGE(TAG, __VA_ARGS__)
 #define LOGI(...) ESP_LOGI(TAG, __VA_ARGS__)
 #define LOGD(...) ESP_LOGD(TAG, __VA_ARGS__)
 #else
+#define LOGE(...)
 #define LOGI(...)
 #define LOGD(...)
 #endif
