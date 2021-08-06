@@ -4,7 +4,7 @@
 
 class UpdateFWScreen : public Screen {
  public:
-  UpdateFWScreen() : Screen() {}
+  UpdateFWScreen(uint16_t bg = GxEPD_WHITE) : Screen(bg) {}
   void show() override;
   void menu() override;
 };

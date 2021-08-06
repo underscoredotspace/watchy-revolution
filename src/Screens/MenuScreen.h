@@ -18,7 +18,9 @@ class MenuScreen : public Screen {
   const GFXfont *font;
 
  public:
-  MenuScreen(MenuItem *mis, const int8_t ms, const GFXfont *font = OptimaLTStd12pt7b);
+  MenuScreen(MenuItem *mis, const int8_t ms,
+             const GFXfont *font = OptimaLTStd12pt7b,
+             uint16_t bg = GxEPD_WHITE);
   void show() override;
   void menu() override;
   void back() override;

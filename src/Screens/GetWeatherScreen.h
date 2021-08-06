@@ -4,7 +4,7 @@
 
 class GetWeatherScreen : public Screen {
  public:
-  GetWeatherScreen() : Screen() {}
+  GetWeatherScreen(uint16_t bg = GxEPD_WHITE) : Screen(bg) {}
   void show() override;
   void back() override;
 };

@@ -4,6 +4,6 @@
 
 class ShowWifiScreen : public Screen {
  public:
-  ShowWifiScreen() : Screen() {}
+  ShowWifiScreen(uint16_t bg = GxEPD_WHITE) : Screen(bg) {}
   void show() override;
 };

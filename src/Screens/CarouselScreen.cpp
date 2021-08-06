@@ -6,7 +6,7 @@ using namespace Watchy;
 
 RTC_DATA_ATTR int8_t CarouselScreen::index;
 
-CarouselScreen::CarouselScreen(CarouselItem *cis, const int8_t cs) : Screen(), items(cis), size(cs) {
+CarouselScreen::CarouselScreen(CarouselItem *cis, const int8_t cs, uint16_t bg) : Screen(bg), items(cis), size(cs) {
   for (int i = 0; i < size; i++) {
     if (items[i].splash != nullptr) {
       items[i].splash->parent = this;

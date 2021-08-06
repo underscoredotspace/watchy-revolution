@@ -14,7 +14,7 @@ class SetTimeScreen : public Screen {
   int8_t year;
 
  public:
-  SetTimeScreen() : Screen() {}
+  SetTimeScreen(uint16_t bg = GxEPD_WHITE) : Screen(bg) {}
   void show() override;
   void up() override;
   void down() override;

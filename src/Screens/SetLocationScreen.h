@@ -14,7 +14,7 @@ class SetLocationScreen : public Screen {
   static IPAddress ip;
 
  public:
-  SetLocationScreen() : Screen() {}
+  SetLocationScreen(uint16_t bg = GxEPD_WHITE) : Screen(bg) {}
   void show() override;
   void back() override;
 };

@@ -48,7 +48,7 @@ void btPoll(Screen *s) {
     BLE &BT;
 
    public:
-    updateFWDownloadingScreen(BLE &bt) : Screen(), BT(bt) {}
+    updateFWDownloadingScreen(BLE &bt, uint16_t bg = GxEPD_WHITE) : Screen(bg), BT(bt) {}
     void show() {
       Watchy::display.fillScreen(bgColor);
       display.setFont(OptimaLTStd12pt7b);
