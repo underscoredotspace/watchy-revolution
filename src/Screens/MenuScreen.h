@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Adafruit_GFX.h"
-#include "Fonts/FreeMonoBold9pt7b.h"
+#include "OptimaLTStd12pt7b.h"
 #include "Screen.h"
 
 typedef struct {
@@ -18,7 +18,9 @@ class MenuScreen : public Screen {
   const GFXfont *font;
 
  public:
-  MenuScreen(MenuItem *mis, const int8_t ms, const GFXfont *font = &FreeMonoBold9pt7b);
+  MenuScreen(MenuItem *mis, const int8_t ms,
+             const GFXfont *font = OptimaLTStd12pt7b,
+             uint16_t bg = GxEPD_WHITE);
   void show() override;
   void menu() override;
   void back() override;

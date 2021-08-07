@@ -1,10 +1,11 @@
 #include "ShowOrientationScreen.h"
 
-#include "Fonts/FreeSans12pt7b.h"
+#include "OptimaLTStd12pt7b.h"
 #include "Watchy.h"
 
 void ShowOrientationScreen::showMe() {
   Watchy::display.fillScreen(bgColor);
+  Watchy::display.setCursor(0,0);
   Accel acc;
   if (Watchy::sensor.getAccel(acc)) {
     Watchy::display.printf("\n  X: %d", acc.x);
@@ -44,7 +45,7 @@ void ShowOrientationScreen::showMe() {
 
 void ShowOrientationScreen::show() {
   Watchy::display.fillScreen(bgColor);
-  Watchy::display.setFont(&FreeSans12pt7b);
+  Watchy::display.setFont(OptimaLTStd12pt7b);
   showing = true;
   while (showing) {
     showMe();

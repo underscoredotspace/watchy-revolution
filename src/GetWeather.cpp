@@ -2,7 +2,7 @@
 
 #include <Arduino_JSON.h>
 
-#include "SetLocation.h"
+#include "GetLocation.h"
 #include "Watchy.h"
 #include "config.h"  // should be first
 
@@ -30,15 +30,16 @@ weatherData getWeather() {
 
   // WiFi is connected Use Weather API for live data
   HTTPClient http;
-  http.setConnectTimeout(5000);  // 5 second max timeout
+  http.setConnectTimeout(10000);  // 10 second max timeout
   const unsigned int weatherQueryURLSize =
       strlen(OPENWEATHERMAP_URL) + strlen("?lat=") + 8 + strlen("&lon=") + 8 +
       strlen("&units=") + strlen(TEMP_UNIT) + strlen("&appid=") +
       strlen(OPENWEATHERMAP_APIKEY) + 1;
   char weatherQueryURL[weatherQueryURLSize];
+  auto loc = Watchy_GetLocation::getLocation();
   snprintf(weatherQueryURL, weatherQueryURLSize,
            "%s?lat=%.4f&lon=%.4f&units=%s&appid=%s", OPENWEATHERMAP_URL,
-           Watchy_SetLocation::lat, Watchy_SetLocation::lon, TEMP_UNIT,
+           loc->lat, loc->lon, TEMP_UNIT,
            OPENWEATHERMAP_APIKEY);
   http.begin(weatherQueryURL);
   int httpResponseCode = http.GET();

@@ -4,6 +4,6 @@
 
 class WeatherScreen : public Screen {
  public:
-  WeatherScreen() : Screen() {}
+  WeatherScreen(uint16_t bg = GxEPD_WHITE) : Screen(bg) {}
   void show() override;
 };

@@ -7,11 +7,9 @@ using namespace Watchy;
 RTC_DATA_ATTR int8_t MenuScreen::first;
 RTC_DATA_ATTR int8_t MenuScreen::index;
 
-MenuScreen::MenuScreen(MenuItem *mis, const int8_t ms, const GFXfont *f)
-    : Screen(),
-      items(mis),
-      size(ms),
-      font(f) {
+MenuScreen::MenuScreen(MenuItem *mis, const int8_t ms, const GFXfont *f,
+                       uint16_t bg)
+    : Screen(bg), items(mis), size(ms), font(f) {
   for (int i = 0; i < size; i++) {
     if (items[i].screen != nullptr) {
       items[i].screen->parent = this;

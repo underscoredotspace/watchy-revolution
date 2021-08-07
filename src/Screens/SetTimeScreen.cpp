@@ -1,7 +1,7 @@
 #include "SetTimeScreen.h"
 
 #include "DSEG7Classic_Bold28pt7b.h"
-#include "Fonts/FreeMonoBold9pt7b.h"
+#include "OptimaLTStd12pt7b.h"
 #include "Watchy.h"
 
 using namespace Watchy;
@@ -89,7 +89,7 @@ void SetTimeScreen::show() {
 
       display.setTextColor(fgColor);
 
-      display.setFont(&FreeMonoBold9pt7b);
+      display.setFont(OptimaLTStd12pt7b);
       display.setCursor(45, 150);
       if (setIndex == SET_YEAR) {  // blink minute digits
         display.setTextColor(blink ? fgColor : screen->bgColor);

@@ -2,9 +2,8 @@
 
 #include <Arduino_JSON.h>
 
-// #include "Adafruit_GFX.h"
-#include "Fonts/FreeSans12pt7b.h"
 #include "GetWeather.h"
+#include "OptimaLTStd12pt7b.h"
 #include "Watchy.h"
 
 RTC_DATA_ATTR enum GetWeatherState {
@@ -20,7 +19,7 @@ void printWeather(Watchy_GetWeather::weatherData wd) {
 
 void GetWeatherScreen::show() {
   Watchy::display.fillScreen(bgColor);
-  Watchy::display.setFont(&FreeSans12pt7b);
+  Watchy::display.setFont(OptimaLTStd12pt7b);
   switch (getWeatherState) {
     case ready: {
       getWeatherState = waiting;

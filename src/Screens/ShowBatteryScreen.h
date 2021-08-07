@@ -4,6 +4,6 @@
 
 class ShowBatteryScreen : public Screen {
  public:
-  ShowBatteryScreen() : Screen() {}
+  ShowBatteryScreen(uint16_t bg = GxEPD_WHITE) : Screen(bg) {}
   void show() override;
 };

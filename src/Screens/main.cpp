@@ -1,6 +1,6 @@
 #include "BuzzScreen.h"
 #include "CarouselScreen.h"
-#include "Fonts/FreeSans24pt7b.h"
+#include "OptimaLTStd22pt7b.h"
 #include "GetWeatherScreen.h"
 #include "IconScreen.h"
 #include "MenuScreen.h"
@@ -33,25 +33,18 @@ MenuItem menuItems[] = {{"Set Time", &setTimeScreen},
                         {"Sync Time", &syncTimeScreen},
                         {"Set Location", &setLocationScreen},
                         {"Get Weather", &getWeatherScreen},
-                        {"Buzz", &buzzScreen},
-                        {"Set Time", &setTimeScreen},
-                        {"Setup WiFi", &setupWifiScreen},
-                        {"Update Firmware", &updateFWScreen},
-                        {"Sync Time", &syncTimeScreen},
-                        {"Set Location", &setLocationScreen},
-                        {"Get Weather", &getWeatherScreen},
                         {"Buzz", &buzzScreen}};
 
 MenuScreen menu(menuItems, sizeof(menuItems) / sizeof(menuItems[0]));
 
 TimeScreen timeScreen;
 WeatherScreen weather;
-IconScreen battery(&rle_battery, "battery", &FreeSans24pt7b);
-IconScreen steps(&rle_steps, "steps", &FreeSans24pt7b);
-IconScreen orientation(&rle_orientation, "orient", &FreeSans24pt7b);
-IconScreen bluetooth(&rle_bluetooth, "bluetooth", &FreeSans24pt7b);
-IconScreen wifi(&rle_wifi, "wifi", &FreeSans24pt7b);
-IconScreen settings(&rle_settings, "settings", &FreeSans24pt7b);
+IconScreen battery(&rle_battery, "battery", OptimaLTStd22pt7b);
+IconScreen steps(&rle_steps, "steps", OptimaLTStd22pt7b);
+IconScreen orientation(&rle_orientation, "orientation", OptimaLTStd22pt7b);
+IconScreen bluetooth(&rle_bluetooth, "bluetooth", OptimaLTStd22pt7b);
+IconScreen wifi(&rle_wifi, "wifi", OptimaLTStd22pt7b);
+IconScreen settings(&rle_settings, "settings", OptimaLTStd22pt7b);
 ShowBatteryScreen showBattery;
 ShowBluetoothScreen showBluetooth;
 ShowOrientationScreen showOrientation;

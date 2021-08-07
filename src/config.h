@@ -28,7 +28,6 @@ const int DISPLAY_HEIGHT = 200;
 constexpr const char * WIFI_AP_SSID = "Watchy AP";
 //set time
 const int YEAR_OFFSET = 1970;
-constexpr const char *TZ = "AEST-10AEDT,M10.1.0,M4.1.0/3";
 constexpr const char *NTP_SERVER = "pool.ntp.org";
 
 //BLE OTA
@@ -42,9 +41,11 @@ const int HARDWARE_VERSION_MINOR = 0;
 
 // debugging macros defined in DEBUG releases
 #ifdef DEBUG
+#define LOGE(...) ESP_LOGE(TAG, __VA_ARGS__)
 #define LOGI(...) ESP_LOGI(TAG, __VA_ARGS__)
 #define LOGD(...) ESP_LOGD(TAG, __VA_ARGS__)
 #else
+#define LOGE(...)
 #define LOGI(...)
 #define LOGD(...)
 #endif

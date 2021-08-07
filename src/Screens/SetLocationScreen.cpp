@@ -1,60 +1,49 @@
 #include "SetLocationScreen.h"
 
-#include "Fonts/FreeSans12pt7b.h"
-#include "SetLocation.h"
+#include "OptimaLTStd12pt7b.h"
+#include "GetLocation.h"
 #include "IPAddress.h"
 
-typedef enum {
+RTC_DATA_ATTR enum GetLocationState {
   ready,
-  wait,
-  success,
-  fail,
-  numSetLocationStates
-} SetLocationState;
+  waiting,
+  done
+} getLocationState = ready;
 
-RTC_DATA_ATTR SetLocationState setLocationState = ready;
-const char *setLocationStateMsgs[numSetLocationStates] = {
-    "\nready", "\nwaiting for sync", "\nsuccess", "\nfail"};
-
-void printLocation() {
+void printLocation(const Watchy_GetLocation::location *loc) {
   Watchy::display.printf("\nsuccess\nlat %.4f\nlon %.4f",
-                         Watchy_SetLocation::lat, Watchy_SetLocation::lon);
-  Watchy::display.printf("\n%s\n", Watchy_SetLocation::timezone);
-  Watchy::display.print(IPAddress(Watchy_SetLocation::ip));
-  LOGI("%08lx", Watchy_SetLocation::ip);
-}
-
-void printSetLocationState() {
-  if (setLocationState == success) {
-    printLocation();
-    return;
-  }
-  Watchy::display.print(setLocationStateMsgs[setLocationState]);
-  Watchy::display.print("\npress back to exit");
+                         loc->lat, loc->lon);
+  Watchy::display.printf("\n%s", loc->timezone);
 }
 
 void SetLocationScreen::show() {
   Watchy::display.fillScreen(bgColor);
-  Watchy::display.setFont(&FreeSans12pt7b);
-  if (setLocationState != ready) {
-    printSetLocationState();
-    return;
+  Watchy::display.setFont(OptimaLTStd12pt7b);
+  switch (getLocationState) {
+    case ready: {
+      getLocationState = waiting;
+      Watchy::display.print("\nwaiting");
+      Watchy::display.display(true);
+      Watchy::display.fillScreen(bgColor);
+      Watchy::display.setCursor(0, 0);
+      auto loc = Watchy_GetLocation::getLocation();
+      getLocationState = done;
+      printLocation(loc);
+      break;
+    }
+    case waiting:
+      Watchy::display.print("\nwaiting");
+      break;
+    case done:
+      printLocation(Watchy_GetLocation::getLocation());
+      break;
+    default:
+      return;
   }
-  setLocationState = wait;
-  printSetLocationState();
-  Watchy::display.display(true);
-  Watchy::display.setCursor(0, 0);
-  Watchy::display.fillScreen(bgColor);
-
-  if (Watchy_SetLocation::setLocation() == Watchy_SetLocation::ok) {
-    setLocationState = success;
-  } else {
-    setLocationState = fail;
-  }
-  printSetLocationState();
+  Watchy::display.print("\npress back to exit");
 }
 
 void SetLocationScreen::back() {
-  setLocationState = ready;
+  getLocationState = ready;
   Screen::back();
 }

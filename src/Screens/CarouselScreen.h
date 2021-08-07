@@ -17,7 +17,7 @@ class CarouselScreen : public Screen {
   static bool active;
 
  public:
-  CarouselScreen(CarouselItem *cis, const int8_t cs);
+  CarouselScreen(CarouselItem *cis, const int8_t cs, uint16_t bg = GxEPD_WHITE);
   void show() override;
   void menu() override;
   void back() override;
