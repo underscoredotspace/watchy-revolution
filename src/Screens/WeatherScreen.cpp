@@ -1,7 +1,7 @@
 #include "WeatherScreen.h"
 
-#include "OptimaLTStd12pt7b.h"
 #include "GetWeather.h"
+#include "OptimaLTStd12pt7b.h"
 
 using namespace Watchy;
 
@@ -9,7 +9,7 @@ using namespace Watchy;
 // sadly that is about 4k larger. :(
 const struct {
   const int16_t code;
-  const char *msg;
+  const char* msg;
 } codeMap[] = {
     {200, "thunderstorm & light rain"},
     {201, "thunderstorm & rain"},
@@ -91,8 +91,11 @@ const char* weatherConditionCodeToString(uint16_t code) {
 
 void WeatherScreen::show() {
   Watchy::display.fillScreen(bgColor);
-  display.setFont(OptimaLTStd12pt7b);
-  display.setTextWrap(true);
+  Watchy::display.setFont(OptimaLTStd12pt7b);
+  Watchy::display.print("\nwaiting");
+  Watchy::display.display(true);
+  Watchy::display.fillScreen(bgColor);
+  Watchy::display.setCursor(0, 0);
   auto wd = Watchy_GetWeather::getWeather();
   display.printf("\n%d deg\n%s", wd.temperature,
                  weatherConditionCodeToString(wd.weatherConditionCode));
