@@ -2,13 +2,12 @@
 
 #include <Wifi.h>
 
-#include "GetLocation.h"
 #include "Watchy.h"
 #include "time.h"
 
 namespace Watchy_SyncTime {
 
-RTC_DATA_ATTR const char *ntpServer = NTP_SERVER;
+RTC_DATA_ATTR const char *ntpServer;
 
 // RTC does not know about TZ
 // so DST has to be in app code
@@ -18,13 +17,13 @@ RTC_DATA_ATTR const char *ntpServer = NTP_SERVER;
 
 void timeSyncCallback(struct timeval *tv) {
   // consider using tv.tv_usec as well
-  setTime(tv->tv_sec);          // set system time
   Watchy::RTC.set(tv->tv_sec);  // set RTC
+  setTime(tv->tv_sec);          // set system time
   settimeofday(tv, nullptr);    // set posix
   sntp_set_sync_status(SNTP_SYNC_STATUS_COMPLETED);
 }
 
-SyncResult syncTime() {
+SyncResult syncTime(const char* timezone) {
   if (!Watchy::connectWiFi()) {
     return Watchy_SyncTime::wifiFailed;  // failed
   }
@@ -34,7 +33,7 @@ SyncResult syncTime() {
     return Watchy_SyncTime::waiting;
   }
   sntp_set_time_sync_notification_cb(timeSyncCallback);
-  configTzTime(Watchy_GetLocation::currentLocation.timezone, ntpServer);
+  configTzTime(timezone, ntpServer);
   uint32_t timeout = millis() + 5000;  // 5 sec timeout
   SyncResult retVal = Watchy_SyncTime::timeout;
   while (millis() < timeout) {
