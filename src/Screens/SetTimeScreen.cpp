@@ -1,6 +1,6 @@
 #include "SetTimeScreen.h"
 
-#include "DSEG7Classic_Bold28pt7b.h"
+#include "OptimaLTStd_Black32pt7b.h"
 #include "OptimaLTStd12pt7b.h"
 #include "Watchy.h"
 
@@ -19,39 +19,40 @@ bool commit;
 RTC_DATA_ATTR uint8_t SetTimeScreen::setIndex;
 
 typedef struct {
-  int8_t SetTimeScreen::*val;
-  int8_t min;
-  int8_t max;
+  int16_t SetTimeScreen::*val;
+  int16_t min;
+  int16_t max;
 } Field;
 
-void decrMin(int8_t &val, int8_t &min, int8_t &max) {
+void decrMin(int16_t &val, int16_t &min, int16_t &max) {
   if (val-- <= min) {
     val = max;
   }
 }
 
-void incrMax(int8_t &val, int8_t &min, int8_t &max) {
+void incrMax(int16_t &val, int16_t &min, int16_t &max) {
   if (val++ >= max) {
     val = min;
   }
 }
 
-Field fields[] = {{&SetTimeScreen::hour, 0, 23},
-                  {&SetTimeScreen::minute, 0, 59},
-                  {&SetTimeScreen::year, 20, 99},
-                  {&SetTimeScreen::month, 1, 12},
-                  {&SetTimeScreen::day, 1, 31}};
+Field fields[] = {{&SetTimeScreen::hour,   0,  23},
+                  {&SetTimeScreen::minute, 0,  59},
+                  {&SetTimeScreen::year, 120, 199},
+                  {&SetTimeScreen::month,  1,  12},
+                  {&SetTimeScreen::day,    1,  31}};
 const uint8_t numFields = sizeof(fields) / sizeof(fields[0]);
 
 void SetTimeScreen::show() {
-  tmElements_t currentTime;
-  RTC.read(currentTime);
+  struct tm tm;
+  time_t t = now();
+  localtime_r(&t, &tm);
 
-  minute = currentTime.Minute;
-  hour = currentTime.Hour;
-  day = currentTime.Day;
-  month = currentTime.Month;
-  year = currentTime.Year + YEAR_OFFSET - 2000;
+  minute = tm.tm_min;
+  hour = tm.tm_hour;
+  day = tm.tm_mday;
+  month = tm.tm_mon;
+  year = tm.tm_year;
 
   blink = 0;
   revert = false;
@@ -69,19 +70,18 @@ void SetTimeScreen::show() {
           (screen->bgColor == GxEPD_WHITE ? GxEPD_BLACK : GxEPD_WHITE);
 
       display.fillScreen(screen->bgColor);
-      display.setFont(&DSEG7Classic_Bold28pt7b);
+      display.setFont(OptimaLTStd_Black32pt7b);
       display.setTextColor(fgColor);
 
-      display.setCursor(5, 80);
+      display.setCursor(25, 80);
       if (setIndex == SET_HOUR) {  // blink hour digits
         display.setTextColor(blink ? fgColor : screen->bgColor);
       }
-      display.printf("%02d", hour);
+      display.printf("%2d", hour);
 
       display.setTextColor(fgColor);
       display.print(":");
 
-      display.setCursor(108, 80);
       if (setIndex == SET_MINUTE) {  // blink minute digits
         display.setTextColor(blink ? fgColor : screen->bgColor);
       }
@@ -90,11 +90,11 @@ void SetTimeScreen::show() {
       display.setTextColor(fgColor);
 
       display.setFont(OptimaLTStd12pt7b);
-      display.setCursor(45, 150);
+      display.setCursor(50, 150);
       if (setIndex == SET_YEAR) {  // blink minute digits
         display.setTextColor(blink ? fgColor : screen->bgColor);
       }
-      display.print(1970 + year);
+      display.print(year + 1900);
 
       display.setTextColor(fgColor);
       display.print("/");
@@ -117,18 +117,9 @@ void SetTimeScreen::show() {
   }
 
   if (commit) {
-    const time_t FUDGE(
-        10);  // fudge factor to allow for upload time, etc. (seconds, YMMV)
-    tmElements_t tm;
-    tm.Month = month;
-    tm.Day = day;
-    tm.Year = year + 2000 -
-              YEAR_OFFSET;  // offset from 1970, since year is stored in uint8_t
-    tm.Hour = hour;
-    tm.Minute = minute;
-    tm.Second = 0;
-
-    time_t t = makeTime(tm) + FUDGE;
+    // fudge factor to allow for upload time, etc. (seconds, YMMV)
+    const time_t FUDGE(10);
+    t = mktime(&tm) + FUDGE;
     setTime(t);
     RTC.set(t);
     timeval tv = {t, 0};
