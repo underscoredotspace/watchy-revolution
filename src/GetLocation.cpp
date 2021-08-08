@@ -20,7 +20,8 @@ RTC_DATA_ATTR time_t lastGetLocationTS;  // can use this to throttle
 RTC_DATA_ATTR location currentLocation = {
     DEFAULT_LOCATION_LATITUDE,      // lat
     DEFAULT_LOCATION_LONGDITUDE,    // lon
-    "AEST-10AEDT,M10.1.0,M4.1.0/3"  // timezone
+    "AEST-10AEDT,M10.1.0,M4.1.0/3", // timezone
+    "TBD"                           // to be determined
 };
 
 // ropg maintains a UDP server that translates Olson Timzones to Posix
@@ -86,10 +87,13 @@ const location *getLocation() {
     return &currentLocation;
   }
 
-  // WiFi is connected Use Weather API for live data
+  // WiFi is connected Use IP-API.com API to map geo-located IP to lat/lon/etc
   HTTPClient http;
   http.setConnectTimeout(5000);  // 5 second max timeout
-  const char *locationQueryURL = "http://ip-api.com/json?fields=57792";
+  // fields is a pseudo-bitmap indicating which fields should be returned
+  // ex. 57792 - query, status, lat, lon, timezone
+  // ex. 57808 - query, status, lat, lon, timezone, city
+  const char *locationQueryURL = "http://ip-api.com/json?fields=57808";
   if (!http.begin(locationQueryURL)) {
     LOGE("http.begin failed");
   }
@@ -100,6 +104,8 @@ const location *getLocation() {
     location loc;
     loc.lat = double(responseObject["lat"]);
     loc.lon = double(responseObject["lon"]);
+    strncpy(loc.city,responseObject["city"],sizeof(loc.city));
+
     auto olsonTZ = (const char *)responseObject["timezone"];
     if (getPosixTZforOlson(olsonTZ, loc.timezone, sizeof(loc.timezone))) {
       currentLocation = loc;

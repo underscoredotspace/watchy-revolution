@@ -97,6 +97,7 @@ void WeatherScreen::show() {
   Watchy::display.fillScreen(bgColor);
   Watchy::display.setCursor(0, 0);
   auto wd = Watchy_GetWeather::getWeather();
-  display.printf("\n%d deg\n%s", wd.temperature,
+  // assumes TEMP_UNITS is metric, and that wd.temperature is in C
+  display.printf("\n\n%-20s,\n%dC %3.0fF\n%s", wd.weatherCity,wd.temperature,((wd.temperature*1.8)+32),
                  weatherConditionCodeToString(wd.weatherConditionCode));
 }
