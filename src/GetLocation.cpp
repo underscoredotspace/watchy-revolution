@@ -8,8 +8,8 @@
 
 namespace Watchy_GetLocation {
 
-constexpr const float DEFAULT_LOCATION_LATITUDE = 37.8136;
-constexpr const float DEFAULT_LOCATION_LONGDITUDE = -144.9631;
+constexpr const float DEFAULT_LOCATION_LATITUDE = -37.8136;
+constexpr const float DEFAULT_LOCATION_LONGDITUDE = 144.9631;
 const int LOCATION_UPDATE_INTERVAL = 5 * 60 * 1000;  // 5 minutes in millis
 
 
