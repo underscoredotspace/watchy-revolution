@@ -1,6 +1,6 @@
 #include "SyncTime.h"
 
-#include <Wifi.h>
+#include "GetLocation.h"
 
 #include "Watchy.h"
 #include "time.h"
