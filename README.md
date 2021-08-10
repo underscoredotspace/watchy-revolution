@@ -2,6 +2,10 @@
 
 Screen based implementation of the [Watchy](https://github.com/sqfmi/Watchy) library. It assumes some familiarity with the Watchy library and only documents the differences.
 
+## Building
+
+To build this project, install [PlatformIO](https://docs.platformio.org/en/latest/core/installation.html) and simply run `pio run -t upload` to build and upload to the watch.
+
 ## Screen abstraction
 
 ```c++
