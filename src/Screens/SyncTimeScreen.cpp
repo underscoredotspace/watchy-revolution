@@ -1,5 +1,6 @@
 #include "SyncTimeScreen.h"
 
+#include "GetLocation.h"
 #include "OptimaLTStd12pt7b.h"
 #include "SyncTime.h"
 #include "Watchy.h"
@@ -39,7 +40,8 @@ void SyncTimeScreen::show() {
   Watchy::display.fillScreen(bgColor);
   Watchy::display.setCursor(0, 0);
 
-  if (Watchy_SyncTime::syncTime() == Watchy_SyncTime::success) {
+  if (Watchy_SyncTime::syncTime(Watchy_GetLocation::currentLocation.timezone) ==
+      Watchy_SyncTime::success) {
     syncState = success;
   } else {
     syncState = fail;

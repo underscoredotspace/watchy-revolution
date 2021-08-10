@@ -8,13 +8,15 @@
 
 namespace Watchy_GetLocation {
 
-constexpr const float DEFAULT_LOCATION_LATITUDE = 37.8136;
-constexpr const float DEFAULT_LOCATION_LONGDITUDE = -144.9631;
+constexpr const float DEFAULT_LOCATION_LATITUDE = -37.8136;
+constexpr const float DEFAULT_LOCATION_LONGDITUDE = 144.9631;
+const int LOCATION_UPDATE_INTERVAL = 5 * 60 * 1000;  // 5 minutes in millis
+
 
 const char* TZDB_UDP_HOST = "timezoned.rop.nl";
 const int TZDB_UDP_PORT = 2342;
 
-RTC_DATA_ATTR time_t lastSetLocationTS;  // can use this to throttle
+RTC_DATA_ATTR time_t lastGetLocationTS;  // can use this to throttle
 RTC_DATA_ATTR location currentLocation = {
     DEFAULT_LOCATION_LATITUDE,      // lat
     DEFAULT_LOCATION_LONGDITUDE,    // lon
@@ -76,7 +78,11 @@ char *getPosixTZforOlson(const char *olson, char *buf, int bufLen) {
 const location *getLocation() {
   // http://ip-api.com/json?fields=57792
   // {"status":"success","lat":-27.4649,"lon":153.028,"timezone":"Australia/Brisbane","query":"202.144.174.72"}
+  if (now() - lastGetLocationTS < LOCATION_UPDATE_INTERVAL) { // too soon
+    return &currentLocation;
+  }
   if (!Watchy::connectWiFi()) {
+    LOGE("connectWiFi failed");
     return &currentLocation;
   }
 
@@ -84,7 +90,9 @@ const location *getLocation() {
   HTTPClient http;
   http.setConnectTimeout(5000);  // 5 second max timeout
   const char *locationQueryURL = "http://ip-api.com/json?fields=57792";
-  http.begin(locationQueryURL);
+  if (!http.begin(locationQueryURL)) {
+    LOGE("http.begin failed");
+  }
   int httpResponseCode = http.GET();
   if (httpResponseCode == 200) {
     String payload = http.getString();
@@ -95,8 +103,12 @@ const location *getLocation() {
     auto olsonTZ = (const char *)responseObject["timezone"];
     if (getPosixTZforOlson(olsonTZ, loc.timezone, sizeof(loc.timezone))) {
       currentLocation = loc;
+      lastGetLocationTS = now();
+    } else {
+      LOGE("getPosixTZForOlson failed");
     }
   } else {
+    LOGE("http error %d", httpResponseCode);
     // http error
   }
   http.end();

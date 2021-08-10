@@ -7,11 +7,11 @@ class SetTimeScreen : public Screen {
   static uint8_t setIndex;
 
  public:
-  int8_t minute;
-  int8_t hour;
-  int8_t day;
-  int8_t month;
-  int8_t year;
+  int16_t minute;
+  int16_t hour;
+  int16_t day;
+  int16_t month;
+  int16_t year;
 
  public:
   SetTimeScreen(uint16_t bg = GxEPD_WHITE) : Screen(bg) {}
