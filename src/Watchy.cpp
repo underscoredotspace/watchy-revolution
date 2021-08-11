@@ -1,7 +1,7 @@
 #include "Watchy.h"
 
 #include "Screen.h"
-#include "Screens/SetLocationScreen.h" // bad hack
+#include "Screens/SetLocationScreen.h"  // bad hack
 
 using namespace Watchy;
 
@@ -331,9 +331,14 @@ void _bmaConfig() {
 }
 
 bool Watchy::connectWiFi() {
-  if (WL_CONNECT_FAILED ==
-      WiFi.begin()) {  // WiFi not setup, you can also use hard coded
-                       // credentials with WiFi.begin(SSID,PASS);
+#if !defined(WIFI_SSID) || !defined(WIFI_PASSWORD)
+  if (WL_CONNECT_FAILED == WiFi.begin()) {
+    // WiFi not setup, you can also use hard coded credentials with
+    // WiFi.begin(SSID,PASS); by defining WIFI_SSID and WIFI_PASSWORD
+#else
+  if (WL_CONNECT_FAILED == WiFi.begin() && WL_CONNECT_FAILED == WiFi.begin(WIFI_SSID,WIFI_PASSWORD)) {
+    // WiFi not setup
+#endif
     WIFI_CONFIGURED = false;
   } else {
     if (WL_CONNECTED ==
