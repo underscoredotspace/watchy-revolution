@@ -13,8 +13,7 @@ class Screen {
  public:
   Screen* parent;
   uint16_t bgColor;
-  Screen(Screen* p = nullptr, uint16_t bg = GxEPD_BLACK)
-      : parent(p), bgColor(bg){};
+  Screen(uint16_t bg = GxEPD_BLACK) : bgColor(bg){};
   virtual void show() = 0;
   virtual void up() {}
   virtual void down() {}
@@ -112,25 +111,25 @@ The `Screens` directory includes individual screens for:
 
 And two "aggregate" screens used to organize other screens:
 
-* Menu - Simple text menu.
+* Menu - Simple scrollable text menu.
 * Carousel - A list of "splash" screens and their corresponding display screens.
 
 ## UI
 
 ### Menu
 
-The menu screen implements a simple text menu. It takes an array of menu items, each consisting of a textual menu item name and corresponding screen to invoke. Adding new items to the menu is as simple as adding another `MenuItem` to the array in the call to the constructor. `up` and `down` navigate the menu, `menu` invokes the current item. When in a menu item's screen `back` takes you back to the menu.
+The menu screen implements a scrollable text menu. It takes an array of menu items, each consisting of a textual menu item name and corresponding screen to invoke. Adding new items to the menu is as simple as adding another `MenuItem` to the array in the call to the constructor. `up` and `down` navigate the menu, `menu` invokes the current item. When in a menu item's screen `back` takes you back to the menu. If there are more items than can be displayed, the menu will show scroll arrows at the top or bottom of the screen to indicate there are more items.
 
 ### Carousel
 
 The carousel implements a cyclic view of spash screens and a corresponding display. Typically a splash screen is a simple static graphical or textual screen, and a display screen has more complex UI and active logic. To construct a carousel create an array of `CarouselItems` each one is a pair of screens the `splash` that is displayed in the carousel and the optional `child` that is displayed when you press `Menu` on the splash screen. The `child` screen is free to use any of the buttons for its own purposes, though conventionally the `back` button should return to the splash screen.
 
-In a carousel `up` takes you to the previous splash screen, `down` takes you to the next one, `menu` shows the child screen for that splash screen, `back` while looking at a splash screen takes you back to the first screen of the carousel. A splash screen uses all of the buttons for its UI. In a child screen the child has complete control of the buttons, though by convention `back` should take you back to the carousel (the `parent` of the child screen). If the splash screen contains all information for the display the and doesn't need any additional UI, the child screen can be null. To add another screen to a carousel, add another `CarouselItem` to the array passed to the `Carousel` constructor in the location you want the screen to appear in the carousel.
+In a carousel `up` takes you to the previous splash screen, `down` takes you to the next one, `menu` shows the child screen for that splash screen, `back` while looking at a splash screen takes you back to the first screen of the carousel. A splash screen uses all of the buttons for its UI. In a child screen the child has complete control of the buttons, though by convention `back` should take you back to the carousel (the `parent` of the child screen). If the splash screen contains all information for the display and doesn't need any additional UI, the child screen can be null. To add another screen to a carousel, add another `CarouselItem` to the array passed to the `Carousel` constructor in the location you want the screen to appear in the carousel.
 
 ## Demo
 
-The face is organized as a carousel of time, weather, battery, steps, orientation, bluetooth status, weather status, and a settings menu. The time and weather screens are standalone, they don't have a display associated.
+The face is organized as a carousel of time, weather, battery, steps, orientation, bluetooth status, weather status, and a settings menu. The time and weather screens are standalone, they don't have a child display associated.
 
-The settings display screen is a menu that lets you set the time, setup the wifi, or update the firmware.
+The settings display screen is a menu that lets you set the time, setup the wifi, update the firmware, synchronize the time with NTP, get your location by IP geolocation, refresh the weather, or buzz the motor.
 
-There are no dependencies within the screens, all of the screen instances and their organization will be in `main.cpp` most of the screens are just a `show` method.
+There are no dependencies between the screens, all of the screen instances and their organization will be in `main.cpp` most of the screens are just a `show` method.
