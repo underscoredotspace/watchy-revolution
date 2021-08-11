@@ -5,19 +5,24 @@
 #include "Wifi.h"
 
 void ShowWifiScreen::show() {
+  bool connected = false;
   Watchy::display.fillScreen(bgColor);
   Watchy::display.setFont(OptimaLTStd12pt7b);
-  Watchy::display.print("\nconnecting...");
-  Watchy::display.display(true);
-  Watchy::display.fillScreen(bgColor);
-  Watchy::display.setCursor(0, 0);
+  auto status = WiFi.status();
+  if (status == WL_NO_SHIELD) { // haven't yet connected this wake cycle
+    Watchy::display.print("\nconnecting...");
+    Watchy::display.display(true);
+    Watchy::display.fillScreen(bgColor);
+    Watchy::display.setCursor(0, 0);
 
-  // can take up to 10 seconds to time out
-  // ignore the result, we'll pick it up below
-  Watchy::connectWiFi();
+    // can take up to 10 seconds to time out
+    // ignore the result, we'll pick it up below
+    Watchy::connectWiFi();
+    connected = true;
+    status = WiFi.status();
+  }
 
   Watchy::display.print("\nStatus ");
-  auto status = WiFi.status();
   switch (status) {
     case WL_NO_SHIELD:
       Watchy::display.print("no shield");
@@ -68,7 +73,9 @@ void ShowWifiScreen::show() {
   }
   Watchy::display.printf("\nBSSID set: %d", conf.sta.bssid_set);
 
-  // turn off wifi when we're done
-  WiFi.mode(WIFI_OFF);
-  btStop();
+  if (connected) {
+    // turn off wifi when we're done
+    WiFi.mode(WIFI_OFF);
+    btStop();
+  }
 }
