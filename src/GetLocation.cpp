@@ -2,7 +2,6 @@
 
 #include <Arduino_JSON.h>
 #include <IPAddress.h>
-#include <Wifi.h>
 
 #include "Watchy.h"  // for connectWiFi
 
@@ -20,8 +19,12 @@ RTC_DATA_ATTR location currentLocation = {
     DEFAULT_LOCATION_LATITUDE,      // lat
     DEFAULT_LOCATION_LONGDITUDE,    // lon
     "AEST-10AEDT,M10.1.0,M4.1.0/3", // timezone
-    "TBD"                           // to be determined
+    "Melbourne"                     // default location is in Melbourne
 };
+
+// built from tzdb version 2021a
+
+#include <string.h>
 
 const char *posix[] = {
   /*   0 */ "GMT0",
@@ -31,57 +34,57 @@ const char *posix[] = {
   /*   4 */ "CAT-2",
   /*   5 */ "EET-2",
   /*   6 */ "<+01>-1",
-  /*   7 */ "CET-1CESTM3.5.0M10.5.03",
+  /*   7 */ "CET-1CEST,M3.5.0,M10.5.0/3",
   /*   8 */ "SAST-2",
-  /*   9 */ "HST10HDTM3.2.0M11.1.0",
-  /*  10 */ "AKST9AKDTM3.2.0M11.1.0",
+  /*   9 */ "HST10HDT,M3.2.0,M11.1.0",
+  /*  10 */ "AKST9AKDT,M3.2.0,M11.1.0",
   /*  11 */ "AST4",
   /*  12 */ "<-03>3",
-  /*  13 */ "<-04>4<-03>M10.1.00M3.4.00",
+  /*  13 */ "<-04>4<-03>,M10.1.0/0,M3.4.0/0",
   /*  14 */ "EST5",
-  /*  15 */ "CST6CDTM4.1.0M10.5.0",
+  /*  15 */ "CST6CDT,M4.1.0,M10.5.0",
   /*  16 */ "CST6",
   /*  17 */ "<-04>4",
   /*  18 */ "<-05>5",
-  /*  19 */ "MST7MDTM3.2.0M11.1.0",
-  /*  20 */ "CST6CDTM3.2.0M11.1.0",
-  /*  21 */ "MST7MDTM4.1.0M10.5.0",
+  /*  19 */ "MST7MDT,M3.2.0,M11.1.0",
+  /*  20 */ "CST6CDT,M3.2.0,M11.1.0",
+  /*  21 */ "MST7MDT,M4.1.0,M10.5.0",
   /*  22 */ "MST7",
-  /*  23 */ "EST5EDTM3.2.0M11.1.0",
-  /*  24 */ "PST8PDTM3.2.0M11.1.0",
-  /*  25 */ "AST4ADTM3.2.0M11.1.0",
-  /*  26 */ "<-03>3<-02>M3.5.0-2M10.5.0-1",
-  /*  27 */ "CST5CDTM3.2.00M11.1.01",
-  /*  28 */ "<-03>3<-02>M3.2.0M11.1.0",
+  /*  23 */ "EST5EDT,M3.2.0,M11.1.0",
+  /*  24 */ "PST8PDT,M3.2.0,M11.1.0",
+  /*  25 */ "AST4ADT,M3.2.0,M11.1.0",
+  /*  26 */ "<-03>3<-02>,M3.5.0/-2,M10.5.0/-1",
+  /*  27 */ "CST5CDT,M3.2.0/0,M11.1.0/1",
+  /*  28 */ "<-03>3<-02>,M3.2.0,M11.1.0",
   /*  29 */ "<-02>2",
-  /*  30 */ "<-04>4<-03>M9.1.624M4.1.624",
-  /*  31 */ "<-01>1<+00>M3.5.00M10.5.01",
-  /*  32 */ "NST3:30NDTM3.2.0M11.1.0",
+  /*  30 */ "<-04>4<-03>,M9.1.6/24,M4.1.6/24",
+  /*  31 */ "<-01>1<+00>,M3.5.0/0,M10.5.0/1",
+  /*  32 */ "NST3:30NDT,M3.2.0,M11.1.0",
   /*  33 */ "<+11>-11",
   /*  34 */ "<+07>-7",
   /*  35 */ "<+10>-10",
-  /*  36 */ "AEST-10AEDTM10.1.0M4.1.03",
+  /*  36 */ "AEST-10AEDT,M10.1.0,M4.1.0/3",
   /*  37 */ "<+05>-5",
-  /*  38 */ "NZST-12NZDTM9.5.0M4.1.03",
+  /*  38 */ "NZST-12NZDT,M9.5.0,M4.1.0/3",
   /*  39 */ "<+03>-3",
-  /*  40 */ "<+00>0<+02>-2M3.5.01M10.5.03",
+  /*  40 */ "<+00>0<+02>-2,M3.5.0/1,M10.5.0/3",
   /*  41 */ "<+06>-6",
-  /*  42 */ "EET-2EESTM3.5.424M10.5.51",
+  /*  42 */ "EET-2EEST,M3.5.4/24,M10.5.5/1",
   /*  43 */ "<+12>-12",
   /*  44 */ "<+04>-4",
-  /*  45 */ "EET-2EESTM3.5.00M10.5.00",
+  /*  45 */ "EET-2EEST,M3.5.0/0,M10.5.0/0",
   /*  46 */ "<+08>-8",
   /*  47 */ "IST-5:30",
   /*  48 */ "<+09>-9",
   /*  49 */ "CST-8",
   /*  50 */ "<+0530>-5:30",
-  /*  51 */ "EET-2EESTM3.5.50M10.5.50",
-  /*  52 */ "EET-2EESTM3.5.03M10.5.04",
-  /*  53 */ "EET-2EESTM3.4.448M10.4.449",
+  /*  51 */ "EET-2EEST,M3.5.5/0,M10.5.5/0",
+  /*  52 */ "EET-2EEST,M3.5.0/3,M10.5.0/4",
+  /*  53 */ "EET-2EEST,M3.4.4/48,M10.4.4/49",
   /*  54 */ "HKT-8",
   /*  55 */ "WIB-7",
   /*  56 */ "WIT-9",
-  /*  57 */ "IST-2IDTM3.4.426M10.5.0",
+  /*  57 */ "IST-2IDT,M3.4.4/26,M10.5.0",
   /*  58 */ "<+0430>-4:30",
   /*  59 */ "PKT-5",
   /*  60 */ "<+0545>-5:45",
@@ -89,18 +92,18 @@ const char *posix[] = {
   /*  62 */ "PST-8",
   /*  63 */ "KST-9",
   /*  64 */ "<+0630>-6:30",
-  /*  65 */ "<+0330>-3:30<+0430>J7924J26324",
+  /*  65 */ "<+0330>-3:30<+0430>,J79/24,J263/24",
   /*  66 */ "JST-9",
-  /*  67 */ "WET0WESTM3.5.01M10.5.0",
+  /*  67 */ "WET0WEST,M3.5.0/1,M10.5.0",
   /*  68 */ "<-01>1",
-  /*  69 */ "ACST-9:30ACDTM10.1.0M4.1.03",
+  /*  69 */ "ACST-9:30ACDT,M10.1.0,M4.1.0/3",
   /*  70 */ "AEST-10",
   /*  71 */ "ACST-9:30",
   /*  72 */ "<+0845>-8:45",
-  /*  73 */ "<+1030>-10:30<+11>-11M10.1.0M4.1.0",
+  /*  73 */ "<+1030>-10:30<+11>-11,M10.1.0,M4.1.0",
   /*  74 */ "AWST-8",
-  /*  75 */ "<-06>6<-05>M9.1.622M4.1.622",
-  /*  76 */ "IST-1GMT0M10.5.0M3.5.01",
+  /*  75 */ "<-06>6<-05>,M9.1.6/22,M4.1.6/22",
+  /*  76 */ "IST-1GMT0,M10.5.0,M3.5.0/1",
   /*  77 */ "<-10>10",
   /*  78 */ "<-11>11",
   /*  79 */ "<-12>12",
@@ -112,24 +115,25 @@ const char *posix[] = {
   /*  85 */ "<+14>-14",
   /*  86 */ "<+02>-2",
   /*  87 */ "UTC0",
-  /*  88 */ "GMT0BSTM3.5.01M10.5.0",
-  /*  89 */ "EET-2EESTM3.5.0M10.5.03",
+  /*  88 */ "GMT0BST,M3.5.0/1,M10.5.0",
+  /*  89 */ "EET-2EEST,M3.5.0,M10.5.0/3",
   /*  90 */ "MSK-3",
   /*  91 */ "<-00>0",
   /*  92 */ "HST10",
-  /*  93 */ "MET-1MESTM3.5.0M10.5.03",
-  /*  94 */ "<+1245>-12:45<+1345>M9.5.02:45M4.1.03:45",
-  /*  95 */ "<+13>-13<+14>M9.5.03M4.1.04",
-  /*  96 */ "<+12>-12<+13>M11.2.0M1.2.399",
+  /*  93 */ "MET-1MEST,M3.5.0,M10.5.0/3",
+  /*  94 */ "<+1245>-12:45<+1345>,M9.5.0/2:45,M4.1.0/3:45",
+  /*  95 */ "<+13>-13<+14>,M9.5.0/3,M4.1.0/4",
+  /*  96 */ "<+12>-12<+13>,M11.2.0,M1.2.3/99",
   /*  97 */ "ChST-10",
   /*  98 */ "<-0930>9:30",
   /*  99 */ "SST11",
-  /* 100 */ "<+11>-11<+12>M10.1.0M4.1.03",
+  /* 100 */ "<+11>-11<+12>,M10.1.0,M4.1.0/3",
 };
 
 const uint32_t mask = 0x1fffff;
 
 const struct {uint32_t hash:24; uint8_t posix:8;} zones[] = {
+  {   3052,   0}, // Etc/localtime
   {   3177,  12}, // America/Argentina/Buenos_Aires
   {   5424,  77}, // Pacific/Rarotonga
   {   6596,  29}, // Brazil/DeNoronha
@@ -666,7 +670,6 @@ const struct {uint32_t hash:24; uint8_t posix:8;} zones[] = {
   {1884747,  17}, // America/Manaus
   {1894052,   7}, // Europe/Skopje
   {1894752,  35}, // Asia/Vladivostok
-  {1900518,  84}, // Pacific/Kanton
   {1901000,  87}, // Etc/Zulu
   {1902986,  34}, // Asia/Phnom_Penh
   {1904373,  10}, // America/Nome
@@ -732,6 +735,8 @@ const uint NumZones = sizeof(zones) / sizeof(zones[0]);
 const uint32_t FNV_PRIME = 16777619u;
 const uint32_t OFFSET_BASIS = 2166136261u;
 
+// this function computes the "fnv" hash of a string, ignoring the nul termination
+// https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function
 uint32_t fnvHash(const char *str) {
 	uint32_t hash = OFFSET_BASIS;
 	while (*str) {
@@ -741,13 +746,12 @@ uint32_t fnvHash(const char *str) {
 	return hash;
 }
 
-// ropg maintains a UDP server that translates Olson Timzones to Posix
-// https://github.com/ropg/ezTime#timezonedropnl
-// alternatively we could maintain our own map, but it would be at least
-// a few kb. Too large for something we need so rarely.
 // this function, given a tz name in "Olson" format (like "Australia/Melbourne")
 // returns the tz in "Posix" format (like "AEST-10AEDT,M10.1.0,M4.1.0/3"), which
-// is what settz wants.
+// is what setenv("TZ",...) and settz wants. It does a binary search on the
+// hashed values. It assumes that the "olson" string is a valid timezone name
+// from the same version of the tzdb as it was compiled for. If passed an invalid
+// string the behaviour is undefined.
 const char *getPosixTZforOlson(const char *olson, char *buf, size_t buflen) {
   static_assert(NumZones > 0, "zones should not be empty");
   auto olsonHash = fnvHash(olson)&mask;
