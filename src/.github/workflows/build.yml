@@ -21,11 +21,3 @@ jobs:
         with:
           name: Watchy-Screen-Face
           path: .pio/build/esp32dev/firmware.bin
-      - name: Create release of face binary
-        uses: "marvinpinto/action-automatic-releases@latest"
-        with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: "latest"
-          prerelease: false
-          title: "Release Build"
-          files: .pio/build/esp32dev/firmware.bin
