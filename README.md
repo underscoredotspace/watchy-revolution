@@ -24,7 +24,7 @@ class Screen {
 };};
 ```
 
-A screen encapsulates the logic to display one screenful of information, and to respond to button presses. To make a `Screen` instance, subclass `Screen` and implement the `show` method to display your screen. `show` is called with the screen cleared to your `bgColor` and text color set to the opposite of `bgColor.` After `show` is done painting, it should return and the display will do a partial refresh.
+A screen encapsulates the logic to display one screenful of information, and to respond to button presses. To make a `Screen` instance, subclass `Screen` and implement the `show` method to display your screen. `show` is called with the screen cleared to your `bgColor`, text color set to the opposite of `bgColor`, and the cursor set to 0,0. After `show` is done painting, it should return and the display will do a partial refresh.
 
 By default the screen does nothing on up, down, or menu button press, and goes up to it's parent (if any) on back button press. To enable the screen to respond to buttons override the corresponding button method in your subclass. For example, if there was a screen to show the time called `timeScreen` and another to display a content called `contentScreen` Where pressing the `up` button while displaying the time screen should display the content, and pressing `Back` while displaying the content screen should return to the time screen:
 
