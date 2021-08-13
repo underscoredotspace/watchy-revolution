@@ -7,7 +7,7 @@
 
 namespace Watchy_SyncTime {
 
-RTC_DATA_ATTR const char *ntpServer;
+RTC_DATA_ATTR const char *ntpServer = NTP_SERVER;
 
 // RTC does not know about TZ
 // so DST has to be in app code
