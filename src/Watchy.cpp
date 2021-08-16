@@ -1,7 +1,7 @@
 #include "Watchy.h"
 
 #include "Screen.h"
-#include "Screens/SetLocationScreen.h"  // bad hack
+#include "GetLocation.h"  // bad dependency
 
 using namespace Watchy;
 
@@ -45,6 +45,8 @@ void Watchy::init(String datetime) {
   // sync ESP32 clocks to RTC
   tmElements_t currentTime;
   if (Watchy::RTC.read(currentTime) == 0) {
+    setenv("TZ", Watchy_GetLocation::currentLocation.timezone, 1);
+    tzset();
     time_t t = makeTime(currentTime);
     setTime(t);
     timeval tv = {t, 0};
