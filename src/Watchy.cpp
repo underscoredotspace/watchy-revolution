@@ -37,7 +37,7 @@ String getValue(String data, char separator, int index) {
   return found > index ? data.substring(strIndex[0], strIndex[1]) : "";
 }
 
-tmElements_t currentTime;
+tmElements_t Watchy::currentTime;
 
 void Watchy::init(String datetime) {
   esp_sleep_wakeup_cause_t wakeup_reason;
