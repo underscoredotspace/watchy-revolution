@@ -23,6 +23,12 @@ board = pico32
 framework = arduino
 ```
 
+We want to maximize program space and don't use much SPIFFS so add
+
+``` ini
+board_build.partitions = min_spiffs.csv
+```
+
 I suggest updating the serial speeds for faster uploading and faster monitoring. Add the following two lines:
 
 ``` ini
