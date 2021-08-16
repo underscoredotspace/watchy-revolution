@@ -39,7 +39,7 @@ lib_deps =
         jchristensen/DS3232RTC@0.0.0-alpha+sha.261ca7d0e6
         zinggjm/GxEPD2@^1.3.4
         adafruit/Adafruit BusIO@^1.7.5
-        https://github.com/charles-haynes/Watchy-Screen.git#v3.1.1
+        https://github.com/charles-haynes/Watchy-Screen.git#v3.1.3
 ```
 
 
