@@ -37,13 +37,14 @@ String getValue(String data, char separator, int index) {
   return found > index ? data.substring(strIndex[0], strIndex[1]) : "";
 }
 
+tmElements_t currentTime;
+
 void Watchy::init(String datetime) {
   esp_sleep_wakeup_cause_t wakeup_reason;
   wakeup_reason = esp_sleep_get_wakeup_cause();  // get wake up reason
   Wire.begin(SDA, SCL);                          // init i2c
 
   // sync ESP32 clocks to RTC
-  tmElements_t currentTime;
   if (Watchy::RTC.read(currentTime) == 0) {
     setenv("TZ", Watchy_GetLocation::currentLocation.timezone, 1);
     tzset();
