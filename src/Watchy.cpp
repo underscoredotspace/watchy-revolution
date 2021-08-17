@@ -2,8 +2,11 @@
 
 #include "Screen.h"
 #include "GetLocation.h"  // bad dependency
+#include "WatchyErrors.h"
 
 using namespace Watchy;
+
+Error Watchy::err;
 
 void _rtcConfig(String datetime);
 void _bmaConfig();
@@ -37,7 +40,73 @@ String getValue(String data, char separator, int index) {
   return found > index ? data.substring(strIndex[0], strIndex[1]) : "";
 }
 
-tmElements_t Watchy::currentTime;
+void debounce(uint8_t pin, int state) {
+  // wait for changed state + 40ms
+  // or 400ms
+  unsigned long timeout = millis() + 400;
+  while (millis() < timeout) {
+    if (digitalRead(pin) != state) {
+      delay(min(timeout - millis(), 40ul));
+      break;
+    }
+    yield();
+  }
+}
+
+bool Watchy::pollButtonsAndDispatch()  // returns true if button was pressed
+{
+  if (digitalRead(MENU_BTN_PIN) == 1) {
+    debounce(MENU_BTN_PIN, 1);
+    screen->menu();
+    return true;
+  }
+  if (digitalRead(BACK_BTN_PIN) == 1) {
+    debounce(BACK_BTN_PIN, 1);
+    screen->back();
+    return true;
+  }
+  if (digitalRead(UP_BTN_PIN) == 1) {
+    debounce(UP_BTN_PIN, 1);
+    screen->up();
+    return true;
+  }
+  if (digitalRead(DOWN_BTN_PIN) == 1) {
+    debounce(DOWN_BTN_PIN, 1);
+    screen->down();
+    return true;
+  }
+  return false;
+}
+
+void fastEventLoop() {
+  // TODO need a way for handlers to say they're done with the ui
+  const int timeout = 5000;
+  long timeoutMillis = millis() + timeout;
+  pinMode(MENU_BTN_PIN, INPUT);
+  pinMode(BACK_BTN_PIN, INPUT);
+  pinMode(UP_BTN_PIN, INPUT);
+  pinMode(DOWN_BTN_PIN, INPUT);
+  while (millis() < timeoutMillis) {
+    if (pollButtonsAndDispatch()) {
+      timeoutMillis = millis() + timeout;
+    }
+    yield();
+  }
+}
+
+void handleButtonPress() {
+  uint64_t wakeupBit = esp_sleep_get_ext1_wakeup_status();
+  switch (wakeupBit & BTN_PIN_MASK) {
+    case MENU_BTN_MASK: screen->menu(); break;
+    case BACK_BTN_MASK: screen->back(); break;
+    case UP_BTN_MASK:   screen->up();   break;
+    case DOWN_BTN_MASK: screen->down(); break;
+    default:                            break;
+  }
+  fastEventLoop();
+}
+
+tmElements_t Watchy::currentTime; // should probably be in SyncTime
 
 void Watchy::init(String datetime) {
   esp_sleep_wakeup_cause_t wakeup_reason;
@@ -126,72 +195,6 @@ void _rtcConfig(String datetime) {
   RTC.setAlarm(ALM2_EVERY_MINUTE, 0, 0, 0,
                0);                    // alarm wakes up Watchy every minute
   RTC.alarmInterrupt(ALARM_2, true);  // enable alarm interrupt
-}
-
-void debounce(uint8_t pin, int state) {
-  // wait for changed state + 40ms
-  // or 400ms
-  unsigned long timeout = millis() + 400;
-  while (millis() < timeout) {
-    if (digitalRead(pin) != state) {
-      delay(min(timeout - millis(), 40ul));
-      break;
-    }
-    yield();
-  }
-}
-
-bool Watchy::pollButtonsAndDispatch()  // returns true if button was pressed
-{
-  if (digitalRead(MENU_BTN_PIN) == 1) {
-    debounce(MENU_BTN_PIN, 1);
-    screen->menu();
-    return true;
-  }
-  if (digitalRead(BACK_BTN_PIN) == 1) {
-    debounce(BACK_BTN_PIN, 1);
-    screen->back();
-    return true;
-  }
-  if (digitalRead(UP_BTN_PIN) == 1) {
-    debounce(UP_BTN_PIN, 1);
-    screen->up();
-    return true;
-  }
-  if (digitalRead(DOWN_BTN_PIN) == 1) {
-    debounce(DOWN_BTN_PIN, 1);
-    screen->down();
-    return true;
-  }
-  return false;
-}
-
-void fastEventLoop() {
-  // TODO need a way for handlers to say they're done with the ui
-  const int timeout = 5000;
-  long timeoutMillis = millis() + timeout;
-  pinMode(MENU_BTN_PIN, INPUT);
-  pinMode(BACK_BTN_PIN, INPUT);
-  pinMode(UP_BTN_PIN, INPUT);
-  pinMode(DOWN_BTN_PIN, INPUT);
-  while (millis() < timeoutMillis) {
-    if (pollButtonsAndDispatch()) {
-      timeoutMillis = millis() + timeout;
-    }
-    yield();
-  }
-}
-
-void Watchy::handleButtonPress() {
-  uint64_t wakeupBit = esp_sleep_get_ext1_wakeup_status();
-  switch (wakeupBit & BTN_PIN_MASK) {
-    case MENU_BTN_MASK: screen->menu(); break;
-    case BACK_BTN_MASK: screen->back(); break;
-    case UP_BTN_MASK:   screen->up();   break;
-    case DOWN_BTN_MASK: screen->down(); break;
-    default:                            break;
-  }
-  fastEventLoop();
 }
 
 void Watchy::showWatchFace(bool partialRefresh, Screen *s) {

@@ -1,11 +1,12 @@
 #pragma once
 
 #include <Arduino.h>
-#include <WiFiManager.h>
-#include <HTTPClient.h>
 #include <DS3232RTC.h>
 #include <GxEPD2_BW.h>
+#include <HTTPClient.h>
+#include <WiFiManager.h>
 #include <Wire.h>
+
 #include "BLE.h"
 #include "bma.h"
 #include "config.h"
