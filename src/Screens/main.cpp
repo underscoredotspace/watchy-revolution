@@ -1,10 +1,11 @@
 #include "BuzzScreen.h"
 #include "CarouselScreen.h"
-#include "OptimaLTStd22pt7b.h"
+#include "GetLocation.h"
 #include "GetWeatherScreen.h"
 #include "IconScreen.h"
 #include "ImageScreen.h"
 #include "MenuScreen.h"
+#include "OptimaLTStd22pt7b.h"
 #include "SetLocationScreen.h"
 #include "SetTimeScreen.h"
 #include "SetupWifiScreen.h"
@@ -13,12 +14,16 @@
 #include "ShowOrientationScreen.h"
 #include "ShowStepsScreen.h"
 #include "ShowWifiScreen.h"
+#include "SyncTime.h"
 #include "SyncTimeScreen.h"
 #include "TimeScreen.h"
 #include "UpdateFWScreen.h"
 #include "Watchy.h"
+#include "WatchyErrors.h"
 #include "WeatherScreen.h"
 #include "icons.h"
+
+#include <time.h>
 
 SetTimeScreen setTimeScreen;
 SetupWifiScreen setupWifiScreen;
@@ -66,10 +71,20 @@ CarouselScreen carousel(carouselItems,
                         sizeof(carouselItems) / sizeof(carouselItems[0]));
 
 void setup() {
-#ifdef DEBUG
-  Serial.begin(115200);
-#endif
   LOGD(); // fail if debugging macros not defined
+
+  // initializing time and location can be a little tricky, because the
+  // calls can fail for a number of reasons, but you don't want to just
+  // keep trying because you can't know if the error is transient or
+  // persistent. So whenever we wake up, try to sync the time and location
+  // if they haven't ever been synced. If there is a persistent failure
+  // this can drain your battery...
+  if (Watchy_SyncTime::lastSyncTimeTS == 0) {
+    Watchy_SyncTime::syncTime(Watchy_GetLocation::currentLocation.timezone);
+  }
+  if (Watchy_GetLocation::lastGetLocationTS == 0) {
+    Watchy_GetLocation::getLocation();
+  }
   if (Watchy::screen == nullptr) { Watchy::screen = &carousel; }
   Watchy::init();
 }
