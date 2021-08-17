@@ -23,10 +23,9 @@ board = pico32
 framework = arduino
 ```
 
-We want to use all of our 8MB of flash and don't use much SPIFFS so add
+We want as much memory as possible for our app don't use much SPIFFS so add
 
 ``` ini
-board_build.f_flash = 80000000L
 board_build.partitions = min_spiffs.csv
 ```
 
