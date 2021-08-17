@@ -1,5 +1,7 @@
 #pragma once
 
+#include <time.h>
+
 namespace Watchy_SyncTime {
 
 // ntpServer defaults to NTP_SERVER from config.h
@@ -8,16 +10,8 @@ extern const char* ntpServer;
 
 constexpr const char *DEFAULT_TIMEZONE = "UTC0"; // posix format
 
-typedef enum {
-  ready,
-  waiting,
-  wifiFailed,
-  timeout,
-  success,
-  numSyncStates
-} SyncResult;
-
+extern time_t lastSyncTimeTS; // timestamp of last successful syncTime
 // sets RTC, now() and time() to UTC
 // sets current timezone so that localtime works
-extern SyncResult syncTime(const char* timezone = DEFAULT_TIMEZONE);
+extern void syncTime(const char* timezone = DEFAULT_TIMEZONE);
 };  // namespace Watchy_SyncTime

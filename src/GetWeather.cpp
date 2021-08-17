@@ -10,11 +10,12 @@
 namespace Watchy_GetWeather {
 RTC_DATA_ATTR weatherData currentWeather = {.temperature = 22,
                                             .weatherConditionCode = 800};
-RTC_DATA_ATTR unsigned long lastWeatherTS = 0;
+RTC_DATA_ATTR time_t lastGetWeatherTS = 0;
 
 weatherData getWeather() {
   // only update if WEATHER_UPDATE_INTERVAL has elapsed i.e. 30 minutes
-  if (now() - lastWeatherTS < WEATHER_UPDATE_INTERVAL) {
+  if (lastGetWeatherTS &&
+      (now() - lastGetWeatherTS < WEATHER_UPDATE_INTERVAL)) {
     // too soon to update, just re-use existing values. Not an error
     Watchy::err = Watchy::RATE_LIMITED;
     return currentWeather;
@@ -48,22 +49,22 @@ weatherData getWeather() {
     Watchy::err = Watchy::REQUEST_FAILED;
     LOGE("http.begin failed");
   } else {
-  int httpResponseCode = http.GET();
-  if (httpResponseCode == 200) {
-    String payload = http.getString();
-    JSONVar responseObject = JSON.parse(payload);
-    currentWeather.temperature = int(responseObject["main"]["temp"]);
-    currentWeather.weatherConditionCode =
-        int(responseObject["weather"][0]["id"]);
+    int httpResponseCode = http.GET();
+    if (httpResponseCode == 200) {
+      String payload = http.getString();
+      JSONVar responseObject = JSON.parse(payload);
+      currentWeather.temperature = int(responseObject["main"]["temp"]);
+      currentWeather.weatherConditionCode =
+          int(responseObject["weather"][0]["id"]);
       strncpy(currentWeather.weatherCity, loc->city,
               sizeof(currentWeather.weatherCity));
       lastGetWeatherTS = now();
       Watchy::err = Watchy::OK;
-  } else {
+    } else {
       Watchy::err = Watchy::REQUEST_FAILED;
-    LOGE("http response %d", httpResponseCode);
-  }
-  http.end();
+      LOGE("http response %d", httpResponseCode);
+    }
+    http.end();
   }
   // turn off radios
   WiFi.mode(WIFI_OFF);
