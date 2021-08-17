@@ -4,6 +4,7 @@
 
 #include "GetLocation.h"
 #include "Watchy.h"
+#include "WatchyErrors.h"
 #include "config.h"  // should be first
 
 namespace Watchy_GetWeather {
@@ -15,9 +16,11 @@ weatherData getWeather() {
   // only update if WEATHER_UPDATE_INTERVAL has elapsed i.e. 30 minutes
   if (now() - lastWeatherTS < WEATHER_UPDATE_INTERVAL) {
     // too soon to update, just re-use existing values. Not an error
+    Watchy::err = Watchy::RATE_LIMITED;
     return currentWeather;
   }
   if (!Watchy::connectWiFi()) {
+    Watchy::err = Watchy::WIFI_FAILED;
     LOGE("Wifi connect failed");
     // No WiFi, return RTC Temperature (this isn't actually useful...)
     uint8_t temperature = Watchy::RTC.temperature() / 4;  // celsius
@@ -40,11 +43,11 @@ weatherData getWeather() {
   auto loc = Watchy_GetLocation::getLocation();
   snprintf(weatherQueryURL, weatherQueryURLSize,
            "%s?lat=%.4f&lon=%.4f&units=%s&appid=%s", OPENWEATHERMAP_URL,
-           loc->lat, loc->lon, TEMP_UNIT,
-           OPENWEATHERMAP_APIKEY);
+           loc->lat, loc->lon, TEMP_UNIT, OPENWEATHERMAP_APIKEY);
   if (!http.begin(weatherQueryURL)) {
+    Watchy::err = Watchy::REQUEST_FAILED;
     LOGE("http.begin failed");
-  }
+  } else {
   int httpResponseCode = http.GET();
   if (httpResponseCode == 200) {
     String payload = http.getString();
@@ -52,12 +55,16 @@ weatherData getWeather() {
     currentWeather.temperature = int(responseObject["main"]["temp"]);
     currentWeather.weatherConditionCode =
         int(responseObject["weather"][0]["id"]);
-    strncpy(currentWeather.weatherCity,loc->city,sizeof(currentWeather.weatherCity));
-    lastWeatherTS = now();
+      strncpy(currentWeather.weatherCity, loc->city,
+              sizeof(currentWeather.weatherCity));
+      lastGetWeatherTS = now();
+      Watchy::err = Watchy::OK;
   } else {
+      Watchy::err = Watchy::REQUEST_FAILED;
     LOGE("http response %d", httpResponseCode);
   }
   http.end();
+  }
   // turn off radios
   WiFi.mode(WIFI_OFF);
   btStop();

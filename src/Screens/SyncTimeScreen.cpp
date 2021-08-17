@@ -4,6 +4,7 @@
 #include "OptimaLTStd12pt7b.h"
 #include "SyncTime.h"
 #include "Watchy.h"
+#include "WatchyErrors.h"
 
 typedef enum { ready, waiting, success, fail, numStates } SyncStates;
 RTC_DATA_ATTR SyncStates syncState = ready;
@@ -40,8 +41,8 @@ void SyncTimeScreen::show() {
   Watchy::display.fillScreen(bgColor);
   Watchy::display.setCursor(0, 0);
 
-  if (Watchy_SyncTime::syncTime(Watchy_GetLocation::currentLocation.timezone) ==
-      Watchy_SyncTime::success) {
+  Watchy_SyncTime::syncTime(Watchy_GetLocation::currentLocation.timezone);
+  if (Watchy::err == Watchy::OK) {
     syncState = success;
   } else {
     syncState = fail;
