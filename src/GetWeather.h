@@ -18,5 +18,6 @@ typedef struct weatherData {
 } weatherData;
 
 extern weatherData getWeather();
+extern time_t lastGetWeatherTS; // timestamp of last successful getWeather call
 
 }  // namespace Watchy_GetWeather

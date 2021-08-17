@@ -1,7 +1,6 @@
 #pragma once
 
-#include <IPAddress.h>
-
+#include <time.h>
 namespace Watchy_GetLocation {
 
 typedef struct {
@@ -12,6 +11,8 @@ typedef struct {
 } location;
 
 extern location currentLocation;
+extern time_t lastGetLocationTS; // timestamp of last successful getLocation
 
+// returns nullptr on failure
 extern const location* getLocation();
 }  // namespace Watchy_GetLocation

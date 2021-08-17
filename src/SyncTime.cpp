@@ -9,6 +9,7 @@
 namespace Watchy_SyncTime {
 
 RTC_DATA_ATTR const char *ntpServer = NTP_SERVER;
+RTC_DATA_ATTR time_t lastSyncTimeTS = 0;
 
 // RTC does not know about TZ
 // so DST has to be in app code
@@ -22,6 +23,8 @@ void timeSyncCallback(struct timeval *tv) {
   setTime(tv->tv_sec);          // set system time
   settimeofday(tv, nullptr);    // set posix
   sntp_set_sync_status(SNTP_SYNC_STATUS_COMPLETED);
+  lastSyncTimeTS = tv->tv_sec;
+  LOGD("lastSyncTimeTS %ld", lastSyncTimeTS);
 }
 
 void syncTime(const char* timezone) {
