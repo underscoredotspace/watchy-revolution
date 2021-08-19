@@ -21,6 +21,7 @@
 #include "Watchy.h"
 #include "WatchyErrors.h"
 #include "WeatherScreen.h"
+#include "WrappedTextScreen.h"
 #include "icons.h"
 
 #include <time.h>
@@ -57,8 +58,14 @@ ShowBluetoothScreen showBluetooth;
 ShowOrientationScreen showOrientation;
 ShowStepsScreen showSteps;
 ShowWifiScreen showWifi;
+WrappedTextScreen wrappedTextScreen(
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus eu "
+    "eleifend dui. Class aptent taciti sociosqu ad litora torquent per conubia "
+    "nostra, per inceptos himenaeos. Etiam ante nulla, porta nec accumsan eu, "
+    "viverra et ex.");
 
 CarouselItem carouselItems[] = {{&timeScreen, nullptr},
+                                {&wrappedTextScreen, nullptr},
                                 {&weather, &weatherScreen},
                                 {&battery, &showBattery},
                                 {&steps, &showSteps},
