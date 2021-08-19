@@ -65,11 +65,11 @@ WrappedTextScreen wrappedTextScreen(
     "viverra et ex.");
 
 CarouselItem carouselItems[] = {{&timeScreen, nullptr},
-                                {&wrappedTextScreen, nullptr},
                                 {&weather, &weatherScreen},
                                 {&battery, &showBattery},
                                 {&steps, &showSteps},
                                 {&orientation, &showOrientation},
+                                {&wrappedTextScreen, nullptr},
                                 {&bluetooth, &showBluetooth},
                                 {&wifi, &showWifi},
                                 {&settings, &menu}};
