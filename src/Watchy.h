@@ -20,7 +20,12 @@ extern tmElements_t currentTime;
 extern Screen *screen;
 void init(String datetime = "");
 void deepSleep();
-float getBatteryVoltage();
+
+// components can register to be called whenever we wake up
+typedef void (*OnWakeCallback)(const esp_sleep_wakeup_cause_t wakeup_reason);
+extern void AddOnWakeCallback(const OnWakeCallback owc);
+// no need for a Remove because they're all removed on deep sleep. Any component
+// registering a callback has to do it when it gets initialized on wake...
 
 bool connectWiFi();
 

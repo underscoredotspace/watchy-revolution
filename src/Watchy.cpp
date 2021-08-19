@@ -1,14 +1,16 @@
 #include "Watchy.h"
 
-#include "Screen.h"
+#include <vector>
+
 #include "GetLocation.h"  // bad dependency
+#include "Screen.h"
 #include "WatchyErrors.h"
 
 using namespace Watchy;
 
 Error Watchy::err;
 
-void _rtcConfig(String datetime);
+void _rtcConfig();
 void _bmaConfig();
 uint16_t _readRegister(uint8_t address, uint8_t reg, uint8_t *data,
                        uint16_t len);
@@ -108,7 +110,14 @@ void handleButtonPress() {
 
 tmElements_t Watchy::currentTime; // should probably be in SyncTime
 
-void Watchy::init(String datetime) {
+// doesn't persist over deep sleep. don't care.
+std::vector<OnWakeCallback> owcVec;
+
+void Watchy::AddOnWakeCallback(const OnWakeCallback owc) {
+  owcVec.push_back(owc);
+}
+
+void Watchy::init() {
   esp_sleep_wakeup_cause_t wakeup_reason;
   wakeup_reason = esp_sleep_get_wakeup_cause();  // get wake up reason
   Wire.begin(SDA, SCL);                          // init i2c
@@ -122,6 +131,8 @@ void Watchy::init(String datetime) {
     timeval tv = {t, 0};
     settimeofday(&tv, nullptr);
   }
+
+  for (auto&& owc : owcVec) { owc(wakeup_reason); }
 
   switch (wakeup_reason) {
 #ifdef ESP_RTC
@@ -150,7 +161,7 @@ void Watchy::init(String datetime) {
       break;
     default:  // reset
 #ifndef ESP_RTC
-      _rtcConfig(datetime);
+      _rtcConfig();
 #endif
       _bmaConfig();
       showWatchFace(false);  // full update on reset
@@ -174,22 +185,7 @@ void Watchy::deepSleep() {
   esp_deep_sleep_start();
 }
 
-void _rtcConfig(String datetime) {
-  if (datetime != NULL) {
-    const time_t FUDGE(
-        30);  // fudge factor to allow for upload time, etc. (seconds, YMMV)
-    tmElements_t tm;
-    tm.Year = getValue(datetime, ':', 0).toInt() -
-              YEAR_OFFSET;  // offset from 1970, since year is stored in uint8_t
-    tm.Month = getValue(datetime, ':', 1).toInt();
-    tm.Day = getValue(datetime, ':', 2).toInt();
-    tm.Hour = getValue(datetime, ':', 3).toInt();
-    tm.Minute = getValue(datetime, ':', 4).toInt();
-    tm.Second = getValue(datetime, ':', 5).toInt();
-
-    time_t t = makeTime(tm) + FUDGE;
-    RTC.set(t);
-  }
+void _rtcConfig() {
   // https://github.com/JChristensen/DS3232RTC
   RTC.squareWave(SQWAVE_NONE);  // disable square wave output
   RTC.setAlarm(ALM2_EVERY_MINUTE, 0, 0, 0,
@@ -214,10 +210,6 @@ void Watchy::setScreen(Screen *s) {
   }
   screen = s;
   showWatchFace(true);
-}
-
-float Watchy::getBatteryVoltage() {
-  return analogRead(ADC_PIN) / 4096.0 * 7.23;
 }
 
 uint16_t _readRegister(uint8_t address, uint8_t reg, uint8_t *data,
