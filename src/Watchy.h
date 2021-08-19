@@ -7,6 +7,7 @@
 #include <WiFiManager.h>
 #include <Wire.h>
 
+#include "battery.h"
 #include "BLE.h"
 #include "bma.h"
 #include "config.h"
@@ -18,7 +19,7 @@ extern DS3232RTC RTC;
 extern GxEPD2_BW<GxEPD2_154_D67, GxEPD2_154_D67::HEIGHT> display;
 extern tmElements_t currentTime;
 extern Screen *screen;
-void init(String datetime = "");
+void init();
 void deepSleep();
 
 // components can register to be called whenever we wake up
