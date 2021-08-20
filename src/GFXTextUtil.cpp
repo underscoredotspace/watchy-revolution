@@ -59,8 +59,8 @@ void drawWordWrappedText(Adafruit_GFX &g, int16_t x, int16_t y, int16_t w,
   int16_t yPos = f->yAdvance;      ///< y position relative to top left of bounding box
   if (yPos > h) { return; }
   g.setCursor(x, y + yPos);
-  for (char c = *t; c; c = *++t) {
-    if (c != '\n'){
+  for (char c = *t; ; c = *++t) {
+    if (c != '\0' && c != '\n'){
       xPos += charWidth(c, f);
       LOGD("%3d %3d %3d %2d %c", w, startNextLineXPos, xPos, charWidth(c, f), c);
       if (xPos <= w) {
@@ -79,6 +79,12 @@ void drawWordWrappedText(Adafruit_GFX &g, int16_t x, int16_t y, int16_t w,
     }
     LOGD("%.*s", startNextLine - startLine, startLine);
     for (; startLine < startNextLine; startLine++) { g.print(*startLine); }
+    if (startLine == t) {
+      // we aren't breaking a word, so consume any trailing whitespace
+      while (*t && isspace(*t) && *t != '\n') { t++; }
+      c = *t;
+    }
+    if (c == '\0') { return; } // end of text
     xPos -= startNextLineXPos;
     startNextLineXPos = 0;
     // newline
