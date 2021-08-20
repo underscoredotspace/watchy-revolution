@@ -52,6 +52,7 @@ IconScreen orientation(&rle_orientation, "orientation", OptimaLTStd22pt7b);
 IconScreen bluetooth(&rle_bluetooth, "bluetooth", OptimaLTStd22pt7b);
 IconScreen wifi(&rle_wifi, "wifi", OptimaLTStd22pt7b);
 IconScreen settings(&rle_settings, "settings", OptimaLTStd22pt7b);
+IconScreen text(&rle_text, "wrap text", OptimaLTStd22pt7b);
 ImageScreen weather(cloud, 96, 96, "weather", OptimaLTStd22pt7b);
 ShowBatteryScreen showBattery;
 ShowBluetoothScreen showBluetooth;
@@ -59,17 +60,20 @@ ShowOrientationScreen showOrientation;
 ShowStepsScreen showSteps;
 ShowWifiScreen showWifi;
 WrappedTextScreen wrappedTextScreen(
-    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus eu "
-    "eleifend dui. Class aptent taciti sociosqu ad litora torquent per conubia "
-    "nostra, per inceptos himenaeos. Etiam ante nulla, porta nec accumsan eu, "
-    "viverra et ex.");
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod "
+    "tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim "
+    "veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea "
+    "commodo consequat. Duis aute irure dolor in reprehenderit in voluptate "
+    "velit esse cillum dolore eu fugiat nulla pariatur.",
+    "n0-=-5p4c35,.,withaverylongwordthatshouldbehardwrapped?\n\nnotice how "
+    "it goes away on screen refresh?\nthat's deep sleep.");
 
 CarouselItem carouselItems[] = {{&timeScreen, nullptr},
                                 {&weather, &weatherScreen},
                                 {&battery, &showBattery},
                                 {&steps, &showSteps},
                                 {&orientation, &showOrientation},
-                                {&wrappedTextScreen, nullptr},
+                                {&text, &wrappedTextScreen},
                                 {&bluetooth, &showBluetooth},
                                 {&wifi, &showWifi},
                                 {&settings, &menu}};
