@@ -57,32 +57,34 @@ void drawWordWrappedText(Adafruit_GFX &g, int16_t x, int16_t y, int16_t w,
   // newline (from 0,0)
   int16_t xPos = 0;
   int16_t yPos = f->yAdvance;      ///< y position relative to top left of bounding box
-  if (yPos > h) {
-    return;
-    }
+  if (yPos > h) { return; }
   g.setCursor(x, y + yPos);
   for (char c = *t; c; c = *++t) {
-    xPos += charWidth(c, f);
-    LOGD("%3d %3d %3d %2d %c", w, startNextLineXPos, xPos, charWidth(c, f), c);
-    if (xPos <= w) {
-      if (yPos+charDescent(c,f) > h) { return; } // text won't fit in bounding box. Done.
-      if (!isalnum(c)) {
-        startNextLine = t + 1;
-        startNextLineXPos = xPos;
+    if (c != '\n'){
+      xPos += charWidth(c, f);
+      LOGD("%3d %3d %3d %2d %c", w, startNextLineXPos, xPos, charWidth(c, f), c);
+      if (xPos <= w) {
+        if (yPos + charDescent(c, f) > h) { return; }  // text won't fit in bounding box. Done.
+        if (!isalnum(c)) {
+          startNextLine = t + 1;
+          startNextLineXPos = xPos;
+        }
+        continue;
+      }
     }
-    } else {
-      LOGD("%.*s", startNextLine - startLine, startLine);
-      for (; startLine < startNextLine; startLine++) {
-        g.print(*startLine);
+    if (startNextLine == startLine) {
+      // current word will not fit on one line. hard break.
+      startNextLine = t;
+      startNextLineXPos = xPos;
     }
-      xPos -= startNextLineXPos;
-      startNextLineXPos = 0;
-      // newline
-      yPos += f->yAdvance;
-      if (yPos > h) {
-      break;
-    }
-      g.setCursor(x, y + yPos);
-    }
+    LOGD("%.*s", startNextLine - startLine, startLine);
+    for (; startLine < startNextLine; startLine++) { g.print(*startLine); }
+    xPos -= startNextLineXPos;
+    startNextLineXPos = 0;
+    // newline
+    if (*startLine == '\n') { startLine++; } // consume a LF if it's the next char
+    yPos += f->yAdvance;
+    if (yPos > h) { break; }
+    g.setCursor(x, y + yPos);
   }
 }
