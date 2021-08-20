@@ -83,6 +83,7 @@ void drawWordWrappedText(Adafruit_GFX &g, int16_t x, int16_t y, int16_t w,
       // we aren't breaking a word, so consume any trailing whitespace
       while (*t && isspace(*t) && *t != '\n') { t++; }
       c = *t;
+      startLine = t;
     }
     if (c == '\0') { return; } // end of text
     xPos -= startNextLineXPos;
