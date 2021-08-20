@@ -66,7 +66,8 @@ WrappedTextScreen wrappedTextScreen(
     "commodo consequat. Duis aute irure dolor in reprehenderit in voluptate "
     "velit esse cillum dolore eu fugiat nulla pariatur.",
     "n0-=-5p4c35,.,withaverylongwordthatshouldbehardwrapped?\n\nnotice how "
-    "it goes away on screen refresh?\nthat's deep sleep.");
+    "it goes away on screen refresh?        \t    \t         \r                "
+    "      \n     that's deep sleep.");
 
 CarouselItem carouselItems[] = {{&timeScreen, nullptr},
                                 {&weather, &weatherScreen},
