@@ -3,6 +3,8 @@
 #include <Adafruit_GFX.h>
 #include <ctype.h>
 
+#include "config.h" // DEBUG
+
 /**
  * @brief when printing, how much width on the screen does this glyph require
  * 
@@ -15,7 +17,6 @@ int16_t charWidth(const char c, const GFXfont *f) {
   if (c > f->last) { return 0; }
   const GFXglyph g = f->glyph[c - f->first];
   return g.xAdvance;
-
 }
 
 /**
@@ -30,20 +31,6 @@ int16_t charDescent(const char c, const GFXfont *f) {
   if (c > f->last) { return 0; }
   const GFXglyph g = f->glyph[c - f->first];
   return g.yOffset + g.height;
-}
-
-/**
- * @brief remove all whitespace from front of t. Return trimmed string.
- * Whitespace is any non-printing (no black pixels) chars in f.
- *
- * @param t
- * @param f
- * @return const char*
- */
-const char *trim(const char *t) {
-  if (t == nullptr) { return t; }
-  while (*t && isspace(*t)) { t++; }
-  return t;
 }
 
 /**
@@ -62,32 +49,40 @@ void drawWordWrappedText(Adafruit_GFX &g, int16_t x, int16_t y, int16_t w,
                          int16_t h, const char *t, const GFXfont *f) {
   if (!t) { return; }
   g.setFont(f);
-  g.setTextWrap(false);  // clip (GFX used to have a bug that would auto-wrap on exact width)
-  int16_t yPos = 0;      ///< current y position relative to top left of bounding box
-  for (;;) {             // for each line line
-    const char *startLine = t, *startWord = t;
-    yPos += f->yAdvance;
-    // find line end
-    for (int16_t xPos = 0; *t && xPos < w; xPos += charWidth(*t, f)) {  
-      if (!isalnum(*t)) { startWord = t + 1; };
-      t++;
+  g.setTextWrap(false);  // clip (GFX used to have a bug that would auto-wrap on
+                         // exact width)
+  const char *startLine = t;
+  const char *startNextLine = t;
+  int16_t startNextLineXPos = 0;
+  // newline (from 0,0)
+  int16_t xPos = 0;
+  int16_t yPos = f->yAdvance;      ///< y position relative to top left of bounding box
+  if (yPos > h) {
+    return;
     }
-    if (startWord == startLine) {
-      // current word doesn't fit on one line. Hard wrap it
-      startWord = t;
+  g.setCursor(x, y + yPos);
+  for (char c = *t; c; c = *++t) {
+    xPos += charWidth(c, f);
+    LOGD("%3d %3d %3d %2d %c", w, startNextLineXPos, xPos, charWidth(c, f), c);
+    if (xPos <= w) {
+      if (yPos+charDescent(c,f) > h) { return; } // text won't fit in bounding box. Done.
+      if (!isalnum(c)) {
+        startNextLine = t + 1;
+        startNextLineXPos = xPos;
     }
-    // print up to the beginning of the current word
-    // check to make sure it fits in the bounding box
-    int16_t maxY = charDescent(*startLine, f);
-    for (const char *p = startLine; p < startWord; p++) {
-      maxY = max(maxY, charDescent(*p, f));
+    } else {
+      LOGD("%.*s", startNextLine - startLine, startLine);
+      for (; startLine < startNextLine; startLine++) {
+        g.print(*startLine);
     }
-    if (yPos + maxY > h) {
-      // this line's glyphs don't fit in the bounding box. we're done
+      xPos -= startNextLineXPos;
+      startNextLineXPos = 0;
+      // newline
+      yPos += f->yAdvance;
+      if (yPos > h) {
       break;
     }
-    g.setCursor(x, y+yPos);
-    g.printf("%.*s", startWord - startLine, startLine);
-    t = trim(startWord);  // trim any leading whitespace
+      g.setCursor(x, y + yPos);
+    }
   }
 }
