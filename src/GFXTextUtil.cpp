@@ -3,8 +3,6 @@
 #include <Adafruit_GFX.h>
 #include <ctype.h>
 
-#include "config.h" // DEBUG
-
 /**
  * @brief when printing, how much width on the screen does this glyph require
  * 
@@ -62,7 +60,6 @@ void drawWordWrappedText(Adafruit_GFX &g, int16_t x, int16_t y, int16_t w,
   for (char c = *t; ; c = *++t) {
     if (c != '\0' && c != '\n'){
       xPos += charWidth(c, f);
-      LOGD("%3d %3d %3d %2d %c", w, startNextLineXPos, xPos, charWidth(c, f), c);
       if (xPos <= w) {
         if (yPos + charDescent(c, f) > h) { return; }  // text won't fit in bounding box. Done.
         if (!isalnum(c)) {
@@ -77,7 +74,6 @@ void drawWordWrappedText(Adafruit_GFX &g, int16_t x, int16_t y, int16_t w,
       startNextLine = t;
       startNextLineXPos = xPos;
     }
-    LOGD("%.*s", startNextLine - startLine, startLine);
     for (; startLine < startNextLine; startLine++) { g.print(*startLine); }
     if (startLine == t) {
       // we aren't breaking a word, so consume any trailing whitespace
